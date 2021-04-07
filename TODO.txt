@@ -1,0 +1,6 @@
+UVs (Add to TexTools)
+- Flip H & V
+- Snap selection to corners/middle
+- Basic Stack
+
+- Clear seams first on hard edge 2 seems
