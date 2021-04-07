@@ -1,8 +1,8 @@
-# ------------------------------------------------------------------------------
-# BE Tools by Bruce Evans - brucein3d@gmail.com
-# Thank you so much for supporting my work!  Please reach out with feedback,
-# and other requests.  I would love to hear them.
-# ------------------------------------------------------------------------------
+#################################################################
+# Be Tools by Bruce Evans                                       #
+# Created 4/6/2021                                              #
+# brucein3d@gmail.com                                           #
+#################################################################
 
 bl_info = {
     "name": "BE Tools",
@@ -16,12 +16,13 @@ bl_info = {
 if "bpy" in locals():
     import imp
 
-    imp.reload(settings)
-    imp.reload(panels)
+    imp.reload(_settings)
+    # imp.reload(_panels)
 
     imp.reload(utils._constants)
     imp.reload(utils._uvs)
 
+    """
     imp.reload(ops._autosmooth)
     imp.reload(ops._bevel)
     imp.reload(ops._collision)
@@ -35,12 +36,17 @@ if "bpy" in locals():
     imp.reload(ops._smartextract)
     imp.reload(ops._uv)
     imp.reload(ops._vert)
+    """
     imp.reload(ops._viewops)
 
 else:
-    import panels
-    import settings
+    from . import _settings
+    # from . import _panels
 
+    from .utils import _constants
+    from .utils import _uvs
+
+    """
     from .ops import _autosmooth
     from .ops import _bevel
     from .ops import _collision
@@ -54,6 +60,7 @@ else:
     from .ops import _smartextract
     from .ops import _uv
     from .ops import _vert
+    """
     from .ops import _viewops
 
 
@@ -76,15 +83,15 @@ from bpy.props import (
 )
 
 
-class PreferencesPanel(bpy.types.AddonPreferences):
+class BEPreferencesPanel(bpy.types.AddonPreferences):
     bl_idname = __package__  # TODO what is this?
 
     game_engine : bpy.props.EnumProperty(
         items = [
-            'Unreal Engine',
-            'Unity'
+            ('UE4', 'Unreal Engine', 'Presets for the Unreal Engine'),  # TODO icon
+            ('Unity', 'Unity', 'Presets for the Unity Engine')  # TODO icon
         ],
-        description = 'Preferred game engine',
+        description = 'Game engine presets',
         name = 'Game Engine',
         default = 'Unreal Engine'
     )
@@ -109,63 +116,25 @@ class PreferencesPanel(bpy.types.AddonPreferences):
         box.label(text = "More Info")
         col = box.column(align=True)
         col.operator('wm.url_open', text='Donate', icon='HELP').url = 'https://gumroad.com/l/KFvsF'
+        col.operator('wm.url_open', text='GitHub Code', icon='WORDWRAP_ON').url = 'https://github.com/bruceevans/betools-blender'
         
 
-# SETTINGS?
-
-addon_keymaps = []
-
 classes = (
-    BEToolsPanel,
-    PieMenu,
-    VertMenu,
-    EdgeMenu,
-    FaceMenu,
-    MeshMenu,
-    MirrorMenu,
-    SmartExtract,
-    SmartMirror,
-    SmartMirrorX,
-    SmartMirrorY,
-    SmartMirrorZ,
-    VIEW3D_OT_PIE_CALL,
-    BEAutoSmooth,
-    BEAutoSmooth30,
-    BEAutoSmooth45,
-    BEAutoSmooth60,
-    SeamHardEdge,
-    DivideLattice,
-    Lattice,
-    Lattice_2,
-    Lattice_3,
-    Lattice_4,
-    CenterPivot,
-    Pivot2Cursor,
-    SmartBevel,
-    ToggleWireFrame,
-    UE4CollisionGenerator,
-    UBXCollisionGenerator,
-    UCXBoxCollisionGenerator,
-    UCXHullCollisionGenerator,
-    USPCollisionGenerator,
-    UCPCollisionGenerator,
-    ExportSelection,
-    ExportScene,
-    ToggleFaceOrientation,
-    RecalcNormals
+    BEPreferencesPanel,
 )
 
 def register():
-    for c in classes:
-        bpy.utils.register_class(c)
+    for cls in classes:
+        bpy.utils.register_class(cls)
 
-    # keymapping
-    kc = bpy.context.window_manager.keyconfigs.addon
-    km = kc.keymaps.new(name="3D View", space_type='VIEW_3D')
-    kmi = km.keymap_items.new(VIEW3D_OT_PIE_CALL.bl_idname, 'SPACE', 'PRESS')
-    kmi.active = True
-    addon_keymaps.append((km, kmi))
+def unregister():
+    for cls in reversed(classes):
+        bpy.utils.unregister_class(cls)
 
+if __name__ == "__main__":
+    register()
+
+"""
     ## ICONS ##
 
     icons = [
@@ -190,14 +159,4 @@ def register():
 
     for icon in icons:
         panels.register_icon(icon)
-
-def unregister():
-    for c in classes:
-        bpy.utils.unregister_class(c)
-
-    for km, kmi in addon_keymaps:
-        km.keymap_items.remove(kmi)
-    addon_keymaps.clear()
-
-if __name__ == "__main__":
-    register()
+"""
