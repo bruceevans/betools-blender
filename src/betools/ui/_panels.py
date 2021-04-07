@@ -12,6 +12,42 @@ from bpy.types import Panel
 from . ops import *
 
 
+class BEPreferencesPanel(bpy.types.AddonPreferences):
+    bl_idname = __package__  # TODO what is this?
+
+    game_engine : bpy.props.EnumProperty(
+        items = [
+            ('UE4', 'Unreal Engine', 'Presets for the Unreal Engine'),  # TODO icon
+            ('Unity', 'Unity', 'Presets for the Unity Engine')  # TODO icon
+        ],
+        description = 'Game engine presets',
+        name = 'Game Engine',
+        default = 'Unreal Engine'
+    )
+
+    # help/docs
+    # github link
+    # portfolio link
+
+    def draw(self, context):
+        layout = self.layout
+
+        box = layout.box()
+        col = box.column(align=True)
+        col.prop(self, "game_engine", icon='RESTRICT_VIEW_OFF')
+        if self.game_engine == 'Unreal Engine':
+            col.label(text="Unreal Engine presets")
+        elif self.game_engine == 'Unity':
+            col.label(text="Unity engine presets")
+
+        box.separator()
+        box = layout.box()
+        box.label(text = "More Info")
+        col = box.column(align=True)
+        col.operator('wm.url_open', text='Donate', icon='HELP').url = 'https://gumroad.com/l/KFvsF'
+        col.operator('wm.url_open', text='GitHub Code', icon='WORDWRAP_ON').url = 'https://github.com/bruceevans/betools-blender'
+
+
 class PieMenu(Menu):
     bl_label = ""
     def __init__(self, name):
@@ -209,17 +245,3 @@ class BEToolsPanel(Panel):
         export_column = export_layout.column()
         export_column.operator('mesh.be_export_selected_fbx', text = 'Export Sel as FBX')
         export_column.operator('mesh.be_export_scene_fbx', text = 'Export FBX')
-
-
-## ICONS ##
-
-preview_collections = {}
-preview_icons = bpy.utils.previews.new()
-
-def get_icon(icon):
-    return preview_icons[icon].icon_id
-
-def register_icon(icon_file):
-    icon_name = icon_file.split('.')[0]
-    dir = os.path.join(os.path.dirname(__file__), "icons")
-    preview_icons.load(icon_name, os.path.join(dir, icon_file), 'IMAGE')

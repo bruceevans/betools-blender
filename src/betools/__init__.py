@@ -17,8 +17,7 @@ if "bpy" in locals():
     import imp
 
     imp.reload(_settings)
-    # imp.reload(_panels)
-
+    imp.reload(ui._panels)
     imp.reload(utils._constants)
     imp.reload(utils._uvs)
 
@@ -41,7 +40,7 @@ if "bpy" in locals():
 
 else:
     from . import _settings
-    # from . import _panels
+    from .ui import _panels
 
     from .utils import _constants
     from .utils import _uvs
@@ -65,62 +64,10 @@ else:
 
 
 import bpy
-import os
-import math
-import string
-import bpy.utils.previews
-
-from bpy.types import Menu, Operator, Panel, UIList
-
-from bpy.props import (
-	StringProperty,
-	BoolProperty,
-	IntProperty,
-	FloatProperty,
-	FloatVectorProperty,
-	EnumProperty,
-	PointerProperty,
-)
-
-
-class BEPreferencesPanel(bpy.types.AddonPreferences):
-    bl_idname = __package__  # TODO what is this?
-
-    game_engine : bpy.props.EnumProperty(
-        items = [
-            ('UE4', 'Unreal Engine', 'Presets for the Unreal Engine'),  # TODO icon
-            ('Unity', 'Unity', 'Presets for the Unity Engine')  # TODO icon
-        ],
-        description = 'Game engine presets',
-        name = 'Game Engine',
-        default = 'Unreal Engine'
-    )
-
-    # help/docs
-    # github link
-    # portfolio link
-
-    def draw(self, context):
-        layout = self.layout
-
-        box = layout.box()
-        col = box.column(align=True)
-        col.prop(self, "game_engine", icon='RESTRICT_VIEW_OFF')
-        if self.game_engine == 'Unreal Engine':
-            col.label(text="Unreal Engine presets")
-        elif self.game_engine == 'Unity':
-            col.label(text="Unity engine presets")
-
-        box.separator()
-        box = layout.box()
-        box.label(text = "More Info")
-        col = box.column(align=True)
-        col.operator('wm.url_open', text='Donate', icon='HELP').url = 'https://gumroad.com/l/KFvsF'
-        col.operator('wm.url_open', text='GitHub Code', icon='WORDWRAP_ON').url = 'https://github.com/bruceevans/betools-blender'
         
 
 classes = (
-    BEPreferencesPanel,
+    _panels.BEPreferencesPanel,
 )
 
 def register():
@@ -134,29 +81,3 @@ def unregister():
 if __name__ == "__main__":
     register()
 
-"""
-    ## ICONS ##
-
-    icons = [
-        "AS_30.png",
-        "AS_45.png",
-        "AS_60.png",
-        "BRIDGE.png",
-        "CHAMFER.png",
-        "EDGE_EXT.png",
-        "LATTICE_2.png",
-        "LATTICE_3.png",
-        "LATTICE_4.png",
-        "MERGE_FIRST.png",
-        "MERGE_LAST.png",
-        "MIRROR_X.png",
-        "MIRROR_Y.png",
-        "MIRROR_Z.png",
-        "VERT_SLIDE.png",
-        "WIRE.png",
-        "WIRE_SHADED.png"
-    ]
-
-    for icon in icons:
-        panels.register_icon(icon)
-"""
