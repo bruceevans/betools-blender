@@ -5,6 +5,7 @@
 #################################################################
 
 import bpy
+import math
 from mathutils import Vector
 
 
@@ -327,3 +328,10 @@ class UCPCollisionGenerator(UE4CollisionGenerator):
     def execute(self, context):
         self.create_cylinder(self.radius, self.height, self.location, self.rotation)
         return{'FINISHED'}
+
+bpy.utils.register_class(UE4CollisionGenerator)
+bpy.utils.register_class(UBXCollisionGenerator)
+bpy.utils.register_class(UCXBoxCollisionGenerator)
+bpy.utils.register_class(UCXHullCollisionGenerator)
+bpy.utils.register_class(USPCollisionGenerator)
+bpy.utils.register_class(UCPCollisionGenerator)

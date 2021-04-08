@@ -201,3 +201,9 @@ class Lattice(bpy.types.Operator):
         if context.object is None:
             return False
         return True
+
+bpy.utils.register_class(DivideLattice)
+bpy.utils.register_class(Lattice)
+bpy.utils.register_class(Lattice_2)
+bpy.utils.register_class(Lattice_3)
+bpy.utils.register_class(Lattice_4)

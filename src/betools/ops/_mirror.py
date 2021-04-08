@@ -63,3 +63,8 @@ class SmartMirrorZ(SmartMirror):
     bl_idname = "mesh.smart_mirror_z"
     def __init__(self):
         SmartMirror.__init__(self, _constants.MIRROR_MODES["Z"], "Smart Mirror Z")
+
+bpy.utils.register_class(SmartMirror)
+bpy.utils.register_class(SmartMirrorX)
+bpy.utils.register_class(SmartMirrorY)
+bpy.utils.register_class(SmartMirrorZ)

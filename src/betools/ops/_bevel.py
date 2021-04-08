@@ -33,3 +33,5 @@ class SmartBevel(bpy.types.Operator):
         if not bpy.context.active_object.mode == 'EDIT':
             return False
         return True
+
+bpy.utils.register_class(SmartBevel)

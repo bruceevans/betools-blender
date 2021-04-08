@@ -32,3 +32,9 @@ class ExportScene(bpy.types.Operator):
     def execute(self, context):
         bpy.ops.export_scene.fbx('INVOKE_DEFAULT')
         return {'FINISHED'}
+
+# TODO UE4 Export
+# TODO Unity Export
+
+bpy.utils.register_class(ExportSelection)
+bpy.utils.register_class(ExportScene)

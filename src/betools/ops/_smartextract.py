@@ -38,3 +38,5 @@ class SmartExtract(bpy.types.Operator):
         if not sm[2]:
             return False
         return True
+
+bpy.utils.register_class(SmartExtract)

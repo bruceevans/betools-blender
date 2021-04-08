@@ -45,3 +45,5 @@ class SeamHardEdge(bpy.types.Operator):
             return False
 
         return True
+
+bpy.utils.register_class(SeamHardEdge)

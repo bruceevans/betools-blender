@@ -46,3 +46,8 @@ class BEAutoSmooth60(BEAutoSmooth):
     bl_idname = "mesh.be_auto_smooth_60"
     def __init__(self):
         BEAutoSmooth.__init__(self, 1.0472)
+
+bpy.utils.register_class(BEAutoSmooth)
+bpy.utils.register_class(BEAutoSmooth30)
+bpy.utils.register_class(BEAutoSmooth45)
+bpy.utils.register_class(BEAutoSmooth60)

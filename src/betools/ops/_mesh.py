@@ -38,3 +38,5 @@ class RecalcNormals(bpy.types.Operator):
 def getMeshBoundingBox():
     """ Return the min, max, and span of the bounding box
     """
+
+bpy.utils.register_class(RecalcNormals)

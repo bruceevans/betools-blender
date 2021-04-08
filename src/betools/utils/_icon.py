@@ -22,16 +22,16 @@ _ICONS = [
     "WIRE_SHADED.png"
 ]
 
-for icon in _ICONS:
-    registerIcon(icon)
-
-preview_collections = {}
-preview_icons = bpy.utils.previews.new()
-
-def getIcon(icon):
-    return preview_icons[icon].icon_id
+previewCollections = {}
+previewIcons = bpy.utils.previews.new()
 
 def registerIcon(iconFile):
     iconName = os.path.splitext(iconFile)[0]
     dir = os.path.join(os.path.dirname(__file__), "icons")
-    preview_icons.load(iconName, os.path.join(dir, iconFile), 'IMAGE')
+    previewIcons.load(iconName, os.path.join(dir, iconFile), 'IMAGE')
+
+for icon in _ICONS:
+    registerIcon(icon)
+
+def getIcon(icon):
+    return previewIcons[icon].icon_id

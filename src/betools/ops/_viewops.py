@@ -36,3 +36,6 @@ class ToggleFaceOrientation(bpy.types.Operator):
         else:
             bpy.context.space_data.overlay.show_face_orientation = True
         return {"FINISHED"}
+
+bpy.utils.register_class(ToggleWireFrame)
+bpy.utils.register_class(ToggleFaceOrientation)

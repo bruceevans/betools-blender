@@ -21,7 +21,6 @@ if "bpy" in locals():
     imp.reload(utils._constants)
     imp.reload(utils._uvs)
 
-    """
     imp.reload(ops._autosmooth)
     imp.reload(ops._bevel)
     imp.reload(ops._collision)
@@ -35,7 +34,6 @@ if "bpy" in locals():
     imp.reload(ops._smartextract)
     imp.reload(ops._uv)
     imp.reload(ops._vert)
-    """
     imp.reload(ops._viewops)
 
 else:
@@ -45,7 +43,6 @@ else:
     from .utils import _constants
     from .utils import _uvs
 
-    """
     from .ops import _autosmooth
     from .ops import _bevel
     from .ops import _collision
@@ -59,7 +56,6 @@ else:
     from .ops import _smartextract
     from .ops import _uv
     from .ops import _vert
-    """
     from .ops import _viewops
 
 
@@ -68,6 +64,14 @@ import bpy
 
 classes = (
     _panels.BEPreferencesPanel,
+    _panels.PieMenu,
+    _panels.VertMenu,
+    _panels.EdgeMenu,
+    _panels.FaceMenu,
+    _panels.MeshMenu,
+    _panels.MirrorMenu,
+    _panels.VIEW3D_OT_PIE_CALL,
+    _panels.BEToolsPanel,
 )
 
 def register():
@@ -80,4 +84,3 @@ def unregister():
 
 if __name__ == "__main__":
     register()
-
