@@ -7,7 +7,7 @@
 import bpy
 
 
-class BEAutoSmooth(bpy.types.Operator):
+class BETOOLS_OT_AutoSmooth(bpy.types.Operator):
     bl_label = "Automatically smooth hard edges"
     bl_description = "Smooth hard edges based on an angle value"
     bl_idname = "mesh.be_auto_smooth"
@@ -30,24 +30,25 @@ class BEAutoSmooth(bpy.types.Operator):
         return True
 
 
-class BEAutoSmooth30(BEAutoSmooth):
+class BETOOLS_OT_AutoSmooth30(BETOOLS_OT_AutoSmooth):
     bl_idname = "mesh.be_auto_smooth_30"
     def __init__(self):
-        BEAutoSmooth.__init__(self, 0.523599)
+        BETOOLS_OT_AutoSmooth.__init__(self, 0.523599)
 
 
-class BEAutoSmooth45(BEAutoSmooth):
+class BETOOLS_OT_AutoSmooth45(BETOOLS_OT_AutoSmooth):
     bl_idname = "mesh.be_auto_smooth_45"
     def __init__(self):
-        BEAutoSmooth.__init__(self, 0.785398)
+        BETOOLS_OT_AutoSmooth.__init__(self, 0.785398)
 
 
-class BEAutoSmooth60(BEAutoSmooth):
+class BETOOLS_OT_AutoSmooth60(BETOOLS_OT_AutoSmooth):
     bl_idname = "mesh.be_auto_smooth_60"
     def __init__(self):
-        BEAutoSmooth.__init__(self, 1.0472)
+        BETOOLS_OT_AutoSmooth.__init__(self, 1.0472)
 
-bpy.utils.register_class(BEAutoSmooth)
-bpy.utils.register_class(BEAutoSmooth30)
-bpy.utils.register_class(BEAutoSmooth45)
-bpy.utils.register_class(BEAutoSmooth60)
+
+bpy.utils.register_class(BETOOLS_OT_AutoSmooth)
+bpy.utils.register_class(BETOOLS_OT_AutoSmooth30)
+bpy.utils.register_class(BETOOLS_OT_AutoSmooth45)
+bpy.utils.register_class(BETOOLS_OT_AutoSmooth60)

@@ -1,3 +1,7 @@
+#################################################################
+# Be Tools by Bruce Evans                                       #
+# brucein3d@gmail.com                                           #
+#################################################################
 
 SELECTION_MODES = {
     (True, False, False)    : "VERTEX",
@@ -10,4 +14,3 @@ MIRROR_MODES = {
     "Y" : (False, True, False),
     "Z" : (False, False, True)
 }
-

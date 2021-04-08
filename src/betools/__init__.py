@@ -1,6 +1,5 @@
 #################################################################
 # Be Tools by Bruce Evans                                       #
-# Created 4/6/2021                                              #
 # brucein3d@gmail.com                                           #
 #################################################################
 
@@ -64,23 +63,36 @@ import bpy
 
 classes = (
     _panels.BEPreferencesPanel,
-    _panels.PieMenu,
-    _panels.VertMenu,
-    _panels.EdgeMenu,
-    _panels.FaceMenu,
-    _panels.MeshMenu,
-    _panels.MirrorMenu,
-    _panels.VIEW3D_OT_PIE_CALL,
-    _panels.BEToolsPanel,
+    _panels.BETOOLS_MT_PieMenu,
+    _panels.BETOOLS_MT_VertexMenu,
+    _panels.BETOOLS_MT_EdgeMenu,
+    _panels.BETOOLS_MT_FaceMenu,
+    _panels.BETOOLS_MT_MeshMenu,
+    _panels.BETOOLS_MT_MirrorMenu,
+    _panels.BETOOLS_OT_PieCall,
+    _panels.UI_PT_BEToolsPanel,
 )
+
+addon_keymaps =[]
 
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
 
+    # handle keymaps
+    kc = bpy.context.window_manager.keyconfigs.addon
+    km = kc.keymaps.new(name="3D View", space_type='VIEW_3D')
+    kmi = km.keymap_items.new(_panels.BETOOLS_OT_PieCall.bl_idname, 'SPACE', 'PRESS', shift=True)
+    kmi.active = True
+    addon_keymaps.append((km, kmi))
+
 def unregister():
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
+
+    for km, kmi in addon_keymaps:
+        km.keymap_items.remove(kmi)
+    addon_keymaps.clear()
 
 if __name__ == "__main__":
     register()

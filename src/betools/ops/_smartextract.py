@@ -7,7 +7,7 @@
 import bpy
 
 
-class SmartExtract(bpy.types.Operator):
+class BETOOLS_OT_SmartExtract(bpy.types.Operator):
     """ An operation to extract the selected faces from a mesh
         and create a new mesh from that selection
     """
@@ -39,4 +39,4 @@ class SmartExtract(bpy.types.Operator):
             return False
         return True
 
-bpy.utils.register_class(SmartExtract)
+bpy.utils.register_class(BETOOLS_OT_SmartExtract)
