@@ -21,7 +21,8 @@ class DivideLattice(bpy.types.Operator):
     def execute(self, context):
         try:
 
-            #  TODO move pivots
+            # TODO move pivots
+            # TODO add a property
             bpy.ops.mesh.be_lattice()
 
             if self.divisions == 2:

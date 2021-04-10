@@ -5,6 +5,8 @@
 #################################################################
 
 import bpy
+import math
+from bpy.props import FloatProperty
 
 
 class BETOOLS_OT_AutoSmooth(bpy.types.Operator):
@@ -13,8 +15,7 @@ class BETOOLS_OT_AutoSmooth(bpy.types.Operator):
     bl_idname = "mesh.be_auto_smooth"
     bl_options = {'REGISTER', 'UNDO'}
 
-    def __init__(self, angle):
-        self.angle = angle
+    angle: FloatProperty(name="Angle", default=math.radians(45), min=math.radians(1), max=math.radians(180), subtype="ANGLE")
 
     def execute(self, context):
         bpy.ops.object.mode_set(mode = 'OBJECT')
@@ -30,25 +31,4 @@ class BETOOLS_OT_AutoSmooth(bpy.types.Operator):
         return True
 
 
-class BETOOLS_OT_AutoSmooth30(BETOOLS_OT_AutoSmooth):
-    bl_idname = "mesh.be_auto_smooth_30"
-    def __init__(self):
-        BETOOLS_OT_AutoSmooth.__init__(self, 0.523599)
-
-
-class BETOOLS_OT_AutoSmooth45(BETOOLS_OT_AutoSmooth):
-    bl_idname = "mesh.be_auto_smooth_45"
-    def __init__(self):
-        BETOOLS_OT_AutoSmooth.__init__(self, 0.785398)
-
-
-class BETOOLS_OT_AutoSmooth60(BETOOLS_OT_AutoSmooth):
-    bl_idname = "mesh.be_auto_smooth_60"
-    def __init__(self):
-        BETOOLS_OT_AutoSmooth.__init__(self, 1.0472)
-
-
 bpy.utils.register_class(BETOOLS_OT_AutoSmooth)
-bpy.utils.register_class(BETOOLS_OT_AutoSmooth30)
-bpy.utils.register_class(BETOOLS_OT_AutoSmooth45)
-bpy.utils.register_class(BETOOLS_OT_AutoSmooth60)

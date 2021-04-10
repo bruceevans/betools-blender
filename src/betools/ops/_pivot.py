@@ -42,5 +42,8 @@ class Pivot2Cursor(bpy.types.Operator):
 
 # TODO Edit pivot
 
+class EditPivot():
+    pass
+
 bpy.utils.register_class(CenterPivot)
 bpy.utils.register_class(Pivot2Cursor)

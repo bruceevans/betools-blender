@@ -4,6 +4,7 @@
 #################################################################
 
 import os
+from math import radians
 
 import bpy
 
@@ -14,6 +15,8 @@ from bpy.types import Panel
 from .. ops import *
 from .. utils import _icon
 from .. utils import _constants
+
+from bpy.props import StringProperty
 
 
 class BEPreferencesPanel(bpy.types.AddonPreferences):
@@ -177,7 +180,7 @@ class UI_PT_BEToolsPanel(Panel):
     """ Main side panel in the 3D View
     """
 
-    bl_label = "Be Tools Panel"
+    bl_label = "Be Tools"
     bl_category = "Be Tools"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -186,83 +189,122 @@ class UI_PT_BEToolsPanel(Panel):
 
         layout = self.layout
 
-        layout.label(text="Viewport Display Modes")
+        layout.label(text="Viewport Display")
 
-        row = layout.column().row(align=True)
-
-        row.operator("mesh.be_toggle_wireframe", text = "Wire", icon = "CUBE")
-        row.operator("mesh.be_toggle_shaded", text = "Shade", icon = "MESH_CUBE")
-        row.operator("view3d.toggle_xray", text = "XRay", icon = "XRAY")
-
-        layout.label(text="Pivot")
-
-        row = layout.column().row(align=True)
-        row.operator("mesh.be_center_pivot", text = "Edit", icon = "OBJECT_ORIGIN")
-        row.operator("mesh.be_center_pivot", text = "Center", icon = "OBJECT_ORIGIN")
-        row.operator("mesh.be_pivot2cursor", text = "Cursor", icon = "EMPTY_ARROWS")
-
-        layout.label(text="Mirror")
-
-        row = layout.column().row(align=True)
-        row.operator("mesh.smart_mirror_x", text = "X", icon_value = _icon.getIcon("MIRROR_X"))
-        row.operator("mesh.smart_mirror_y", text = "Y", icon_value = _icon.getIcon("MIRROR_Y"))
-        row.operator("mesh.smart_mirror_z", text = "Z", icon_value = _icon.getIcon("MIRROR_Z"))
-
-        layout.label(text="Quick Lattice")
-
-        row = layout.column().row(align=True)
-
-        row.operator("mesh.lattice_2", text = "2x2", icon_value = _icon.getIcon("LATTICE_2"))
-        row.operator("mesh.lattice_3", text = "3x3", icon_value = _icon.getIcon("LATTICE_3"))
-        row.operator("mesh.lattice_4", text = "4x4", icon_value = _icon.getIcon("LATTICE_4"))
-
-        layout.label(text="Auto Smooth")
-
-        row = layout.column().row(align=True)
-
-        row.operator("mesh.be_auto_smooth_30", text = "30", icon_value = _icon.getIcon("AS_30"))
-        row.operator("mesh.be_auto_smooth_45", text = "45", icon_value = _icon.getIcon("AS_45"))
-        row.operator("mesh.be_auto_smooth_60", text = "60", icon_value = _icon.getIcon("AS_60"))
-
-        layout.label(text="Normals")
-
-        row = layout.column().row(align=True)
-
-        row.operator("mesh.be_recalc_normals", text = "Recalc", icon = "NORMALS_FACE")
-        row.operator("mesh.be_toggle_fo", text = "Show", icon = "ORIENTATION_NORMAL")
-
-        layout.label(text="Mesh Tools")
-
-        row = layout.column().row(align=True)
-        # TODO other tools?
-
-        row.operator("mesh.smart_extract", text = "Smart Extract") # TODO Icon
-
-        layout.label(text="UVs")
-
+        # row = layout.column().row(align=True)
         col = layout.column(align=True)
 
-        col.operator("mesh.seams_from_hard_edge", text = "Hard Edges To Seams", icon = "MOD_EDGESPLIT")
+        col.operator("mesh.be_toggle_wireframe", text = "Toggle Wireframe", icon = "SHADING_WIRE")
+        col.operator("mesh.be_toggle_shaded", text = "Toggle Shaded", icon = "SHADING_SOLID")
+        col.operator("view3d.toggle_xray", text = "Toggle XRay", icon = "XRAY")
 
-        # TODO Unwrap
-        # Options for unwrap method and margin
-        
-        # TODO Projections (project from view in blender)
+        object = context.active_object
+        if object is None or len(bpy.context.selected_objects) == 0:
+            col.label(text='Select a Mesh!')
+        else:
+            layout.label(text="Pivot")
+            # row = layout.column().row(align=True)
+            col = layout.column(align=True)
+            col.operator("mesh.be_center_pivot", text = "Edit Pivot", icon = "OBJECT_ORIGIN")
+            col.operator("mesh.be_center_pivot", text = "Center Pivot", icon = "OBJECT_ORIGIN")
+            col.operator("mesh.be_pivot2cursor", text = "Pivot to Cursor", icon = "EMPTY_ARROWS")
 
-        # TODO Switch collision ops based on prefs
-        layout.label(text='Collision Generation')
+            layout.label(text="Mirror")
+            row = layout.column().row(align=True)
+            row.operator("mesh.smart_mirror_x", text = "X", icon_value = _icon.getIcon("MIRROR_X"))
+            row.operator("mesh.smart_mirror_y", text = "Y", icon_value = _icon.getIcon("MIRROR_Y"))
+            row.operator("mesh.smart_mirror_z", text = "Z", icon_value = _icon.getIcon("MIRROR_Z"))
 
+            layout.label(text="Quick Lattice")
+            row = layout.column().row(align=True)
+            row.operator("mesh.lattice_2", text = "2x2", icon_value = _icon.getIcon("LATTICE_2"))
+            row.operator("mesh.lattice_3", text = "3x3", icon_value = _icon.getIcon("LATTICE_3"))
+            row.operator("mesh.lattice_4", text = "4x4", icon_value = _icon.getIcon("LATTICE_4"))
+
+            layout.label(text="Mesh Tools")
+            row = layout.column().row(align=True)
+            row.operator("mesh.smart_extract", text = "Smart Extract") # TODO Icon
+
+
+            col = layout.column(align=True)
+            scene = context.scene
+            row = col.row(align=True)
+            row.prop_search(scene, "snapObject", bpy.data, "objects", text = "") # TODO icon
+
+            row = col.row(align=True)
+            row.operator("mesh.be_snap_to_face", text = "Snap to Face") # string property
+            # TODO Snap to face
+
+            mesh = bpy.context.object.data
+            col = layout.column(align=False, heading="Shading")
+            col.use_property_decorate = False
+
+            row = col.row(align=True)
+            row.prop(mesh, "use_auto_smooth", text=" Auto Smooth")
+            row.active = mesh.use_auto_smooth and not mesh.has_custom_normals
+
+            row = col.row(align=True)
+            row.prop(mesh, "auto_smooth_angle", text="")
+            row.prop_decorator(mesh, "auto_smooth_angle")
+
+            col = layout.column(align=True)
+            col.operator("object.shade_smooth", text = "Shade Smooth", icon = "SPHERECURVE")
+            col.operator("object.shade_flat", text = "Shade Flat", icon = "LINCURVE")
+            col.operator("mesh.be_recalc_normals", text = "Recalculate Normals", icon = "NORMALS_FACE")
+            col.operator("mesh.be_toggle_fo", text = "Show Face Orientation", icon = "ORIENTATION_NORMAL")
+
+            layout.label(text="UVs")
+            col = layout.column(align=True)
+            col.operator("mesh.seams_from_hard_edge", text = "Hard Edges To Seams", icon = "MOD_EDGESPLIT")
+            col.operator("uv.unwrap", text = "Unwrap Faces", icon = "FACESEL")
+            # TODO Projections (project from view in blender)
+            # TODO UV Mesh
+
+
+class UI_PT_CollisionPanel(Panel):
+    """ Main side panel in the 3D View
+    """
+
+    bl_label = "Collision Tools"
+    bl_category = "Be Tools"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+
+    def draw(self, context):
+        # TODO Add ops based on prefs
+        # TODO Context Sensitive
+        layout = self.layout
         col = layout.column(align=True)
-        row = col.row(align=True)
+        object = context.active_object
+        if object is None or len(bpy.context.selected_objects) == 0:
+            col.label(text='Select a Mesh!')
+        else:
+            col.label(text='UE4 Collision')
+            row = col.row(align=True)
+            row.operator('mesh.be_ucx_hull', text = "UCX Convex")
+            row.operator('mesh.be_ucx_box_collision', text = "UCX Box")
+            row = col.row(align=True)
+            row.operator('mesh.be_ubx_collision', text = "UBX")
+            row.operator('mesh.be_usp', text = "USP")
+            row.operator('mesh.be_ucp', text = "UCP")
 
-        row.operator('mesh.be_ucx_hull', text = "UCX Convex")
-        row.operator('mesh.be_ucx_box_collision', text = "UCX Box")
-        col.operator('mesh.be_ubx_collision', text = "UBX")
-        col.operator('mesh.be_usp', text = "USP")
-        col.operator('mesh.be_ucp', text = "UCP")
 
-        layout.label(text="Export")
+class UI_PT_ExportPanel(Panel):
+    """ Main side panel in the 3D View
+    """
+
+    bl_label = "Export Tools"
+    bl_category = "Be Tools"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+
+    def draw(self, context):
+        layout = self.layout
         col = layout.column(align=True)
         col.operator('mesh.be_export_selected_fbx', text = 'Export Sel as FBX')
         col.operator('mesh.be_export_scene_fbx', text = 'Export FBX')
         # TODO simple obj export to temp area
+
+# TODO Clean up panel
+
+bpy.types.Scene.snapObject = bpy.props.StringProperty()
