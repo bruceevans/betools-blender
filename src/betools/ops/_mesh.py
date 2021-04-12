@@ -7,6 +7,9 @@
 import bpy
 import bmesh
 
+import math
+import mathutils
+
 
 class BETOOLS_OT_RecalcNormals(bpy.types.Operator):
     bl_idname = "mesh.be_recalc_normals"
@@ -36,41 +39,38 @@ class BETOOLS_OT_RecalcNormals(bpy.types.Operator):
         return True
 
 
+# TODO Offset edges
+
+
 class BETOOLS_OT_SnapToFace(bpy.types.Operator):
     bl_idname = "mesh.be_snap_to_face"
     bl_label = "Snap to Face"
     bl_description = "Snap mesh to selected face"
     bl_options = {'REGISTER', 'UNDO'}
 
-    def _getFaceTarget(self):
-        bm = getMesh()
-        targetFace =[face for face in bm.faces if face.select][0]
-        return targetFace.calc_center_median_weighted(), targetFace.normal
-
     def execute(self, context):
         
-        # snapObject = bpy.types.Scene.snapObject
-        transform, rotation = self._getFaceTarget()
+        targetTransform, targetRotation = getFaceCenter()
 
-        # switch to object mode
+        if not targetTransform or bpy.context.object.mode == 'OBJECT':
+            self.report({'INFO'}, 'Switch to FACE mode and select a face to snap.')
+            return {"FINISHED"}
 
-        # select snap object
-
-        print("SNAP OBJECT")
-        print(context.scene.snapObject)
         bpy.ops.object.mode_set(mode='OBJECT')
-        # deselect objects
+
+        faceObject = bpy.context.selected_objects[0]
+        targetTransform += faceObject.location
+        
         bpy.ops.object.select_all(action='DESELECT')
         bpy.data.objects[context.scene.snapObject].select_set(True)
 
-        # TODO
-        # transform deltas
-        # rotation deltas
+        if faceObject == bpy.data.objects[context.scene.snapObject]:
+            self.report({'INFO'}, 'Invalid selection! Choose a different object to snap.')
+            return {"FINISHED"}
 
-        bpy.ops.transform.translate(value=transform)
-        bpy.ops.transform.rotate(value=rotation.x, orient_axis='X')
-        bpy.ops.transform.rotate(value=rotation.y, orient_axis='Y')
-        bpy.ops.transform.rotate(value=rotation.z, orient_axis='Z')
+        location = bpy.data.objects[context.scene.snapObject].location
+        translateToCoordinates(location, targetTransform)
+        rotateToCoordinates(context.scene.snapObject, targetRotation)
 
         return {"FINISHED"}
 
@@ -82,9 +82,29 @@ class BETOOLS_OT_SnapToFace(bpy.types.Operator):
             return False
         return True
 
+
 ################################################
 #   Utilities
 ################################################
+
+def getFaceCenter():
+    """ Get the center position of the selected face
+
+        args:
+            face (face?)
+
+        returns:
+            pos (Vec3)
+            normal (Vec3)
+    """
+
+    bm = getMesh()
+    if not bm:
+        return (None, None)
+    faces = [face for face in bm.faces if face.select]
+    if not len(faces) == 1:
+        return (None, None)
+    return faces[0].calc_center_median_weighted(), faces[0].normal
 
 def getMesh():
     """ Small helper to get the current bmesh in edit mode
@@ -110,26 +130,28 @@ def getSelectedFaces():
     bm = getMesh()
     return [face for face in bm.faces if face.select]
 
-def getFaceCenter(face):
-    """ Get the center position of the selected face
-
-        args:
-            face (face?)
-
-        returns:
-            pos (Vec3)
-    """
-
-    bm = getMesh()
-    faces = [face for face in bm.faces if face.select]
-    if not len(faces) == 1:
-        print("Select a single face!")
-        return
-    return faces[0].calc_center_median_weighted()
-
 def getMeshBoundingBox(mesh):
     """ Return the min, max, and span of the bounding box
     """
+
+def rotateToCoordinates(obj, direction):
+
+    bpy.ops.object.select_all(action='DESELECT')
+    bpy.data.objects[obj].select_set(True)
+
+    #apply rotation
+    bpy.data.objects[obj].rotation_mode = 'QUATERNION'
+    bpy.data.objects[obj].rotation_quaternion = direction.to_track_quat('X','Z')
+
+def translateToCoordinates(objectLocation, targetLocation):
+    """ Translate object to a target coordinate location
+
+        args:
+            objectLocation (vec3)
+            targetLocation (vec3)
+    """
+    delta = mathutils.Vector(targetLocation - objectLocation)
+    bpy.ops.transform.translate(value=delta)
 
 bpy.utils.register_class(BETOOLS_OT_RecalcNormals)
 bpy.utils.register_class(BETOOLS_OT_SnapToFace)
