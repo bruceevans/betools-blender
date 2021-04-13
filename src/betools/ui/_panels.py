@@ -240,8 +240,7 @@ class UI_PT_BEToolsPanel(Panel):
             row.prop_search(scene, "snapObject", bpy.data, "objects", text = "") # TODO icon
 
             row = col.row(align=True)
-            row.operator("mesh.be_snap_to_face", text = "Snap to Face") # string property
-            # TODO Snap to face
+            row.operator("mesh.be_snap_to_face", text = "Snap to Face") # TODO icon
 
             mesh = bpy.context.object.data
             col = layout.column(align=False, heading="Shading")
@@ -265,8 +264,7 @@ class UI_PT_BEToolsPanel(Panel):
             col = layout.column(align=True)
             col.operator("mesh.seams_from_hard_edge", text = "Hard Edges To Seams", icon = "MOD_EDGESPLIT")
             col.operator("uv.unwrap", text = "Unwrap Faces", icon = "FACESEL")
-            # TODO Projections (project from view in blender)
-            # TODO UV Mesh
+            col.operator('uv.project_from_view', text = 'Cam Project', icon = 'CON_CAMERASOLVER')
 
 
 class UI_PT_CollisionPanel(Panel):
@@ -322,7 +320,7 @@ class UI_PT_UVPanel(Panel):
     """ Main panel for the UV image editor
     """
 
-    bl_label = "UV Layout"
+    bl_label = "Be Tools"
     bl_category = "Be Tools"
     bl_space_type = "IMAGE_EDITOR"
     bl_region_type = "UI"
@@ -330,6 +328,8 @@ class UI_PT_UVPanel(Panel):
     def draw(self, context):
         layout = self.layout
         col = layout.column(align=True)
+        col.label(text='UV Tools')
+        
 
     # main settings
     # Map size, padding, resize, uv channels

@@ -39,9 +39,6 @@ class BETOOLS_OT_RecalcNormals(bpy.types.Operator):
         return True
 
 
-# TODO Offset edges
-
-
 class BETOOLS_OT_SnapToFace(bpy.types.Operator):
     bl_idname = "mesh.be_snap_to_face"
     bl_label = "Snap to Face"
