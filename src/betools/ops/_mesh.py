@@ -113,16 +113,18 @@ def getMesh():
     ob = bpy.context.active_object
     
     if not ob.mode == 'EDIT':
-        print("Must be in EDIT mode when to get a BMESH object")
+        print("Must be in EDIT mode when getting a BMESH object")
         return
     
     return bmesh.from_edit_mesh(ob.data)
 
 def getSelectedVerts():
-    pass
+    bm = getMesh()
+    return [vert for vert in bm.verts if vert.select]
 
 def getSelectedEdges():
-    pass
+    bm = getMesh()
+    return [edge for edge in bm.edges if edge.select]
 
 def getSelectedFaces():
     """ The data gets destroyed, try global?
@@ -139,7 +141,6 @@ def rotateToCoordinates(obj, direction):
     bpy.ops.object.select_all(action='DESELECT')
     bpy.data.objects[obj].select_set(True)
 
-    #apply rotation
     bpy.data.objects[obj].rotation_mode = 'QUATERNION'
     bpy.data.objects[obj].rotation_quaternion = direction.to_track_quat('X','Z')
 
@@ -152,6 +153,7 @@ def translateToCoordinates(objectLocation, targetLocation):
     """
     delta = mathutils.Vector(targetLocation - objectLocation)
     bpy.ops.transform.translate(value=delta)
+
 
 bpy.utils.register_class(BETOOLS_OT_RecalcNormals)
 bpy.utils.register_class(BETOOLS_OT_SnapToFace)

@@ -144,10 +144,10 @@ class BETOOLS_MT_MirrorMenu(BETOOLS_MT_PieMenu):
         BETOOLS_MT_PieMenu.__init__(self, "Mirror")
 
     def draw(self, context):
-        self.pie_menu.operator("mesh.smart_mirror_x", text = "Mirror X", icon_value = _icon.getIcon("MIRROR_X"))
-        self.pie_menu.operator("mesh.smart_mirror_y", text = "Mirror Y", icon_value = _icon.getIcon("MIRROR_Y"))
+        self.pie_menu.operator("mesh.smart_mirror", text = "Mirror X", icon_value = _icon.getIcon("MIRROR_X")).direction = 'X'
+        self.pie_menu.operator("mesh.smart_mirror", text = "Mirror Y", icon_value = _icon.getIcon("MIRROR_Y")).direction = 'Y'
         self.pie_menu.operator("wm.call_menu_pie", text = "Back", icon = "FILE_PARENT").name = "MeshMenu"
-        self.pie_menu.operator("mesh.smart_mirror_z", text = "Mirror Z", icon_value = _icon.getIcon("MIRROR_Z"))
+        self.pie_menu.operator("mesh.smart_mirror", text = "Mirror Z", icon_value = _icon.getIcon("MIRROR_Z")).direction = 'Z'
 
 
 class BETOOLS_OT_PieCall(bpy.types.Operator):
@@ -198,6 +198,15 @@ class UI_PT_BEToolsPanel(Panel):
         col.operator("mesh.be_toggle_shaded", text = "Toggle Shaded", icon = "SHADING_SOLID")
         col.operator("view3d.toggle_xray", text = "Toggle XRay", icon = "XRAY")
 
+        layout.label(text="Snapping")
+
+        col = layout.column(align=True)
+        row = col.row(align=True)
+        row.operator("mesh.be_vert_snap", text = "Vertex", icon = "SNAP_VERTEX")
+        row.operator("mesh.be_closest_vert_snap", text = "Close Vert", icon = "SNAP_GRID")
+        row = col.row(align=True)
+        row.operator("mesh.be_grid_snap", text = "Grid", icon = "SNAP_INCREMENT")
+
         object = context.active_object
         if object is None or len(bpy.context.selected_objects) == 0:
             col.label(text='Select a Mesh!')
@@ -205,23 +214,22 @@ class UI_PT_BEToolsPanel(Panel):
             layout.label(text="Pivot")
             # row = layout.column().row(align=True)
             col = layout.column(align=True)
-            col.operator("mesh.be_center_pivot", text = "Edit Pivot", icon = "OBJECT_ORIGIN")
+            col.operator("mesh.be_editpivot", text = "Edit Pivot", icon = "OBJECT_ORIGIN")
             col.operator("mesh.be_center_pivot", text = "Center Pivot", icon = "OBJECT_ORIGIN")
             col.operator("mesh.be_pivot2cursor", text = "Pivot to Cursor", icon = "EMPTY_ARROWS")
 
-            layout.label(text="Mirror")
-            row = layout.column().row(align=True)
-            row.operator("mesh.smart_mirror_x", text = "X", icon_value = _icon.getIcon("MIRROR_X"))
-            row.operator("mesh.smart_mirror_y", text = "Y", icon_value = _icon.getIcon("MIRROR_Y"))
-            row.operator("mesh.smart_mirror_z", text = "Z", icon_value = _icon.getIcon("MIRROR_Z"))
+            layout.label(text="Mesh Tools")
 
-            layout.label(text="Quick Lattice")
+            row = layout.column().row(align=True)
+            row.operator("mesh.smart_mirror", text = "X", icon_value = _icon.getIcon("MIRROR_X")).direction='X'
+            row.operator("mesh.smart_mirror", text = "Y", icon_value = _icon.getIcon("MIRROR_Y")).direction='Y'
+            row.operator("mesh.smart_mirror", text = "Z", icon_value = _icon.getIcon("MIRROR_Z")).direction='Z'
+
             row = layout.column().row(align=True)
             row.operator("mesh.lattice_2", text = "2x2", icon_value = _icon.getIcon("LATTICE_2"))
             row.operator("mesh.lattice_3", text = "3x3", icon_value = _icon.getIcon("LATTICE_3"))
             row.operator("mesh.lattice_4", text = "4x4", icon_value = _icon.getIcon("LATTICE_4"))
 
-            layout.label(text="Mesh Tools")
             row = layout.column().row(align=True)
             row.operator("mesh.smart_extract", text = "Smart Extract") # TODO Icon
 

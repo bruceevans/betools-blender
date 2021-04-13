@@ -40,10 +40,60 @@ class Pivot2Cursor(bpy.types.Operator):
             return False
         return True
 
-# TODO Edit pivot
 
-class EditPivot():
-    pass
+# TODO Double check this, maybe use a toggle button and log to show you're in edit pivot mode
+class EditPivot(bpy.types.Operator):
+    bl_label = "Edit Pivot"
+    bl_description = "Edit the object's pivot"
+    bl_idname = "mesh.be_editpivot"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def createPivot(self, context, obj):
+        self.report({'INFO'}, 'IN EDIT PIVOT MODE. SET THE PIVOT AND CLICK EDIT PIVOT AGAIN')
+        bpy.ops.object.empty_add(type='ARROWS', location=obj.location)
+        pivot = bpy.context.active_object
+        pivot.name = obj.name + ".PivotHelper"
+        pivot.location = obj.location
+
+    def getPivot(self, context, obj):
+        pivot = obj.name + ".PivotHelper"
+        if bpy.data.objects.get(pivot) is None:
+            return False
+        else:
+            bpy.data.objects[obj.name].select_set(False)
+            bpy.data.objects[pivot].select_set(True)
+            context.view_layer.objects.active = bpy.data.objects[pivot]
+            return True
+
+    def applyPivot(self, context, pivot):
+        obj = bpy.data.objects[pivot.name[:-12]]
+        piv_loc = pivot.location
+        #I need to create piv as it seem like the pivot location is passed by reference? Still no idea why this happens
+        cl = context.scene.cursor.location
+        piv = (cl[0],cl[1],cl[2])
+        context.scene.cursor.location = piv_loc
+        bpy.context.view_layer.objects.active = obj
+        bpy.data.objects[obj.name].select_set(True)
+        bpy.ops.object.origin_set(type='ORIGIN_CURSOR', center='MEDIAN')
+        context.scene.cursor.location = (piv[0],piv[1],piv[2])
+        #Select pivot, delete it and select obj again
+        bpy.data.objects[obj.name].select_set(False)
+        bpy.data.objects[pivot.name].select_set(True)
+        bpy.ops.object.delete()
+        bpy.data.objects[obj.name].select_set(True)
+        context.view_layer.objects.active = obj
+        
+    def execute(self, context):
+        obj = bpy.context.active_object
+        if  obj.name.endswith(".PivotHelper"):
+            self.applyPivot(context, obj)
+        elif self.getPivot(context, obj):
+            piv = bpy.context.active_object
+        else:
+            self.createPivot(context,obj)
+        return{'FINISHED'}
+
 
 bpy.utils.register_class(CenterPivot)
 bpy.utils.register_class(Pivot2Cursor)
+bpy.utils.register_class(EditPivot)

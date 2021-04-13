@@ -34,6 +34,7 @@ if "bpy" in locals():
     imp.reload(ops._uv)
     imp.reload(ops._vert)
     imp.reload(ops._viewops)
+    imp.reload(ops._snapping)
 
 else:
     from . import _settings
@@ -56,6 +57,7 @@ else:
     from .ops import _uv
     from .ops import _vert
     from .ops import _viewops
+    from .ops import _snapping
 
 
 import bpy
