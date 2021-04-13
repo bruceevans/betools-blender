@@ -315,4 +315,35 @@ class UI_PT_ExportPanel(Panel):
 
 # TODO Clean up panel
 
+
+# UV Panel
+
+class UI_PT_UVPanel(Panel):
+    """ Main panel for the UV image editor
+    """
+
+    bl_label = "UV Layout"
+    bl_category = "Be Tools"
+    bl_space_type = "IMAGE_EDITOR"
+    bl_region_type = "UI"
+
+    def draw(self, context):
+        layout = self.layout
+        col = layout.column(align=True)
+
+    # main settings
+    # Map size, padding, resize, uv channels
+    # Map selection (Checker, gravity, etc.)
+    # 
+    # UV Layout
+    # Crop, fill
+    # Snap to pos
+    # Sort v & h
+    # Rectify
+    # Texel density
+    # Overlap, selection junk
+    # Flip
+    # Color ID stuff?
+
+
 bpy.types.Scene.snapObject = bpy.props.StringProperty()

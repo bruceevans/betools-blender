@@ -75,6 +75,7 @@ classes = (
     _panels.UI_PT_BEToolsPanel,
     _panels.UI_PT_CollisionPanel,
     _panels.UI_PT_ExportPanel,
+    _panels.UI_PT_UVPanel
 )
 
 addon_keymaps =[]
