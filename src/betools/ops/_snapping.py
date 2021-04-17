@@ -32,6 +32,7 @@ class BETOOLS_OT_VertSnapClosest(bpy.types.Operator):
     def execute(self, context):
         context.scene.tool_settings.use_snap = True
         context.scene.tool_settings.snap_elements = {'VERTEX'}
+        
         context.scene.tool_settings.snap_target = 'CLOSEST'
         return {'FINISHED'}
     

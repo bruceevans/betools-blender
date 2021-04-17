@@ -15,8 +15,9 @@ from bpy.types import Panel
 from .. ops import *
 from .. utils import _icon
 from .. utils import _constants
+from .. utils._uvs import UVTransformProperties
 
-from bpy.props import StringProperty
+from bpy.props import StringProperty, PointerProperty
 
 
 class BEPreferencesPanel(bpy.types.AddonPreferences):
@@ -328,7 +329,35 @@ class UI_PT_UVPanel(Panel):
     def draw(self, context):
         layout = self.layout
         col = layout.column(align=True)
-        col.label(text='UV Tools')
+        col.label(text='UV Transform')
+
+        uv_transform = context.scene.uv_transform_properties
+
+        col = layout.column(align=True)
+        col.label(text='Move')
+        row = col.row(align=True, heading="Move")
+        col = layout.column(align=True)
+        row = col.row(align=True)
+        row.prop(uv_transform, "translate_u")
+        row.prop(uv_transform, "translate_v")
+        col.operator('uv.be_translate', text='Move UVs')
+
+        col = layout.column(align=True)
+        col.label(text="Scale")
+        row = col.row(align=True, heading="Scale")
+        col = layout.column(align=True)
+        row = col.row(align=True)
+        row.prop(uv_transform, "scale_u")
+        row.prop(uv_transform, "scale_v")
+        col.operator('uv.be_scale', text='Scale UVs')
+
+        # TODO try all in the same row
+        # TODO add rotation
+
+
+        # row.operator('uv.be_textools_snap_island', text="↖").direction = 'LEFTTOP'
+        # row.operator('uv.be_textools_snap_island', text="↑").direction = 'CENTERTOP'
+        # row.operator('uv.be_textools_snap_island', text="↗").direction = 'RIGHTTOP'
         
 
     # main settings
@@ -347,3 +376,4 @@ class UI_PT_UVPanel(Panel):
 
 
 bpy.types.Scene.snapObject = bpy.props.StringProperty()
+bpy.types.Scene.uv_transform_properties = bpy.props.PointerProperty(type = UVTransformProperties)
