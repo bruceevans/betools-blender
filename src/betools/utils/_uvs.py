@@ -278,11 +278,7 @@ def translate_island(mesh, island, uv_layer, deltaX, deltaY):
 def scale_island(mesh, island, uv_layer, scaleU, scaleV):
     """ scale """
 
-    obj = bpy.context.active_object
-    me = obj.data
-    bm = bmesh.from_edit_mesh(me)
-
-    uv_layer = bm.loops.layers.uv.verify()
+    # translate to 0, 0 (bbox center?)
 
     for face in island:
         for loop in face.loops:
@@ -290,21 +286,45 @@ def scale_island(mesh, island, uv_layer, scaleU, scaleV):
             loop_uv.uv[0] *= scaleU
             loop_uv.uv[1] *= scaleV
 
-    bmesh.update_edit_mesh(me)
+    bmesh.update_edit_mesh(mesh)
 
 def rotate_island(mesh, island, uv_layer, angle):
     """ rotate """
+    cos_theta, sin_theta = math.cos(math.radians(-angle)), math.sin(math.radians(-angle))
+    
+    # TODO find a solution for multi select? Or is it ok?
+    # TODO utility, get num of selected islands
+    bounding_box = get_selection_bounding_box()
 
+    center = bounding_box.get("center")
+    box_max = bounding_box.get("max")
+    pivot = box_max - center
+
+    for face in island:
+        for loop in face.loops:
+            loop_uv = loop[uv_layer]
+
+            loop_uv.uv[0] -= pivot.x
+            loop_uv.uv[1] -= pivot.y
+
+            duR = loop_uv.uv[0] * cos_theta - loop_uv.uv[1] * sin_theta
+            dvR = loop_uv.uv[0] * sin_theta + loop_uv.uv[1] * cos_theta
+
+            loop_uv.uv[0] = duR + pivot.x
+            loop_uv.uv[1] = dvR + pivot.y
+
+    bmesh.update_edit_mesh(mesh)
+            
 
 class UVTransformProperties(bpy.types.PropertyGroup):
 
     translate_u : bpy.props.FloatProperty(name='U')
     translate_v : bpy.props.FloatProperty(name='V')
 
-    scale_u : bpy.props.FloatProperty(name='U')
-    scale_v : bpy.props.FloatProperty(name='V')
+    scale_u : bpy.props.FloatProperty(name='U', default=1.0)
+    scale_v : bpy.props.FloatProperty(name='V', default=1.0)
 
-    rotate : bpy.props.FloatProperty(name='Rotate')
+    angle : bpy.props.IntProperty(name='Angle')
 
 bpy.utils.register_class(UVTransformProperties)
 

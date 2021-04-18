@@ -321,7 +321,7 @@ class UI_PT_UVPanel(Panel):
     """ Main panel for the UV image editor
     """
 
-    bl_label = "Be Tools"
+    bl_label = "UV Tools"
     bl_category = "Be Tools"
     bl_space_type = "IMAGE_EDITOR"
     bl_region_type = "UI"
@@ -340,7 +340,7 @@ class UI_PT_UVPanel(Panel):
         row = col.row(align=True)
         row.prop(uv_transform, "translate_u")
         row.prop(uv_transform, "translate_v")
-        col.operator('uv.be_translate', text='Move UVs')
+        row.operator('uv.be_translate', text='Move')
 
         col = layout.column(align=True)
         col.label(text="Scale")
@@ -349,9 +349,16 @@ class UI_PT_UVPanel(Panel):
         row = col.row(align=True)
         row.prop(uv_transform, "scale_u")
         row.prop(uv_transform, "scale_v")
-        col.operator('uv.be_scale', text='Scale UVs')
+        row.operator('uv.be_scale', text='Scale')
 
-        # TODO try all in the same row
+        col = layout.column(align=True)
+        col.label(text="Rotate")
+        row = col.row(align=True, heading="Rotate")
+        col = layout.column(align=True)
+        row = col.row(align=True)
+        row.prop(uv_transform, "angle")
+        row.operator('uv.be_rotate', text='Rotate')
+
         # TODO add rotation
 
 

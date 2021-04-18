@@ -108,6 +108,32 @@ class BETOOLS_OT_UVScale(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class BETOOLS_OT_UVRotate(bpy.types.Operator):
+    bl_idname = "uv.be_rotate"
+    bl_label = "Rotate UVs"
+    bl_description = "Rotate UVs in UV space"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        uv_transform = context.scene.uv_transform_properties
+        angle = uv_transform.angle
+
+        obj = bpy.context.active_object
+        me = obj.data
+        bm = bmesh.from_edit_mesh(me)
+        uv_layer = bm.loops.layers.uv.verify()
+        islands = _uvs.get_selected_islands(bm, uv_layer)
+
+        if not islands:
+            self.report({'INFO'}, 'Select UV islands')
+            return {'FINISHED'}
+
+        for island in islands:
+            _uvs.rotate_island(me, island, uv_layer, angle)
+
+        return {'FINISHED'}
+
+
 class BETOOLS_OT_Crop(bpy.types.Operator):
     pass
 
@@ -185,3 +211,4 @@ bpy.utils.register_class(BETOOLS_OT_IslandSnap)
 bpy.utils.register_class(BETOOLS_OT_UVCameraProject)
 bpy.utils.register_class(BETOOLS_OT_UVTranslate)
 bpy.utils.register_class(BETOOLS_OT_UVScale)
+bpy.utils.register_class(BETOOLS_OT_UVRotate)
