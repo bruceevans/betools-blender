@@ -168,6 +168,8 @@ def get_uv_layer(ops_obj, bm):
     return uv_layer
 
 def get_selection_bounding_box():
+    # TODO makes sure this is getting every island
+    # islands and mesh as args?
     bm = bmesh.from_edit_mesh(bpy.context.active_object.data)
     uv_layers = bm.loops.layers.uv.verify()
 
@@ -178,6 +180,8 @@ def get_selection_bounding_box():
     boundsCenter = Vector((0.0,0.0))
 
     selection = False
+
+    # for island in islands:
 
     for face in bm.faces:
         if face.select:
@@ -246,7 +250,6 @@ def get_selected_islands(bm = None, uv_layers = None):
         for loop in face.loops:
             loop[uv_layers].select = True
 
-    print(islands)
     return islands
 
 
@@ -288,30 +291,30 @@ def scale_island(mesh, island, uv_layer, scaleU, scaleV):
 
     bmesh.update_edit_mesh(mesh)
 
-def rotate_island(mesh, island, uv_layer, angle):
+def rotate_island(mesh, islands, uv_layer, angle):
     """ rotate """
     cos_theta, sin_theta = math.cos(math.radians(-angle)), math.sin(math.radians(-angle))
     
-    # TODO find a solution for multi select? Or is it ok?
-    # TODO utility, get num of selected islands
+    # rotate pivot still a little off TODO
     bounding_box = get_selection_bounding_box()
 
-    center = bounding_box.get("center")
+    center = (bounding_box.get("max") - bounding_box.get("min"))/2
     box_max = bounding_box.get("max")
+
     pivot = box_max - center
+    for island in islands:
+        for face in island:
+            for loop in face.loops:
+                loop_uv = loop[uv_layer]
 
-    for face in island:
-        for loop in face.loops:
-            loop_uv = loop[uv_layer]
+                loop_uv.uv[0] -= pivot.x
+                loop_uv.uv[1] -= pivot.y
 
-            loop_uv.uv[0] -= pivot.x
-            loop_uv.uv[1] -= pivot.y
+                duR = loop_uv.uv[0] * cos_theta - loop_uv.uv[1] * sin_theta
+                dvR = loop_uv.uv[0] * sin_theta + loop_uv.uv[1] * cos_theta
 
-            duR = loop_uv.uv[0] * cos_theta - loop_uv.uv[1] * sin_theta
-            dvR = loop_uv.uv[0] * sin_theta + loop_uv.uv[1] * cos_theta
-
-            loop_uv.uv[0] = duR + pivot.x
-            loop_uv.uv[1] = dvR + pivot.y
+                loop_uv.uv[0] = duR + pivot.x
+                loop_uv.uv[1] = dvR + pivot.y
 
     bmesh.update_edit_mesh(mesh)
             

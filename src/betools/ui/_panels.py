@@ -314,14 +314,15 @@ class UI_PT_ExportPanel(Panel):
 
 # TODO Clean up panel
 
+###############################################
+# UV Panels
+###############################################
 
-# UV Panel
-
-class UI_PT_UVPanel(Panel):
+class UI_PT_UVTransform(Panel):
     """ Main panel for the UV image editor
     """
 
-    bl_label = "UV Tools"
+    bl_label = "Transform"
     bl_category = "Be Tools"
     bl_space_type = "IMAGE_EDITOR"
     bl_region_type = "UI"
@@ -329,7 +330,6 @@ class UI_PT_UVPanel(Panel):
     def draw(self, context):
         layout = self.layout
         col = layout.column(align=True)
-        col.label(text='UV Transform')
 
         uv_transform = context.scene.uv_transform_properties
 
@@ -358,14 +358,28 @@ class UI_PT_UVPanel(Panel):
         row = col.row(align=True)
         row.prop(uv_transform, "angle")
         row.operator('uv.be_rotate', text='Rotate')
-
-        # TODO add rotation
+        # col = layout.column(align=True)
+        row = col.row(align=True)
+        row.operator('uv.be_rotate2', text='-90').angle=-90
+        row.operator('uv.be_rotate2', text='90').angle=90
 
 
         # row.operator('uv.be_textools_snap_island', text="↖").direction = 'LEFTTOP'
         # row.operator('uv.be_textools_snap_island', text="↑").direction = 'CENTERTOP'
         # row.operator('uv.be_textools_snap_island', text="↗").direction = 'RIGHTTOP'
-        
+    
+class UI_PT_UVLayout(Panel):
+    """ Main panel for the UV image editor
+    """
+
+    bl_label = "Layout"
+    bl_category = "Be Tools"
+    bl_space_type = "IMAGE_EDITOR"
+    bl_region_type = "UI"
+
+    def draw(self, context):
+        layout = self.layout
+        col = layout.column(align=True)
 
     # main settings
     # Map size, padding, resize, uv channels

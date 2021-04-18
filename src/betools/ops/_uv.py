@@ -128,8 +128,36 @@ class BETOOLS_OT_UVRotate(bpy.types.Operator):
             self.report({'INFO'}, 'Select UV islands')
             return {'FINISHED'}
 
-        for island in islands:
-            _uvs.rotate_island(me, island, uv_layer, angle)
+        #for island in islands:
+        _uvs.rotate_island(me, islands, uv_layer, angle)
+
+        return {'FINISHED'}
+
+
+class BETOOLS_OT_UVRotate2(bpy.types.Operator):
+    bl_idname = "uv.be_rotate2"
+    bl_label = "Rotate UVs"
+    bl_description = "Rotate UVs in UV space"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    angle : bpy.props.IntProperty(
+        name='angle',
+        default=90
+    )
+
+    def execute(self, context):
+        obj = bpy.context.active_object
+        me = obj.data
+        bm = bmesh.from_edit_mesh(me)
+        uv_layer = bm.loops.layers.uv.verify()
+        islands = _uvs.get_selected_islands(bm, uv_layer)
+
+        if not islands:
+            self.report({'INFO'}, 'Select UV islands')
+            return {'FINISHED'}
+
+        #for island in islands:
+        _uvs.rotate_island(me, islands, uv_layer, self.angle)
 
         return {'FINISHED'}
 
@@ -212,3 +240,4 @@ bpy.utils.register_class(BETOOLS_OT_UVCameraProject)
 bpy.utils.register_class(BETOOLS_OT_UVTranslate)
 bpy.utils.register_class(BETOOLS_OT_UVScale)
 bpy.utils.register_class(BETOOLS_OT_UVRotate)
+bpy.utils.register_class(BETOOLS_OT_UVRotate2)
