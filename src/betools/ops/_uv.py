@@ -45,7 +45,7 @@ class BETOOLS_OT_UVCameraProject(bpy.types.Operator):
             bpy.ops.uv.project_from_view(camera_bounds=False, correct_aspect=True, scale_to_bounds=False)
             return {'FINISHED'}
         else:
-            bpy.ops.view3d.view_axis(type=self.mode, align_active=False, relative=False)
+            bpy.ops.view3d.view_axis(type=self.mode, align_active=False, relative=False) # TODO code this separately
             bpy.ops.uv.project_from_view(camera_bounds=False, correct_aspect=True, scale_to_bounds=True)
 
         return {'FINISHED'}
@@ -54,6 +54,9 @@ class BETOOLS_OT_UVCameraProject(bpy.types.Operator):
 # Transform
 
 class BETOOLS_OT_UVTranslate(bpy.types.Operator):
+    """ Uses menu properties
+    """
+
     bl_idname = "uv.be_translate"
     bl_label = "Translate UVs"
     bl_description = "Translate UVs in UV space"
@@ -109,6 +112,9 @@ class BETOOLS_OT_UVScale(bpy.types.Operator):
 
 
 class BETOOLS_OT_UVRotate(bpy.types.Operator):
+    """ Gets angle from UI prop
+    """
+
     bl_idname = "uv.be_rotate"
     bl_label = "Rotate UVs"
     bl_description = "Rotate UVs in UV space"
@@ -167,6 +173,48 @@ class BETOOLS_OT_Crop(bpy.types.Operator):
 
 
 class BETOOLS_OT_Fill(bpy.types.Operator):
+    bl_idname = "uv.be_fill"
+    bl_label = "Fill"
+    bl_description = "Fill the selected island to the entire 0-1 UV space"
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+
+        obj = bpy.context.active_object
+        me = obj.data
+        bm = bmesh.from_edit_mesh(me)
+        uv_layer = bm.loops.layers.uv.verify()
+        islands = _uvs.get_selected_islands(bm, uv_layer)
+
+        if not islands:
+            self.report({'INFO'}, 'Select UV islands')
+            return {'FINISHED'}
+
+        bounding_box = _uvs.get_selection_bounding_box()
+
+        scaleU = 1.00 / bounding_box.get('width')
+        scaleV = 1.00 / bounding_box.get('height')
+
+        for island in islands:
+            _uvs.scale_island(me, island, uv_layer, scaleU, scaleV)
+
+        # get new bounding box
+        # move it by (-min.x, -min.x)
+
+        bounding_box = _uvs.get_selection_bounding_box()
+        deltaU = bounding_box.get('min').x
+        delatV = bounding_box.get('min').y
+
+        print(deltaU)
+        print(delatV)
+
+        for island in islands:
+            _uvs.translate_island(me, island, uv_layer, -deltaU, -delatV)
+
+        return {'FINISHED'}
+
+
+class BETOOLS_OT_Fit(bpy.types.Operator):
     pass
 
 
@@ -241,3 +289,4 @@ bpy.utils.register_class(BETOOLS_OT_UVTranslate)
 bpy.utils.register_class(BETOOLS_OT_UVScale)
 bpy.utils.register_class(BETOOLS_OT_UVRotate)
 bpy.utils.register_class(BETOOLS_OT_UVRotate2)
+bpy.utils.register_class(BETOOLS_OT_Fill)

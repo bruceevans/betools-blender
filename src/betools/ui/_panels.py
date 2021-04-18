@@ -380,6 +380,8 @@ class UI_PT_UVLayout(Panel):
     def draw(self, context):
         layout = self.layout
         col = layout.column(align=True)
+        row = col.row(align=True)
+        row.operator('uv.be_fill', text='Fill')
 
     # main settings
     # Map size, padding, resize, uv channels
