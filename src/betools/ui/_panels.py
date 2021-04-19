@@ -382,6 +382,25 @@ class UI_PT_UVLayout(Panel):
         col = layout.column(align=True)
         row = col.row(align=True)
         row.operator('uv.be_fill', text='Fill')
+        row.operator('uv.be_fit', text="Fit")
+
+        col = layout.column(align=True)
+        row = col.row(align=True)
+        row.operator('uv.be_orient_edge', text="Orient")
+
+        col = layout.column(align=True)
+        row = col.row(align=True)
+        row.operator('uv.be_textools_snap_island', text="↖").direction = 'LEFTTOP'
+        row.operator('uv.be_textools_snap_island', text="↑").direction = 'CENTERTOP'
+        row.operator('uv.be_textools_snap_island', text="↗").direction = 'RIGHTTOP'
+        row = col.row(align=True)
+        row.operator('uv.be_textools_snap_island', text="←").direction = 'LEFTCENTER'
+        row.operator('uv.be_textools_snap_island', text=".").direction = 'CENTER'
+        row.operator('uv.be_textools_snap_island', text="→").direction = 'RIGHTCENTER'
+        row = col.row(align=True)
+        row.operator('uv.be_textools_snap_island', text="↙").direction = 'LEFTBOTTOM'
+        row.operator('uv.be_textools_snap_island', text="↓").direction = 'CENTERBOTTOM'
+        row.operator('uv.be_textools_snap_island', text="↘").direction = 'RIGHTBOTTOM'
 
     # main settings
     # Map size, padding, resize, uv channels

@@ -12,6 +12,8 @@ from collections import defaultdict
 from ..utils import _ui
 from .. import _settings
 
+from pprint import pprint
+
 
 #######################################
 # UV Selections - uvs, faces, islands #
@@ -97,7 +99,27 @@ def set_selected_faces(faces):
         for loop in face.loops:
             loop[uv_layers].select = True
 
-# uvs from verts
+def get_selected_uvs(bm, uv_layers):
+    # edges = []
+    uv_edges = []
+    for face in bm.faces:
+        uv_edge = []  # temp, only append if it doesn't already exist
+        for loop in face.loops:
+            if loop[uv_layers].select:
+                if loop[uv_layers].uv not in uv_edge:
+                    uv_edge.append(loop[uv_layers].uv)
+                    # pprint(loop[uv_layers].uv)
+                else:
+                    print("Already have that uv")
+            # loop is an edge face is a collection of loops
+            if len(uv_edge) <= 1:
+                continue
+            if uv_edge not in uv_edges and reversed(uv_edge) not in uv_edges:
+                uv_edges.append(uv_edge)
+            else:
+                print("Already have that edge")
+    pprint(uv_edges)
+    return uv_edges
 
 def get_uvs_from_verts(bm, uv_layers):
     vert_uv = {}

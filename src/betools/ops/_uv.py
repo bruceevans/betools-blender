@@ -168,13 +168,9 @@ class BETOOLS_OT_UVRotate2(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class BETOOLS_OT_Crop(bpy.types.Operator):
-    pass
-
-
 class BETOOLS_OT_Fill(bpy.types.Operator):
     bl_idname = "uv.be_fill"
-    bl_label = "Fill"
+    bl_label = "UV Fill"
     bl_description = "Fill the selected island to the entire 0-1 UV space"
     bl_options = {"REGISTER", "UNDO"}
 
@@ -198,15 +194,9 @@ class BETOOLS_OT_Fill(bpy.types.Operator):
         for island in islands:
             _uvs.scale_island(me, island, uv_layer, scaleU, scaleV)
 
-        # get new bounding box
-        # move it by (-min.x, -min.x)
-
         bounding_box = _uvs.get_selection_bounding_box()
         deltaU = bounding_box.get('min').x
         delatV = bounding_box.get('min').y
-
-        print(deltaU)
-        print(delatV)
 
         for island in islands:
             _uvs.translate_island(me, island, uv_layer, -deltaU, -delatV)
@@ -215,7 +205,57 @@ class BETOOLS_OT_Fill(bpy.types.Operator):
 
 
 class BETOOLS_OT_Fit(bpy.types.Operator):
-    pass
+    bl_idname = "uv.be_fit"
+    bl_label = "UV Fit"
+    bl_description = "Uniformly scale the island to fit in the 0-1 UV space, no stretching."
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        obj = bpy.context.active_object
+        me = obj.data
+        bm = bmesh.from_edit_mesh(me)
+        uv_layer = bm.loops.layers.uv.verify()
+        islands = _uvs.get_selected_islands(bm, uv_layer)
+
+        if not islands:
+            self.report({'INFO'}, 'Select UV islands')
+            return {'FINISHED'}
+
+        bounding_box = _uvs.get_selection_bounding_box()
+
+        max_size = max(bounding_box.get("width"), bounding_box.get("height"))
+        scalar = 1.00 / max_size
+
+        for island in islands:
+            _uvs.scale_island(me, island, uv_layer, scalar, scalar)
+
+        bounding_box = _uvs.get_selection_bounding_box()
+        deltaU = bounding_box.get('min').x
+        delatV = bounding_box.get('min').y
+
+        for island in islands:
+            _uvs.translate_island(me, island, uv_layer, -deltaU, -delatV)
+
+        return {'FINISHED'}
+
+
+class BETOOLS_OT_OrientEdge(bpy.types.Operator):
+    bl_idname = "uv.be_orient_edge"
+    bl_label = "Orient to Edge"
+    bl_description = "Orient UV Island to selected edges"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        obj = bpy.context.active_object
+        me = obj.data
+        bm = bmesh.from_edit_mesh(me)
+        uv_layer = bm.loops.layers.uv.verify()
+
+        uvs = _uvs.get_selected_uvs(bm, uv_layer)
+        # for loop_uv in uvs:
+        #     print(loop_uv.uv)
+
+        return {'FINISHED'}
 
 
 class BETOOLS_OT_Rect(bpy.types.Operator):
@@ -290,3 +330,5 @@ bpy.utils.register_class(BETOOLS_OT_UVScale)
 bpy.utils.register_class(BETOOLS_OT_UVRotate)
 bpy.utils.register_class(BETOOLS_OT_UVRotate2)
 bpy.utils.register_class(BETOOLS_OT_Fill)
+bpy.utils.register_class(BETOOLS_OT_Fit)
+bpy.utils.register_class(BETOOLS_OT_OrientEdge)
