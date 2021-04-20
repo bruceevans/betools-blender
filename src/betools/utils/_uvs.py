@@ -99,8 +99,8 @@ def set_selected_faces(faces):
         for loop in face.loops:
             loop[uv_layers].select = True
 
-def get_selected_uvs(bm, uv_layers):
-    # edges = []
+def get_selected_uv_edges(bm, uv_layers):
+    """
     uv_edges = []
     for face in bm.faces:
         uv_edge = []  # temp, only append if it doesn't already exist
@@ -119,6 +119,56 @@ def get_selected_uvs(bm, uv_layers):
             else:
                 print("Already have that edge")
     pprint(uv_edges)
+    return uv_edges
+    """
+    faces = []
+    for face in bm.faces:
+        for loop in face.loops:
+            if loop[uv_layers].select:
+                faces.append(face)
+                break
+    
+    # get the edges in each face
+    uv_edges = []
+    for face in faces:
+        uv_edge = []
+        for loop in face.loops:
+            if loop[uv_layers].select:
+
+                # how many connections are selected
+                con_next = loop.link_loop_next
+                con_prev = loop.link_loop_prev
+
+                if con_next[uv_layers].select and not con_prev[uv_layers].select:
+                    uv_edge.append(loop[uv_layers])
+                    uv_edge.append(con_next[uv_layers])
+                    if uv_edge not in uv_edges:
+                        uv_edges.append(uv_edge)
+                    break
+                elif not con_next[uv_layers].select and con_prev[uv_layers].select:
+                    # prepend con_prev, break
+                    uv_edge.append(con_prev[uv_layers])
+                    uv_edge.append(loop[uv_layers])
+                    if uv_edge not in uv_edges:
+                        uv_edges.append(uv_edge)
+                    break
+                else:
+                    # both are selected, make two edges and append both
+                    uv_edge.append(loop[uv_layers])
+                    uv_edge.append(con_next[uv_layers])
+                    if uv_edge not in uv_edges:
+                        uv_edges.append(uv_edge)
+
+                    uv_edge.clear()
+
+                    uv_edge.append(con_prev[uv_layers])
+                    uv_edge.append(loop[uv_layers])
+                    if uv_edge not in uv_edges:
+                        uv_edges.append(uv_edge)
+                    break
+
+    # Will return duplicates currently
+    # TODO optimize
     return uv_edges
 
 def get_uvs_from_verts(bm, uv_layers):

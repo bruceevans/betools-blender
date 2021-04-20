@@ -5,6 +5,7 @@
 
 import bpy
 import bmesh
+import math
 from bpy.props import EnumProperty, FloatVectorProperty
 from mathutils import Vector
 from ..utils import _uvs
@@ -250,11 +251,26 @@ class BETOOLS_OT_OrientEdge(bpy.types.Operator):
         me = obj.data
         bm = bmesh.from_edit_mesh(me)
         uv_layer = bm.loops.layers.uv.verify()
+        islands = _uvs.get_selected_islands(bm, uv_layer)
 
-        uvs = _uvs.get_selected_uvs(bm, uv_layer)
+        angle_sum = 0
+        angle_count = 0
+
+        uv_edges = _uvs.get_selected_uv_edges(bm, uv_layer)
+        for edge in uv_edges:
+            # print("{} - {}".format(edge[0].uv, edge[1].uv)) # vectors
+            # get angle, discard if neg?
+            angle = edge[0].uv.angle(edge[1].uv)
+            # print(math.degrees(angle))
+            if math.degrees(angle) > 1:
+                angle_sum += angle
+                angle_count += 1
+        print(math.degrees(angle_sum))
+        average_angle = angle_sum / angle_count
+
         # for loop_uv in uvs:
         #     print(loop_uv.uv)
-
+        _uvs.rotate_island(me, islands, uv_layer, average_angle)
         return {'FINISHED'}
 
 
