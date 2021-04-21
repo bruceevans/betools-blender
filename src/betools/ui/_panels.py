@@ -267,6 +267,11 @@ class UI_PT_BEToolsPanel(Panel):
             col.operator("uv.unwrap", text = "Unwrap Faces", icon = "FACESEL")
             col.operator('uv.project_from_view', text = 'Cam Project', icon = 'CON_CAMERASOLVER')
 
+            row = col.row(align=True)
+            row.operator('uv.be_axis_project', text = "X Proj").axis='X'
+            row.operator('uv.be_axis_project', text = "Y Proj").axis='Y'
+            row.operator('uv.be_axis_project', text = "Z Proj").axis='Z'
+
 
 class UI_PT_CollisionPanel(Panel):
     """ Main side panel in the 3D View
@@ -380,15 +385,24 @@ class UI_PT_UVLayout(Panel):
     def draw(self, context):
         layout = self.layout
         col = layout.column(align=True)
-        row = col.row(align=True)
-        row.operator('uv.be_fill', text='Fill')
-        row.operator('uv.be_fit', text="Fit")
 
-        col = layout.column(align=True)
-        row = col.row(align=True)
-        row.operator('uv.be_orient_edge', text="Orient")
+        # main col
+        # two rows
+        # each row has a column
 
-        col = layout.column(align=True)
+        split = layout.split()
+        col = split.column()
+
+        # row = col.row(align=True)
+        col.operator('uv.be_fill', text='Fill')
+        col.operator('uv.be_fit', text="Fit")
+
+        # col = layout.column(align=True)
+        # row = col.row(align=True)
+        col.operator('uv.be_orient_edge', text="Orient")
+
+        # col = layout.column(align=True)
+        col = split.column()
         row = col.row(align=True)
         row.operator('uv.be_textools_snap_island', text="↖").direction = 'LEFTTOP'
         row.operator('uv.be_textools_snap_island', text="↑").direction = 'CENTERTOP'
@@ -401,6 +415,12 @@ class UI_PT_UVLayout(Panel):
         row.operator('uv.be_textools_snap_island', text="↙").direction = 'LEFTBOTTOM'
         row.operator('uv.be_textools_snap_island', text="↓").direction = 'CENTERBOTTOM'
         row.operator('uv.be_textools_snap_island', text="↘").direction = 'RIGHTBOTTOM'
+
+        col = layout.column(align=True)
+        row = col.row(align=True)
+        row.operator("uv.pack_islands", text = "Pack Islands").margin = 0.01
+
+
 
     # main settings
     # Map size, padding, resize, uv channels

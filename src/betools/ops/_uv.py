@@ -23,6 +23,11 @@ _SNAP_POINTS = {
     'RIGHTBOTTOM': ['max', 'min', Vector((1, 0))]
 }
 
+_PROJECTION_SWIZZLE = {
+    'X': 'yz',
+    'Y': 'xz',
+    'Z': 'xy'
+}
 
 class BETOOLS_OT_UVCameraProject(bpy.types.Operator):
     bl_idname = "mesh.be_uv_camera_project"
@@ -251,31 +256,64 @@ class BETOOLS_OT_OrientEdge(bpy.types.Operator):
         me = obj.data
         bm = bmesh.from_edit_mesh(me)
         uv_layer = bm.loops.layers.uv.verify()
-        islands = _uvs.get_selected_islands(bm, uv_layer)
-
+        
         angle_sum = 0
         angle_count = 0
 
         uv_edges = _uvs.get_selected_uv_edges(bm, uv_layer)
         for edge in uv_edges:
-            # print("{} - {}".format(edge[0].uv, edge[1].uv)) # vectors
-            # get angle, discard if neg?
-            angle = edge[0].uv.angle(edge[1].uv)
-            # print(math.degrees(angle))
-            if math.degrees(angle) > 1:
-                angle_sum += angle
-                angle_count += 1
-        print(math.degrees(angle_sum))
+            angle = math.degrees(_uvs.get_uv_edge_angle(edge[0].uv, edge[1].uv))
+            angle_sum += angle
+            angle_count += 1
+        # TODO precheck the angle
         average_angle = angle_sum / angle_count
-
-        # for loop_uv in uvs:
-        #     print(loop_uv.uv)
+        _uvs.store_selection()
+        islands = _uvs.get_selected_islands(bm, uv_layer)
         _uvs.rotate_island(me, islands, uv_layer, average_angle)
+        _uvs.restore_selection(bm, uv_layer)
         return {'FINISHED'}
 
 
-class BETOOLS_OT_Rect(bpy.types.Operator):
-    pass
+# Super gross but the op wouldn't auto run when fed the attribute
+class BETOOLS_OT_UVProject(bpy.types.Operator):
+    bl_idname = "uv.be_axis_project"
+    bl_label = "UV Project"
+    bl_description = "Project UVs from a given axis"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    axis : EnumProperty(
+        name="Axis",
+        default='Y',
+        items=[
+            ('X', 'X', 'Project from the X ortho'),
+            ('Y', 'Y', 'Project from the Y ortho'),
+            ('Z', 'Z', 'Project from the Z ortho')
+        ]
+    )
+
+    def execute(self, context):
+        obj = context.active_object
+        me = obj.data
+        bm = bmesh.from_edit_mesh(me)
+        uv_layer = bm.loops.layers.uv.verify()
+
+        for face in bm.faces:
+            if face.select:
+                for loop in face.loops:
+                    loop_uv = loop[uv_layer]
+                    loop_uv.uv = getattr(loop.vert.co, _PROJECTION_SWIZZLE.get(self.axis))
+        bmesh.update_edit_mesh(me)
+        # Get the island we're messing with TODO
+        bpy.ops.uv.be_fit()
+        return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        if context.object is None:
+            return False
+        if not bpy.context.object.mode == 'EDIT':
+            return False
+        return True
 
 
 class BETOOLS_OT_IslandSnap(bpy.types.Operator):
@@ -307,11 +345,16 @@ class BETOOLS_OT_IslandSnap(bpy.types.Operator):
         return True
 
     def execute(self, context):
+        obj = bpy.context.active_object
+        me = obj.data
+        bm = bmesh.from_edit_mesh(me)
+        uv_layer = bm.loops.layers.uv.verify()
 
-        island = _uvs.getSelectedIslands()
-        if not island:
+        islands = _uvs.get_selected_islands(bm, uv_layer)
+        if not islands:
             return {'FINISHED'}
-        bounds = _uvs.getIslandBoundingBox(island)
+        # bounds = _uvs.getIslandBoundingBox(islands)
+        bounds = _uvs.get_selection_bounding_box()
 
         x = _SNAP_POINTS.get(self.direction)[0]
         y = _SNAP_POINTS.get(self.direction)[1]
@@ -348,3 +391,4 @@ bpy.utils.register_class(BETOOLS_OT_UVRotate2)
 bpy.utils.register_class(BETOOLS_OT_Fill)
 bpy.utils.register_class(BETOOLS_OT_Fit)
 bpy.utils.register_class(BETOOLS_OT_OrientEdge)
+bpy.utils.register_class(BETOOLS_OT_UVProject)

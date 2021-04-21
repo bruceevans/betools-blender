@@ -26,9 +26,9 @@ class SmartMirror(bpy.types.Operator):
         name="Direction",
         default='X',
         items = [
-            ('X', 'X_MIRROR', 'Mirror the object in the X direction'),
-            ('Y', 'Y_MIRROR', 'Mirror the object in the Y direction'),
-            ('Z', 'Z_MIRROR', 'Mirror the object in the Z direction')
+            ('X', 'X', 'Mirror the object in the X direction'),
+            ('Y', 'Y', 'Mirror the object in the Y direction'),
+            ('Z', 'Z', 'Mirror the object in the Z direction')
         ]
     )
 

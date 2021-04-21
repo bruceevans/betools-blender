@@ -30,7 +30,7 @@ def store_selection():
     _settings.uv_pivot_selection_position = bpy.context.space_data.cursor_location.copy()
 
     # mesh selection (store indices)
-    _settings.selection_mode = tuple(bpy.context.scene.tool_setting.mesh_select_mode)
+    _settings.selection_mode = tuple(bpy.context.scene.tool_settings.mesh_select_mode)
     _settings.vert_selection = [ vert.index for vert in bm.verts if vert.select ]
     _settings.face_selection = [ face.index for face in bm.faces if face.select ]
     _settings.uv_loops_selection = []
@@ -87,6 +87,47 @@ def restore_selection(bm = None, uv_layers = None):
 
     bpy.context.view_layer.update()
 
+def get_selected_islands(bm = None, uv_layers = None):
+    if not bm:
+        bm = bmesh.from_edit_mesh(bpy.context.active_object.data)
+        uv_layers = bm.loops.layers.uv.verify()
+    
+    if bpy.context.scene.tool_settings.use_uv_select_sync == False:
+        bpy.ops.uv.select_linked()
+
+    # selected_faces = [ face for face in bm.faces if face.select and face.loops[0][uv_layers].select ]
+    selected_faces = []
+    for face in bm.faces:
+        if face.select and face.loops[0][uv_layers].select:
+            selected_faces.append(face)
+
+    unparsed_faces = selected_faces.copy()
+    islands = []
+
+    for face in selected_faces:
+        if face in unparsed_faces:
+            # select face
+            bpy.ops.uv.select_all(action='DESELECT')
+            face.loops[0][uv_layers].select = True
+            bpy.ops.uv.select_linked()
+
+            islandFaces = [face]
+            for wholeFace in unparsed_faces:
+                if wholeFace != face and wholeFace.select and wholeFace.loops[0][uv_layers].select:
+                    islandFaces.append(wholeFace)
+            
+            for wholeFace in islandFaces:
+                unparsed_faces.remove(wholeFace)
+
+            islands.append(islandFaces)
+
+    # reselect
+    for face in selected_faces:
+        for loop in face.loops:
+            loop[uv_layers].select = True
+
+    return islands
+
 def get_selected_faces():
     bm = bmesh.from_edit_mesh(bpy.context.active_object.data)
     faces = [ face for face in bm.faces if face.select ]
@@ -100,27 +141,7 @@ def set_selected_faces(faces):
             loop[uv_layers].select = True
 
 def get_selected_uv_edges(bm, uv_layers):
-    """
-    uv_edges = []
-    for face in bm.faces:
-        uv_edge = []  # temp, only append if it doesn't already exist
-        for loop in face.loops:
-            if loop[uv_layers].select:
-                if loop[uv_layers].uv not in uv_edge:
-                    uv_edge.append(loop[uv_layers].uv)
-                    # pprint(loop[uv_layers].uv)
-                else:
-                    print("Already have that uv")
-            # loop is an edge face is a collection of loops
-            if len(uv_edge) <= 1:
-                continue
-            if uv_edge not in uv_edges and reversed(uv_edge) not in uv_edges:
-                uv_edges.append(uv_edge)
-            else:
-                print("Already have that edge")
-    pprint(uv_edges)
-    return uv_edges
-    """
+
     faces = []
     for face in bm.faces:
         for loop in face.loops:
@@ -128,48 +149,23 @@ def get_selected_uv_edges(bm, uv_layers):
                 faces.append(face)
                 break
     
-    # get the edges in each face
     uv_edges = []
     for face in faces:
-        uv_edge = []
         for loop in face.loops:
-            if loop[uv_layers].select:
-
-                # how many connections are selected
-                con_next = loop.link_loop_next
-                con_prev = loop.link_loop_prev
-
-                if con_next[uv_layers].select and not con_prev[uv_layers].select:
-                    uv_edge.append(loop[uv_layers])
-                    uv_edge.append(con_next[uv_layers])
-                    if uv_edge not in uv_edges:
-                        uv_edges.append(uv_edge)
-                    break
-                elif not con_next[uv_layers].select and con_prev[uv_layers].select:
-                    # prepend con_prev, break
-                    uv_edge.append(con_prev[uv_layers])
-                    uv_edge.append(loop[uv_layers])
-                    if uv_edge not in uv_edges:
-                        uv_edges.append(uv_edge)
-                    break
-                else:
-                    # both are selected, make two edges and append both
-                    uv_edge.append(loop[uv_layers])
-                    uv_edge.append(con_next[uv_layers])
-                    if uv_edge not in uv_edges:
-                        uv_edges.append(uv_edge)
-
-                    uv_edge.clear()
-
-                    uv_edge.append(con_prev[uv_layers])
-                    uv_edge.append(loop[uv_layers])
-                    if uv_edge not in uv_edges:
-                        uv_edges.append(uv_edge)
-                    break
-
+            uv_edge = []
+            uv_edge.append(loop[uv_layers])
+            uv_edge.append(loop.link_loop_next[uv_layers])
+            uv_edges.append(uv_edge)
+        
+    selected_uv_edges = [ edge for edge in uv_edges if edge[0].select and edge[1].select ]
     # Will return duplicates currently
     # TODO optimize
-    return uv_edges
+    return selected_uv_edges
+
+def get_uv_edge_angle(uv1, uv2):
+    """ Calculate the angle in radians
+    """
+    return math.atan2(uv2[1] - uv1[1], uv2[0] - uv1[0])
 
 def get_uvs_from_verts(bm, uv_layers):
     vert_uv = {}
@@ -182,8 +178,6 @@ def get_uvs_from_verts(bm, uv_layers):
             else:
                 vert_uv[vert].append(uv)
     return vert_uv
-
-# uvs from edges TODO
 
 def get_uvs_from_faces(bm, uv_layers):
     
@@ -283,50 +277,9 @@ def get_selection_bounding_box():
 
     return bounding_box
 
-def get_selected_islands(bm = None, uv_layers = None):
-    if not bm:
-        bm = bmesh.from_edit_mesh(bpy.context.active_object.data)
-        uv_layers = bm.loops.layers.uv.verify()
-    
-    if bpy.context.scene.tool_settings.use_uv_select_sync == False:
-        bpy.ops.uv.select_linked()
-
-    # selected_faces = [ face for face in bm.faces if face.select and face.loops[0][uv_layers].select ]
-    selected_faces = []
-    for face in bm.faces:
-        if face.select and face.loops[0][uv_layers].select:
-            selected_faces.append(face)
-
-    unparsed_faces = selected_faces.copy()
-    islands = []
-
-    for face in selected_faces:
-        if face in unparsed_faces:
-            # select face
-            bpy.ops.uv.select_all(action='DESELECT')
-            face.loops[0][uv_layers].select = True
-            bpy.ops.uv.select_linked()
-
-            islandFaces = [face]
-            for wholeFace in unparsed_faces:
-                if wholeFace != face and wholeFace.select and wholeFace.loops[0][uv_layers].select:
-                    islandFaces.append(wholeFace)
-            
-            for wholeFace in islandFaces:
-                unparsed_faces.remove(wholeFace)
-
-            islands.append(islandFaces)
-
-    # reselect
-    for face in selected_faces:
-        for loop in face.loops:
-            loop[uv_layers].select = True
-
-    return islands
-
 
 #######################################
-#  UV Transforms                      #
+#  UV Transforms
 #######################################
 
 def translate_island(mesh, island, uv_layer, deltaX, deltaY):
