@@ -301,9 +301,10 @@ class BETOOLS_OT_UVProject(bpy.types.Operator):
             if face.select:
                 for loop in face.loops:
                     loop_uv = loop[uv_layer]
+                    loop_uv.select = True
                     loop_uv.uv = getattr(loop.vert.co, _PROJECTION_SWIZZLE.get(self.axis))
+        
         bmesh.update_edit_mesh(me)
-        # Get the island we're messing with TODO
         bpy.ops.uv.be_fit()
         return {'FINISHED'}
 

@@ -234,8 +234,7 @@ def get_uv_layer(ops_obj, bm):
     return uv_layer
 
 def get_selection_bounding_box():
-    # TODO makes sure this is getting every island
-    # islands and mesh as args?
+
     bm = bmesh.from_edit_mesh(bpy.context.active_object.data)
     uv_layers = bm.loops.layers.uv.verify()
 
@@ -246,8 +245,6 @@ def get_selection_bounding_box():
     boundsCenter = Vector((0.0,0.0))
 
     selection = False
-
-    # for island in islands:
 
     for face in bm.faces:
         if face.select:
@@ -277,6 +274,13 @@ def get_selection_bounding_box():
 
     return bounding_box
 
+def match_face_selection(bm, uv_layers):
+    """ Select the corresponding uvs from the mesh face selection
+    """
+    for face in bm.faces:
+        if face.select:
+            for loop in face.loops:
+                loop[uv_layers].select = True
 
 #######################################
 #  UV Transforms
@@ -305,8 +309,6 @@ def translate_island(mesh, island, uv_layer, deltaX, deltaY):
 
 def scale_island(mesh, island, uv_layer, scaleU, scaleV):
     """ scale """
-
-    # translate to 0, 0 (bbox center?)
 
     for face in island:
         for loop in face.loops:
@@ -355,8 +357,3 @@ class UVTransformProperties(bpy.types.PropertyGroup):
     angle : bpy.props.IntProperty(name='Angle')
 
 bpy.utils.register_class(UVTransformProperties)
-
-
-#######################################
-#  Helpers                            #
-#######################################

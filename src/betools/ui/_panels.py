@@ -368,10 +368,6 @@ class UI_PT_UVTransform(Panel):
         row.operator('uv.be_rotate2', text='-90').angle=-90
         row.operator('uv.be_rotate2', text='90').angle=90
 
-
-        # row.operator('uv.be_textools_snap_island', text="↖").direction = 'LEFTTOP'
-        # row.operator('uv.be_textools_snap_island', text="↑").direction = 'CENTERTOP'
-        # row.operator('uv.be_textools_snap_island', text="↗").direction = 'RIGHTTOP'
     
 class UI_PT_UVLayout(Panel):
     """ Main panel for the UV image editor
