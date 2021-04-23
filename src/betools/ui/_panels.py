@@ -400,17 +400,21 @@ class UI_PT_UVLayout(Panel):
         # col = layout.column(align=True)
         col = split.column()
         row = col.row(align=True)
-        row.operator('uv.be_textools_snap_island', text="↖").direction = 'LEFTTOP'
-        row.operator('uv.be_textools_snap_island', text="↑").direction = 'CENTERTOP'
-        row.operator('uv.be_textools_snap_island', text="↗").direction = 'RIGHTTOP'
+        row.operator('uv.be_snap_island', text="↖").direction = 'LEFTTOP'
+        row.operator('uv.be_snap_island', text="↑").direction = 'CENTERTOP'
+        row.operator('uv.be_snap_island', text="↗").direction = 'RIGHTTOP'
         row = col.row(align=True)
-        row.operator('uv.be_textools_snap_island', text="←").direction = 'LEFTCENTER'
-        row.operator('uv.be_textools_snap_island', text=".").direction = 'CENTER'
-        row.operator('uv.be_textools_snap_island', text="→").direction = 'RIGHTCENTER'
+        row.operator('uv.be_snap_island', text="←").direction = 'LEFTCENTER'
+        row.operator('uv.be_snap_island', text=".").direction = 'CENTER'
+        row.operator('uv.be_snap_island', text="→").direction = 'RIGHTCENTER'
         row = col.row(align=True)
-        row.operator('uv.be_textools_snap_island', text="↙").direction = 'LEFTBOTTOM'
-        row.operator('uv.be_textools_snap_island', text="↓").direction = 'CENTERBOTTOM'
-        row.operator('uv.be_textools_snap_island', text="↘").direction = 'RIGHTBOTTOM'
+        row.operator('uv.be_snap_island', text="↙").direction = 'LEFTBOTTOM'
+        row.operator('uv.be_snap_island', text="↓").direction = 'CENTERBOTTOM'
+        row.operator('uv.be_snap_island', text="↘").direction = 'RIGHTBOTTOM'
+
+        col = layout.column(align=True)
+        row = col.row(align=True)
+        row.operator("uv.be_stack")
 
         col = layout.column(align=True)
         row = col.row(align=True)

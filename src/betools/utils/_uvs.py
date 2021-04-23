@@ -233,6 +233,41 @@ def get_uv_layer(ops_obj, bm):
     uv_layer = bm.loops.layers.uv.verify()
     return uv_layer
 
+def get_island_bounding_box(island, uv_layers):
+
+    bounding_box = {}
+    boundsMin = Vector((99999999.0,99999999.0))
+    boundsMax = Vector((-99999999.0,-99999999.0))
+    boundsCenter = Vector((0.0,0.0))
+    selection = False
+
+    for face in island:
+        for loop in face.loops:
+            if loop[uv_layers].select:
+                selection = True
+                uv = loop[uv_layers].uv
+                boundsMin.x = min(boundsMin.x, uv.x)
+                boundsMin.y = min(boundsMin.y, uv.y)
+                boundsMax.x = max(boundsMax.x, uv.x)
+                boundsMax.y = max(boundsMax.y, uv.y)
+    
+    if not selection:
+        return None
+
+    bounding_box['min'] = boundsMin
+    bounding_box['max'] = boundsMax
+    bounding_box['width'] = (boundsMax - boundsMin).x
+    bounding_box['height'] = (boundsMax - boundsMin).y
+
+    boundsCenter.x = (boundsMax.x + boundsMin.x)/2
+    boundsCenter.y = (boundsMax.y + boundsMin.y)/2
+
+    bounding_box['center'] = boundsCenter
+    bounding_box['area'] = bounding_box['width'] * bounding_box['height']
+    bounding_box['minLength'] = min(bounding_box['width'], bounding_box['height'])
+
+    return bounding_box
+
 def get_selection_bounding_box():
 
     bm = bmesh.from_edit_mesh(bpy.context.active_object.data)

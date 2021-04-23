@@ -265,10 +265,10 @@ class BETOOLS_OT_OrientEdge(bpy.types.Operator):
             angle = math.degrees(_uvs.get_uv_edge_angle(edge[0].uv, edge[1].uv))
             angle_sum += angle
             angle_count += 1
-        # TODO precheck the angle
         average_angle = angle_sum / angle_count
         _uvs.store_selection()
         islands = _uvs.get_selected_islands(bm, uv_layer)
+        print(len(islands))
         _uvs.rotate_island(me, islands, uv_layer, average_angle)
         _uvs.restore_selection(bm, uv_layer)
         return {'FINISHED'}
@@ -318,7 +318,7 @@ class BETOOLS_OT_UVProject(bpy.types.Operator):
 
 
 class BETOOLS_OT_IslandSnap(bpy.types.Operator):
-    bl_idname = "uv.be_textools_snap_island"
+    bl_idname = "uv.be_snap_island"
     bl_label = "Snap Islands"
     bl_description = "Snap islands to different positions on the grid"
     bl_options = {'REGISTER', 'UNDO'}
@@ -383,6 +383,38 @@ class BETOOLS_OT_IslandSnap(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class BETOOLS_OT_IslandStack(bpy.types.Operator):
+    bl_idname = "uv.be_stack"
+    bl_label = "Stacks Islands"
+    bl_description = "Stack two islands on top of each other"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+
+        obj = bpy.context.active_object
+        me = obj.data
+        bm = bmesh.from_edit_mesh(me)
+        uv_layer = bm.loops.layers.uv.verify()
+
+        islands = _uvs.get_selected_islands(bm, uv_layer)
+
+        if len(islands) < 2:
+            self.report({'INFO'}, 'Select 2 or more UV islands')
+            return {'FINISHED'}
+
+        # default to the first index
+        targetCenter = _uvs.get_island_bounding_box(islands[0], uv_layer).get('center')
+
+        for i in range(len(islands)-1):
+            index = i + 1
+            bbox = _uvs.get_island_bounding_box(islands[index], uv_layer)
+            deltaX = bbox.get('center').x - targetCenter.x
+            deltaY = bbox.get('center').y - targetCenter.y
+            _uvs.translate_island(me, islands[index], uv_layer, -deltaX, -deltaY)
+
+        return {'FINISHED'}
+
+
 bpy.utils.register_class(BETOOLS_OT_IslandSnap)
 bpy.utils.register_class(BETOOLS_OT_UVCameraProject)
 bpy.utils.register_class(BETOOLS_OT_UVTranslate)
@@ -393,3 +425,4 @@ bpy.utils.register_class(BETOOLS_OT_Fill)
 bpy.utils.register_class(BETOOLS_OT_Fit)
 bpy.utils.register_class(BETOOLS_OT_OrientEdge)
 bpy.utils.register_class(BETOOLS_OT_UVProject)
+bpy.utils.register_class(BETOOLS_OT_IslandStack)
