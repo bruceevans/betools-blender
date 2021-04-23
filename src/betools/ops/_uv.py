@@ -6,7 +6,7 @@
 import bpy
 import bmesh
 import math
-from bpy.props import EnumProperty, FloatVectorProperty
+from bpy.props import EnumProperty, FloatVectorProperty, FloatProperty
 from mathutils import Vector
 from ..utils import _uvs
 
@@ -35,29 +35,10 @@ class BETOOLS_OT_UVCameraProject(bpy.types.Operator):
     bl_description = "Project UVs from camera position"
     bl_options = {'REGISTER', 'UNDO'}
 
-    mode : EnumProperty(
-        name="Mode",
-        default='CAM',
-        items=[
-            ('CAM', 'CAM_PROJECT', 'Project from current camera position'),
-            ('FRONT', 'FRONT_PROJECT', 'Project from the front ortho view'),
-            ('TOP', 'TOP_PROJECT', 'Project from the top ortho view'),
-            ('RIGHT', 'RIGHT_PROJECT', 'Project from the right ortho view')
-        ]
-    )
-
     def execute(self, context):
-        if self.mode == 'CAM':
-            bpy.ops.uv.project_from_view(camera_bounds=False, correct_aspect=True, scale_to_bounds=False)
-            return {'FINISHED'}
-        else:
-            bpy.ops.view3d.view_axis(type=self.mode, align_active=False, relative=False) # TODO code this separately
-            bpy.ops.uv.project_from_view(camera_bounds=False, correct_aspect=True, scale_to_bounds=True)
-
+        bpy.ops.uv.project_from_view(camera_bounds=False, correct_aspect=True, scale_to_bounds=False)
         return {'FINISHED'}
 
-
-# Transform
 
 class BETOOLS_OT_UVTranslate(bpy.types.Operator):
     """ Uses menu properties
@@ -84,7 +65,6 @@ class BETOOLS_OT_UVTranslate(bpy.types.Operator):
             self.report({'INFO'}, 'Select UV islands')
             return {'FINISHED'}
 
-        # may have to give the mesh too
         for island in islands:
             _uvs.translate_island(me, island, uv_layer, deltaU, deltaV)
         return {'FINISHED'}
@@ -140,7 +120,6 @@ class BETOOLS_OT_UVRotate(bpy.types.Operator):
             self.report({'INFO'}, 'Select UV islands')
             return {'FINISHED'}
 
-        #for island in islands:
         _uvs.rotate_island(me, islands, uv_layer, angle)
 
         return {'FINISHED'}
@@ -274,7 +253,6 @@ class BETOOLS_OT_OrientEdge(bpy.types.Operator):
         return {'FINISHED'}
 
 
-# Super gross but the op wouldn't auto run when fed the attribute
 class BETOOLS_OT_UVProject(bpy.types.Operator):
     bl_idname = "uv.be_axis_project"
     bl_label = "UV Project"
@@ -364,21 +342,8 @@ class BETOOLS_OT_IslandSnap(bpy.types.Operator):
         xDelta = target.x-bounds.get(x).x
         yDelta = target.y-bounds.get(y).y
 
-        # _uvs.translateIsland(island, xDelta, yDelta)
-
-        bpy.ops.transform.translate(
-            value=(xDelta, yDelta, 0),
-            orient_type='GLOBAL',
-            orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)),
-            orient_matrix_type='GLOBAL',
-            mirror=True,
-            use_proportional_edit=False,
-            proportional_edit_falloff='SMOOTH',
-            proportional_size=1,
-            use_proportional_connected=False,
-            use_proportional_projected=False,
-            release_confirm=True
-            )
+        for island in islands:
+            _uvs.translate_island(me, island, uv_layer, xDelta, yDelta)
 
         return {'FINISHED'}
 
@@ -415,6 +380,123 @@ class BETOOLS_OT_IslandStack(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class BETOOLS_OT_IslandSort(bpy.types.Operator):
+    bl_idname = "uv.be_island_sort"
+    bl_label = "Sort Islands"
+    bl_description = "Sort islands vertically or horizontally"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    axis : EnumProperty(
+        name="Sort Axis",
+        default='VERTICAL',
+        items=[
+            ('VERTICAL', 'Vertical', 'Sort islands vertically'),
+            ('HORIZONTAL', 'Horizontal', 'Sort islands horizontally')
+        ]
+    )
+
+    def _getWidth(self, island, uv_layer):
+        return _uvs.get_island_bounding_box(island, uv_layer).get('width')
+
+    def _getHeight(self, island, uv_layer):
+        return _uvs.get_island_bounding_box(island, uv_layer).get('height')
+
+    def execute(self, context):
+
+        obj = bpy.context.active_object
+        me = obj.data
+        bm = bmesh.from_edit_mesh(me)
+        uv_layer = bm.loops.layers.uv.verify()
+
+        islands = _uvs.get_selected_islands(bm, uv_layer)
+
+        padding = context.scene.uv_transform_properties.padding
+        translation = padding
+
+        if self.axis == 'VERTICAL':
+            for island in islands:
+                # doing vertical sort, we want longest axis to be the width
+                # sort
+                bbox = _uvs.get_island_bounding_box(island, uv_layer)
+                if bbox.get('height') > bbox.get('width'):
+                    # rotate by 90
+                    tempList = []
+                    tempList.append(island)
+                    _uvs.rotate_island(me, tempList, uv_layer, 90)
+                    bbox = _uvs.get_island_bounding_box(island, uv_layer)
+            # sort by width
+            sortedIslands = sorted(
+                islands,
+                key=lambda k: _uvs.get_island_bounding_box(k, uv_layer).get('width'))
+            for island in reversed(sortedIslands):
+                # move to corner
+                bbox = _uvs.get_island_bounding_box(island, uv_layer)
+                delta = Vector((padding, 1.0 - translation)) - Vector(( bbox.get('min').x, bbox.get('max').y))
+                _uvs.translate_island(me, island, uv_layer, delta.x, delta.y)
+                translation += bbox.get('height') + padding
+        else:
+            for island in islands:
+                bbox = _uvs.get_island_bounding_box(island, uv_layer)
+                if bbox.get('width') > bbox.get('height'):
+                    # rotate by 90
+                    tempList = []
+                    tempList.append(island)
+                    _uvs.rotate_island(me, tempList, uv_layer, 90)
+                    bbox = _uvs.get_island_bounding_box(island, uv_layer)
+            # sort by width
+            sortedIslands = sorted(
+                islands,
+                key=lambda k: _uvs.get_island_bounding_box(k, uv_layer).get('height'))
+            for island in reversed(sortedIslands):
+                # move to corner
+                bbox = _uvs.get_island_bounding_box(island, uv_layer)
+                delta = Vector(( translation , 1.0 - padding )) - Vector((bbox.get('min').x, bbox.get('max').y)) 
+                _uvs.translate_island(me, island, uv_layer, delta.x, delta.y)
+                translation += bbox.get('width') + padding
+
+        return {'FINISHED'}
+
+
+class BETOOLS_OT_FlipIsland(bpy.types.Operator):
+    bl_idname = "uv.be_flip"
+    bl_label = "Sort Islands"
+    bl_description = "Sort islands vertically or horizontally"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    direction : EnumProperty(
+        name="Sort Axis",
+        default='VERTICAL',
+        items=[
+            ('VERTICAL', 'Vertical', 'Flip vertically'),
+            ('HORIZONTAL', 'Horizontal', 'Flip horizontally')
+        ]
+    )
+
+    def execute(self, context):
+
+        obj = bpy.context.active_object
+        me = obj.data
+        bm = bmesh.from_edit_mesh(me)
+        uv_layer = bm.loops.layers.uv.verify()
+
+        islands = _uvs.get_selected_islands(bm, uv_layer)
+
+        scale = Vector(( -1.0, 1.0 )) if self.direction == "HORIZONTAL" else Vector(( 1.0, -1.0 ))
+
+        if not islands:
+            self.report({'INFO'}, 'Select UV islands')
+            return {'FINISHED'}
+
+        for island in islands:
+            bbox = _uvs.get_island_bounding_box(island, uv_layer)
+            delta = Vector(( -bbox.get('center').x, -bbox.get('center').y ))
+            _uvs.translate_island(me, island, uv_layer, delta.x, delta.y)
+            _uvs.scale_island(me, island, uv_layer, scale.x, scale.y)
+            _uvs.translate_island(me, island, uv_layer, -delta.x, -delta.y)
+
+        return {'FINISHED'}
+
+
 bpy.utils.register_class(BETOOLS_OT_IslandSnap)
 bpy.utils.register_class(BETOOLS_OT_UVCameraProject)
 bpy.utils.register_class(BETOOLS_OT_UVTranslate)
@@ -426,3 +508,5 @@ bpy.utils.register_class(BETOOLS_OT_Fit)
 bpy.utils.register_class(BETOOLS_OT_OrientEdge)
 bpy.utils.register_class(BETOOLS_OT_UVProject)
 bpy.utils.register_class(BETOOLS_OT_IslandStack)
+bpy.utils.register_class(BETOOLS_OT_IslandSort)
+bpy.utils.register_class(BETOOLS_OT_FlipIsland)

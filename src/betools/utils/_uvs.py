@@ -357,15 +357,35 @@ def rotate_island(mesh, islands, uv_layer, angle):
     """ rotate """
     cos_theta, sin_theta = math.cos(math.radians(-angle)), math.sin(math.radians(-angle))
     
-    # rotate pivot still a little off TODO
-    bounding_box = get_selection_bounding_box()
+    
+    if len(islands) > 1:
+        bounding_box = get_selection_bounding_box()
 
-    center = (bounding_box.get("max") - bounding_box.get("min"))/2
-    box_max = bounding_box.get("max")
+        center = (bounding_box.get("max") - bounding_box.get("min"))/2
+        box_max = bounding_box.get("max")
 
-    pivot = box_max - center
-    for island in islands:
-        for face in island:
+        pivot = box_max - center
+        for island in islands:
+            for face in island:
+                for loop in face.loops:
+                    loop_uv = loop[uv_layer]
+
+                    loop_uv.uv[0] -= pivot.x
+                    loop_uv.uv[1] -= pivot.y
+
+                    duR = loop_uv.uv[0] * cos_theta - loop_uv.uv[1] * sin_theta
+                    dvR = loop_uv.uv[0] * sin_theta + loop_uv.uv[1] * cos_theta
+
+                    loop_uv.uv[0] = duR + pivot.x
+                    loop_uv.uv[1] = dvR + pivot.y
+    else:
+        # dealing with a single island
+        bounding_box = get_island_bounding_box(islands[0], uv_layer)
+        center = (bounding_box.get("max") - bounding_box.get("min"))/2
+        box_max = bounding_box.get("max")
+
+        pivot = box_max - center
+        for face in islands[0]:
             for loop in face.loops:
                 loop_uv = loop[uv_layer]
 
@@ -390,5 +410,7 @@ class UVTransformProperties(bpy.types.PropertyGroup):
     scale_v : bpy.props.FloatProperty(name='V', default=1.0)
 
     angle : bpy.props.IntProperty(name='Angle')
+
+    padding : bpy.props.FloatProperty(name='Pad', default=0.0)
 
 bpy.utils.register_class(UVTransformProperties)

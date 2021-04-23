@@ -379,25 +379,18 @@ class UI_PT_UVLayout(Panel):
     bl_region_type = "UI"
 
     def draw(self, context):
+        uv_transform = context.scene.uv_transform_properties
+
         layout = self.layout
         col = layout.column(align=True)
-
-        # main col
-        # two rows
-        # each row has a column
 
         split = layout.split()
         col = split.column()
 
-        # row = col.row(align=True)
         col.operator('uv.be_fill', text='Fill')
         col.operator('uv.be_fit', text="Fit")
-
-        # col = layout.column(align=True)
-        # row = col.row(align=True)
         col.operator('uv.be_orient_edge', text="Orient")
 
-        # col = layout.column(align=True)
         col = split.column()
         row = col.row(align=True)
         row.operator('uv.be_snap_island', text="↖").direction = 'LEFTTOP'
@@ -414,25 +407,30 @@ class UI_PT_UVLayout(Panel):
 
         col = layout.column(align=True)
         row = col.row(align=True)
+        row.operator('uv.be_flip', text="Flip V").direction = 'HORIZONTAL'
+        row.operator('uv.be_flip', text="Flip V").direction = 'VERTICAL'
+
+        col = layout.column(align=True)
+        row = col.row(align=True)
         row.operator("uv.be_stack")
 
         col = layout.column(align=True)
         row = col.row(align=True)
-        row.operator("uv.pack_islands", text = "Pack Islands").margin = 0.01
+        row.prop(uv_transform, "padding")
+        row.operator("uv.be_island_sort", text="V Sort").axis = 'VERTICAL'
+        row.operator("uv.be_island_sort", text="H Sort").axis = 'HORIZONTAL'
 
-
+        col = layout.column(align=True)
+        row = col.row(align=True)
+        row.prop(uv_transform, "padding")
+        row.operator("uv.pack_islands", text = "Pack Islands").margin = uv_transform.padding
 
     # main settings
     # Map size, padding, resize, uv channels
     # Map selection (Checker, gravity, etc.)
     # 
-    # UV Layout
-    # Crop, fill
-    # Snap to pos
-    # Sort v & h
     # Rectify
     # Texel density
-    # Overlap, selection junk
     # Flip
     # Color ID stuff?
 
