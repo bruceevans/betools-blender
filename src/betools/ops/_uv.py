@@ -147,7 +147,6 @@ class BETOOLS_OT_UVRotate2(bpy.types.Operator):
             self.report({'INFO'}, 'Select UV islands')
             return {'FINISHED'}
 
-        #for island in islands:
         _uvs.rotate_island(me, islands, uv_layer, self.angle)
 
         return {'FINISHED'}
@@ -247,7 +246,6 @@ class BETOOLS_OT_OrientEdge(bpy.types.Operator):
         average_angle = angle_sum / angle_count
         _uvs.store_selection()
         islands = _uvs.get_selected_islands(bm, uv_layer)
-        print(len(islands))
         _uvs.rotate_island(me, islands, uv_layer, average_angle)
         _uvs.restore_selection(bm, uv_layer)
         return {'FINISHED'}
@@ -316,11 +314,13 @@ class BETOOLS_OT_IslandSnap(bpy.types.Operator):
         #Requires UV map
         if not bpy.context.object.data.uv_layers:
             return False
+        # Selective sync off
         if bpy.context.scene.tool_settings.use_uv_select_sync:
             return False
         #Only in UV editor mode
         if bpy.context.area.type != 'IMAGE_EDITOR':
             return False
+        # island selection TODO
         return True
 
     def execute(self, context):
@@ -410,7 +410,7 @@ class BETOOLS_OT_IslandSort(bpy.types.Operator):
 
         islands = _uvs.get_selected_islands(bm, uv_layer)
 
-        padding = context.scene.uv_transform_properties.padding
+        padding = context.scene.uv_transform_properties.sortPadding
         translation = padding
 
         if self.axis == 'VERTICAL':
@@ -418,6 +418,7 @@ class BETOOLS_OT_IslandSort(bpy.types.Operator):
                 # doing vertical sort, we want longest axis to be the width
                 # sort
                 bbox = _uvs.get_island_bounding_box(island, uv_layer)
+                # TODO check for rotate
                 if bbox.get('height') > bbox.get('width'):
                     # rotate by 90
                     tempList = []

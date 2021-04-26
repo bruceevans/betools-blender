@@ -399,8 +399,12 @@ def rotate_island(mesh, islands, uv_layer, angle):
                 loop_uv.uv[1] = dvR + pivot.y
 
     bmesh.update_edit_mesh(mesh)
+
+
+# TODO trim tools
             
 
+# TODO move to settings or panels?
 class UVTransformProperties(bpy.types.PropertyGroup):
 
     translate_u : bpy.props.FloatProperty(name='U')
@@ -411,6 +415,8 @@ class UVTransformProperties(bpy.types.PropertyGroup):
 
     angle : bpy.props.IntProperty(name='Angle')
 
-    padding : bpy.props.FloatProperty(name='Pad', default=0.0)
+    packPadding : bpy.props.FloatProperty(name='Pad', default=0.0)
+    sortPadding : bpy.props.FloatProperty(name='Pad', default=0.0)
+    # TODO checkbox for auto rotate on sort
 
 bpy.utils.register_class(UVTransformProperties)

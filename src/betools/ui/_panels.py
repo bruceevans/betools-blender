@@ -414,7 +414,7 @@ class UI_PT_UVLayout(Panel):
 
         col = layout.column(align=True)
         row = col.row(align=True)
-        row.operator('uv.be_flip', text="Flip V").direction = 'HORIZONTAL'
+        row.operator('uv.be_flip', text="Flip H").direction = 'HORIZONTAL'
         row.operator('uv.be_flip', text="Flip V").direction = 'VERTICAL'
 
         col = layout.column(align=True)
@@ -423,14 +423,14 @@ class UI_PT_UVLayout(Panel):
 
         col = layout.column(align=True)
         row = col.row(align=True)
-        row.prop(uv_transform, "padding")
+        row.prop(uv_transform, "sortPadding")
         row.operator("uv.be_island_sort", text="V Sort").axis = 'VERTICAL'
         row.operator("uv.be_island_sort", text="H Sort").axis = 'HORIZONTAL'
 
         col = layout.column(align=True)
         row = col.row(align=True)
-        row.prop(uv_transform, "padding")
-        row.operator("uv.pack_islands", text = "Pack Islands").margin = uv_transform.padding
+        row.prop(uv_transform, "packPadding")
+        row.operator("uv.pack_islands", text = "Pack Islands").margin = uv_transform.packPadding
 
         col = layout.column(align=True)
         row = col.row(align=True)
