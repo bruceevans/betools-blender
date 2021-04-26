@@ -59,6 +59,9 @@ class BEPreferencesPanel(bpy.types.AddonPreferences):
         row.operator('wm.url_open', text='My Stuff', icon='HELP').url = 'https://www.brucein3d.com'
 
 
+## PIE MENUS
+
+
 class BETOOLS_MT_PieMenu(Menu):
     """ Base class for betools' piemenus
     """
@@ -151,6 +154,9 @@ class BETOOLS_MT_MirrorMenu(BETOOLS_MT_PieMenu):
         self.pie_menu.operator("mesh.smart_mirror", text = "Mirror Z", icon_value = _icon.getIcon("MIRROR_Z")).direction = 'Z'
 
 
+## 3D VIEW MENUS
+
+
 class BETOOLS_OT_PieCall(bpy.types.Operator):
     """ Main operator to call the pie menus
     """
@@ -218,6 +224,7 @@ class UI_PT_BEToolsPanel(Panel):
             col.operator("mesh.be_editpivot", text = "Edit Pivot", icon = "OBJECT_ORIGIN")
             col.operator("mesh.be_center_pivot", text = "Center Pivot", icon = "OBJECT_ORIGIN")
             col.operator("mesh.be_pivot2cursor", text = "Pivot to Cursor", icon = "EMPTY_ARROWS")
+            col.operator("view3d.snap_cursor_to_center", text = "Cursor to Origin")  # TODO ICON
 
             layout.label(text="Mesh Tools")
 
@@ -424,6 +431,15 @@ class UI_PT_UVLayout(Panel):
         row = col.row(align=True)
         row.prop(uv_transform, "padding")
         row.operator("uv.pack_islands", text = "Pack Islands").margin = uv_transform.padding
+
+        col = layout.column(align=True)
+        row = col.row(align=True)
+        row.operator("uv.be_uv_squares_by_shape", text="Rectify")
+        row.operator("uv.be_uv_squares", text = "Squarify")
+
+        col = layout.column(align=True)
+        row = col.row(align=True)
+        row.operator("uv.be_uv_face_rip", text = "Rip Faces")
 
     # main settings
     # Map size, padding, resize, uv channels
