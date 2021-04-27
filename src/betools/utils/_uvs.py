@@ -415,8 +415,13 @@ class UVTransformProperties(bpy.types.PropertyGroup):
 
     angle : bpy.props.IntProperty(name='Angle')
 
-    packPadding : bpy.props.FloatProperty(name='Pad', default=0.0)
+    random_translate : bpy.props.FloatProperty(name='rand_translate')
+    random_scale : bpy.props.FloatProperty(name='rand_scale')
+    random_rotate : bpy.props.FloatProperty(name='rand_rotate')
+
     sortPadding : bpy.props.FloatProperty(name='Pad', default=0.0)
+    packPadding : bpy.props.FloatProperty(name='Pad', default=0.0)
+    
     # TODO checkbox for auto rotate on sort
 
 bpy.utils.register_class(UVTransformProperties)

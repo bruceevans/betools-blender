@@ -131,7 +131,6 @@ class BETOOLS_MT_MeshMenu(BETOOLS_MT_PieMenu):
         self.pie_menu.operator("object.shade_flat", text = "Flat Shade", icon = "LINCURVE")
         self.pie_menu.operator("mesh.be_pivot2cursor", text = "Pivot to Cursor", icon = "EMPTY_ARROWS")
 
-        # TODO wrap
         freeze_transforms = self.pie_menu.operator("object.transform_apply", text = "Apply All Transforms", icon = "EMPTY_AXIS")
         freeze_transforms.location = True
         freeze_transforms.rotation = True
@@ -330,6 +329,23 @@ class UI_PT_ExportPanel(Panel):
 # UV Panels
 ###############################################
 
+
+class UI_PT_UVImage(Panel):
+    """ Main panel for the UV image editor
+    """
+
+    bl_label = "Be Tools"
+    bl_category = "Be Tools"
+    bl_space_type = "IMAGE_EDITOR"
+    bl_region_type = "UI"
+
+    def draw(self, context):
+        # Image creation and generation
+        layout = self.layout
+        col = layout.column(align=True)
+        row = col.row(align=True)
+
+
 class UI_PT_UVTransform(Panel):
     """ Main panel for the UV image editor
     """
@@ -441,13 +457,45 @@ class UI_PT_UVLayout(Panel):
         row = col.row(align=True)
         row.operator("uv.be_uv_face_rip", text = "Rip Faces")
 
+
+class UI_PT_UVTexel(Panel):
+    """ Main panel for modifying texel density
+    """
+
+    bl_label = "Texel"
+    bl_category = "Be Tools"
+    bl_space_type = "IMAGE_EDITOR"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        # Image creation and generation
+        layout = self.layout
+        col = layout.column(align=True)
+        row = col.row(align=True)
+
+
+class UI_PT_UVColorID(Panel):
+    """ Create and modify ID maps
+    """
+
+    bl_label = "Color ID"
+    bl_category = "Be Tools"
+    bl_space_type = "IMAGE_EDITOR"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        # Image creation and generation
+        layout = self.layout
+        col = layout.column(align=True)
+        row = col.row(align=True)
+
     # main settings
     # Map size, padding, resize, uv channels
     # Map selection (Checker, gravity, etc.)
     # 
-    # Rectify
     # Texel density
-    # Flip
     # Color ID stuff?
 
 
