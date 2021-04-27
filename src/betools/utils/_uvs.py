@@ -404,24 +404,11 @@ def rotate_island(mesh, islands, uv_layer, angle):
 # TODO trim tools
             
 
-# TODO move to settings or panels?
-class UVTransformProperties(bpy.types.PropertyGroup):
+#######################################
+#  Image Helpers
+#######################################
 
-    translate_u : bpy.props.FloatProperty(name='U')
-    translate_v : bpy.props.FloatProperty(name='V')
-
-    scale_u : bpy.props.FloatProperty(name='U', default=1.0)
-    scale_v : bpy.props.FloatProperty(name='V', default=1.0)
-
-    angle : bpy.props.IntProperty(name='Angle')
-
-    random_translate : bpy.props.FloatProperty(name='rand_translate')
-    random_scale : bpy.props.FloatProperty(name='rand_scale')
-    random_rotate : bpy.props.FloatProperty(name='rand_rotate')
-
-    sortPadding : bpy.props.FloatProperty(name='Pad', default=0.0)
-    packPadding : bpy.props.FloatProperty(name='Pad', default=0.0)
-    
-    # TODO checkbox for auto rotate on sort
-
-bpy.utils.register_class(UVTransformProperties)
+def get_current_image():
+    for area in bpy.context.screen.areas:
+        if area.type == 'IMAGE_EDITOR':
+                return area.spaces.active.image

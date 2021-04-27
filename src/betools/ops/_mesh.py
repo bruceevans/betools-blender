@@ -59,15 +59,15 @@ class BETOOLS_OT_SnapToFace(bpy.types.Operator):
         targetTransform += faceObject.location
         
         bpy.ops.object.select_all(action='DESELECT')
-        bpy.data.objects[context.scene.snapObject].select_set(True)
+        bpy.data.objects[context.scene.snap_object].select_set(True)
 
-        if faceObject == bpy.data.objects[context.scene.snapObject]:
+        if faceObject == bpy.data.objects[context.scene.snap_object]:
             self.report({'INFO'}, 'Invalid selection! Choose a different object to snap.')
             return {"FINISHED"}
 
-        location = bpy.data.objects[context.scene.snapObject].location
+        location = bpy.data.objects[context.scene.snap_object].location
         translateToCoordinates(location, targetTransform)
-        rotateToCoordinates(context.scene.snapObject, targetRotation)
+        rotateToCoordinates(context.scene.snap_object, targetRotation)
 
         return {"FINISHED"}
 
@@ -75,7 +75,7 @@ class BETOOLS_OT_SnapToFace(bpy.types.Operator):
     def poll(cls, context):
         if context.object is None:
             return False
-        if not bpy.types.Scene.snapObject:
+        if not bpy.types.Scene.snap_object:
             return False
         return True
 

@@ -26,6 +26,7 @@ if "bpy" in locals():
     imp.reload(ops._edge)
     imp.reload(ops._export)
     imp.reload(ops._hardedgeseam)
+    imp.reload(ops._image)
     imp.reload(ops._lattice)
     imp.reload(ops._mesh)
     imp.reload(ops._mirror)
@@ -50,6 +51,7 @@ else:
     from .ops import _edge
     from .ops import _export
     from .ops import _hardedgeseam
+    from .ops import _image
     from .ops import _lattice
     from .ops import _mesh
     from .ops import _mirror

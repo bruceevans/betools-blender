@@ -15,9 +15,9 @@ from bpy.types import Panel
 from .. ops import *
 from .. utils import _icon
 from .. utils import _constants
-from .. utils._uvs import UVTransformProperties
+from .. _settings import BETOOLSProperties
 
-from bpy.props import StringProperty, PointerProperty
+from bpy.props import StringProperty, FloatProperty, IntProperty, PointerProperty
 
 
 class BEPreferencesPanel(bpy.types.AddonPreferences):
@@ -153,9 +153,6 @@ class BETOOLS_MT_MirrorMenu(BETOOLS_MT_PieMenu):
         self.pie_menu.operator("mesh.smart_mirror", text = "Mirror Z", icon_value = _icon.getIcon("MIRROR_Z")).direction = 'Z'
 
 
-## 3D VIEW MENUS
-
-
 class BETOOLS_OT_PieCall(bpy.types.Operator):
     """ Main operator to call the pie menus
     """
@@ -182,6 +179,9 @@ class BETOOLS_OT_PieCall(bpy.types.Operator):
             pass
 
 
+## 3D VIEW MENUS
+
+
 class UI_PT_BEToolsPanel(Panel):
     """ Main side panel in the 3D View
     """
@@ -194,19 +194,20 @@ class UI_PT_BEToolsPanel(Panel):
     def draw(self, context):
 
         layout = self.layout
-
         layout.label(text="Viewport Display")
+        box = layout.box()
 
         # row = layout.column().row(align=True)
-        col = layout.column(align=True)
+        col = box.column(align=True)
 
         col.operator("mesh.be_toggle_wireframe", text = "Toggle Wireframe", icon = "SHADING_WIRE")
         col.operator("mesh.be_toggle_shaded", text = "Toggle Shaded", icon = "SHADING_SOLID")
         col.operator("view3d.toggle_xray", text = "Toggle XRay", icon = "XRAY")
 
         layout.label(text="Snapping")
+        box = layout.box()
 
-        col = layout.column(align=True)
+        col = box.column(align=True)
         row = col.row(align=True)
         row.operator("mesh.be_vert_snap", text = "Vertex", icon = "SNAP_VERTEX")
         row.operator("mesh.be_closest_vert_snap", text = "Close Vert", icon = "SNAP_GRID")
@@ -215,42 +216,49 @@ class UI_PT_BEToolsPanel(Panel):
 
         object = context.active_object
         if object is None or len(bpy.context.selected_objects) == 0:
-            col.label(text='Select a Mesh!')
+            layout.label(text='Select a Mesh!')
         else:
             layout.label(text="Pivot")
+            box = layout.box()
             # row = layout.column().row(align=True)
-            col = layout.column(align=True)
+            col = box.column(align=True)
             col.operator("mesh.be_editpivot", text = "Edit Pivot", icon = "OBJECT_ORIGIN")
             col.operator("mesh.be_center_pivot", text = "Center Pivot", icon = "OBJECT_ORIGIN")
             col.operator("mesh.be_pivot2cursor", text = "Pivot to Cursor", icon = "EMPTY_ARROWS")
             col.operator("view3d.snap_cursor_to_center", text = "Cursor to Origin")  # TODO ICON
 
             layout.label(text="Mesh Tools")
+            box = layout.box()
 
-            row = layout.column().row(align=True)
+            col = box.column(align=True)
+
+            row = col.row(align=True)
             row.operator("mesh.smart_mirror", text = "X", icon_value = _icon.getIcon("MIRROR_X")).direction='X'
             row.operator("mesh.smart_mirror", text = "Y", icon_value = _icon.getIcon("MIRROR_Y")).direction='Y'
             row.operator("mesh.smart_mirror", text = "Z", icon_value = _icon.getIcon("MIRROR_Z")).direction='Z'
 
-            row = layout.column().row(align=True)
+            row = col.row(align=True)
             row.operator("mesh.lattice_2", text = "2x2", icon_value = _icon.getIcon("LATTICE_2"))
             row.operator("mesh.lattice_3", text = "3x3", icon_value = _icon.getIcon("LATTICE_3"))
             row.operator("mesh.lattice_4", text = "4x4", icon_value = _icon.getIcon("LATTICE_4"))
 
-            row = layout.column().row(align=True)
+            row = col.row(align=True)
             row.operator("mesh.smart_extract", text = "Smart Extract") # TODO Icon
 
-
-            col = layout.column(align=True)
+            col = box.column(align=True)
             scene = context.scene
             row = col.row(align=True)
-            row.prop_search(scene, "snapObject", bpy.data, "objects", text = "") # TODO icon
+            row.prop_search(scene, "snap_object", bpy.data, "objects", text = "") # TODO icon
 
             row = col.row(align=True)
             row.operator("mesh.be_snap_to_face", text = "Snap to Face") # TODO icon
 
             mesh = bpy.context.object.data
-            col = layout.column(align=False, heading="Shading")
+
+            layout.label(text="Shading")
+            box = layout.box()
+
+            col = box.column(align=False)
             col.use_property_decorate = False
 
             row = col.row(align=True)
@@ -261,14 +269,15 @@ class UI_PT_BEToolsPanel(Panel):
             row.prop(mesh, "auto_smooth_angle", text="")
             row.prop_decorator(mesh, "auto_smooth_angle")
 
-            col = layout.column(align=True)
+            col = box.column(align=True)
             col.operator("object.shade_smooth", text = "Shade Smooth", icon = "SPHERECURVE")
             col.operator("object.shade_flat", text = "Shade Flat", icon = "LINCURVE")
             col.operator("mesh.be_recalc_normals", text = "Recalculate Normals", icon = "NORMALS_FACE")
             col.operator("mesh.be_toggle_fo", text = "Show Face Orientation", icon = "ORIENTATION_NORMAL")
 
             layout.label(text="UVs")
-            col = layout.column(align=True)
+            box = layout.box()
+            col = box.column(align=True)
             col.operator("mesh.seams_from_hard_edge", text = "Hard Edges To Seams", icon = "MOD_EDGESPLIT")
             col.operator("uv.unwrap", text = "Unwrap Faces", icon = "FACESEL")
             col.operator('uv.project_from_view', text = 'Cam Project', icon = 'CON_CAMERASOLVER')
@@ -287,6 +296,7 @@ class UI_PT_CollisionPanel(Panel):
     bl_category = "Be Tools"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
         # TODO Add ops based on prefs
@@ -297,7 +307,9 @@ class UI_PT_CollisionPanel(Panel):
         if object is None or len(bpy.context.selected_objects) == 0:
             col.label(text='Select a Mesh!')
         else:
-            col.label(text='UE4 Collision')
+            layout.label(text='UE4 Collision')
+            box = layout.box()
+            col = box.column()
             row = col.row(align=True)
             row.operator('mesh.be_ucx_hull', text = "UCX Convex")
             row.operator('mesh.be_ucx_box_collision', text = "UCX Box")
@@ -311,17 +323,22 @@ class UI_PT_ExportPanel(Panel):
     """ Main side panel in the 3D View
     """
 
-    bl_label = "Export Tools"
+    bl_label = "I/O"
     bl_category = "Be Tools"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
         layout = self.layout
-        col = layout.column(align=True)
+        # TODO quick imports
+        layout.label(text="Export")
+        box = layout.box()
+        col = box.column(align=True)
         col.operator('mesh.be_export_selected_fbx', text = 'Export Sel as FBX')
         col.operator('mesh.be_export_scene_fbx', text = 'Export FBX')
         # TODO simple obj export to temp area
+        
 
 # TODO Clean up panel
 
@@ -359,7 +376,7 @@ class UI_PT_UVTransform(Panel):
         layout = self.layout
         col = layout.column(align=True)
 
-        uv_transform = context.scene.uv_transform_properties
+        uv_transform = context.scene.uv_properties
 
         col = layout.column(align=True)
         col.label(text='Move')
@@ -402,7 +419,7 @@ class UI_PT_UVLayout(Panel):
     bl_region_type = "UI"
 
     def draw(self, context):
-        uv_transform = context.scene.uv_transform_properties
+        uv_transform = context.scene.uv_properties
 
         layout = self.layout
         col = layout.column(align=True)
@@ -470,9 +487,21 @@ class UI_PT_UVTexel(Panel):
 
     def draw(self, context):
         # Image creation and generation
+
+        uv_props = context.scene.uv_properties
+
         layout = self.layout
-        col = layout.column(align=True)
+        box = layout.box()
+        col = box.column(align=True)
         row = col.row(align=True)
+        row.label(text="Map size: ")
+        row.label(text="  {} px".format(uv_props.image_size))
+        row = col.row(align=True)
+        row.operator("uv.be_get_texel", text="Get")
+        row.prop(uv_props, "texel_density")
+        row.operator("uv.be_get_texel", text="Set")
+        # Cube helper with size drop down
+        # Mannequin helper
 
 
 class UI_PT_UVColorID(Panel):
@@ -491,6 +520,8 @@ class UI_PT_UVColorID(Panel):
         col = layout.column(align=True)
         row = col.row(align=True)
 
+        return {'FINISHED'}
+
     # main settings
     # Map size, padding, resize, uv channels
     # Map selection (Checker, gravity, etc.)
@@ -498,6 +529,5 @@ class UI_PT_UVColorID(Panel):
     # Texel density
     # Color ID stuff?
 
-
-bpy.types.Scene.snapObject = bpy.props.StringProperty()
-bpy.types.Scene.uv_transform_properties = bpy.props.PointerProperty(type = UVTransformProperties)
+bpy.types.Scene.snap_object = bpy.props.StringProperty()
+bpy.types.Scene.uv_properties = bpy.props.PointerProperty(type=BETOOLSProperties)

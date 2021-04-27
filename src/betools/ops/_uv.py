@@ -51,7 +51,7 @@ class BETOOLS_OT_UVTranslate(bpy.types.Operator):
 
     def execute(self, context):
 
-        uv_transform = context.scene.uv_transform_properties
+        uv_transform = context.scene.uv_properties
         deltaU = uv_transform.translate_u
         deltaV = uv_transform.translate_v
 
@@ -78,7 +78,7 @@ class BETOOLS_OT_UVScale(bpy.types.Operator):
 
     def execute(self, context):
 
-        uv_transform = context.scene.uv_transform_properties
+        uv_transform = context.scene.uv_properties
         scaleU = uv_transform.scale_u
         scaleV = uv_transform.scale_v
 
@@ -107,7 +107,7 @@ class BETOOLS_OT_UVRotate(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        uv_transform = context.scene.uv_transform_properties
+        uv_transform = context.scene.uv_properties
         angle = uv_transform.angle
 
         obj = bpy.context.active_object
@@ -410,7 +410,7 @@ class BETOOLS_OT_IslandSort(bpy.types.Operator):
 
         islands = _uvs.get_selected_islands(bm, uv_layer)
 
-        padding = context.scene.uv_transform_properties.sortPadding
+        padding = context.scene.uv_properties.sortPadding
         translation = padding
 
         if self.axis == 'VERTICAL':
