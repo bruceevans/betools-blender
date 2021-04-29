@@ -224,6 +224,30 @@ def get_faces_from_uvs(bm, uv_layers):
                 faces.append(face)
     return faces
 
+def get_area_triangle_uv(A, B, C, size_x, size_y):
+	scale_x = size_x / max(size_x, size_y)
+	scale_y = size_y / max(size_x, size_y)
+	A.x/=scale_x
+	B.x/=scale_x
+	C.x/=scale_x
+	
+	A.y/=scale_y
+	B.y/=scale_y
+	C.y/=scale_y
+
+	return get_area_triangle(A, B, C)
+
+def get_area_triangle(A,B,C):
+	# Heron's formula: http://www.1728.org/triang.htm
+	# area = square root (s • (s - a) • (s - b) • (s - c))
+	a = (B-A).length
+	b = (C-B).length
+	c = (A-C).length
+	s = (a+b+c)/2
+
+	return math.sqrt(s * abs(s-a) * abs(s-b) * abs(s-c))
+
+"""
 def get_uv_layer(ops_obj, bm):
     # get UV layer
     if not bm.loops.layers.uv:
@@ -232,6 +256,7 @@ def get_uv_layer(ops_obj, bm):
         return None
     uv_layer = bm.loops.layers.uv.verify()
     return uv_layer
+"""
 
 def get_island_bounding_box(island, uv_layers):
 
@@ -345,18 +370,29 @@ def translate_island(mesh, island, uv_layer, deltaX, deltaY):
 def scale_island(mesh, island, uv_layer, scaleU, scaleV):
     """ scale """
 
+    bounding_box = get_selection_bounding_box()
+    center = (bounding_box.get("max") - bounding_box.get("min"))/2
+    box_max = bounding_box.get("max")
+    pivot = box_max - center
+
     for face in island:
         for loop in face.loops:
             loop_uv = loop[uv_layer]
+
+            loop_uv.uv[0] -= pivot.x
+            loop_uv.uv[1] -= pivot.y
+
             loop_uv.uv[0] *= scaleU
             loop_uv.uv[1] *= scaleV
+
+            loop_uv.uv[0] += pivot.x
+            loop_uv.uv[1] += pivot.y
 
     bmesh.update_edit_mesh(mesh)
 
 def rotate_island(mesh, islands, uv_layer, angle):
     """ rotate """
     cos_theta, sin_theta = math.cos(math.radians(-angle)), math.sin(math.radians(-angle))
-    
     
     if len(islands) > 1:
         bounding_box = get_selection_bounding_box()

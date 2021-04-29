@@ -41,6 +41,9 @@ class BEPreferencesPanel(bpy.types.AddonPreferences):
 
         box = layout.box()
         col = box.column(align=True)
+        row = col.row(align = True)
+        row.label("Texel Density Units:")
+        # TODO drop down for meters, centimeters
         col.prop(self, "game_engine", icon='RESTRICT_VIEW_OFF')
         if self.game_engine == 'UE4':
             col.label(text="Using Unreal Engine Presets")
@@ -376,7 +379,7 @@ class UI_PT_UVTransform(Panel):
         layout = self.layout
         col = layout.column(align=True)
 
-        uv_transform = context.scene.uv_properties
+        uv_transform = context.scene.betools_settings
 
         col = layout.column(align=True)
         col.label(text='Move')
@@ -419,17 +422,16 @@ class UI_PT_UVLayout(Panel):
     bl_region_type = "UI"
 
     def draw(self, context):
-        uv_transform = context.scene.uv_properties
+        uv_transform = context.scene.betools_settings
 
         layout = self.layout
-        col = layout.column(align=True)
-
-        split = layout.split()
+        box = layout.box()
+        split = box.split()
         col = split.column()
 
-        col.operator('uv.be_fill', text='Fill')
-        col.operator('uv.be_fit', text="Fit")
         col.operator('uv.be_orient_edge', text="Orient")
+        col.operator('uv.be_fit', text="Fit")
+        col.operator('uv.be_fill', text='Fill')
 
         col = split.column()
         row = col.row(align=True)
@@ -445,34 +447,40 @@ class UI_PT_UVLayout(Panel):
         row.operator('uv.be_snap_island', text="↓").direction = 'CENTERBOTTOM'
         row.operator('uv.be_snap_island', text="↘").direction = 'RIGHTBOTTOM'
 
-        col = layout.column(align=True)
+        col = box.column(align=True)
         row = col.row(align=True)
         row.operator('uv.be_flip', text="Flip H").direction = 'HORIZONTAL'
         row.operator('uv.be_flip', text="Flip V").direction = 'VERTICAL'
 
-        col = layout.column(align=True)
+        col = box.column(align=True)
         row = col.row(align=True)
         row.operator("uv.be_stack")
 
-        col = layout.column(align=True)
+        col = box.column(align=True)
         row = col.row(align=True)
-        row.prop(uv_transform, "sortPadding")
-        row.operator("uv.be_island_sort", text="V Sort").axis = 'VERTICAL'
-        row.operator("uv.be_island_sort", text="H Sort").axis = 'HORIZONTAL'
+        row.operator("uv.be_uv_face_rip", text = "Rip Faces")
 
-        col = layout.column(align=True)
-        row = col.row(align=True)
-        row.prop(uv_transform, "packPadding")
-        row.operator("uv.pack_islands", text = "Pack Islands").margin = uv_transform.packPadding
-
-        col = layout.column(align=True)
+        col = box.column(align=True)
         row = col.row(align=True)
         row.operator("uv.be_uv_squares_by_shape", text="Rectify")
         row.operator("uv.be_uv_squares", text = "Squarify")
 
-        col = layout.column(align=True)
+        box = layout.box()
+        col = box.column(align=True)
         row = col.row(align=True)
-        row.operator("uv.be_uv_face_rip", text = "Rip Faces")
+        row.label(text="Padding: ")
+        row.prop(uv_transform, "sort_padding", text = "")
+        row = col.row(align=True)
+        row.operator("uv.be_island_sort", text="Sort V").axis = 'VERTICAL'
+        row.operator("uv.be_island_sort", text="Sort H").axis = 'HORIZONTAL'
+
+        box = layout.box()
+        col = box.column(align=True)
+        row = col.row(align=True)
+        row.label(text="Padding: ")
+        row.prop(uv_transform, "pack_padding", text="")
+        row = col.row(align=True)
+        row.operator("uv.pack_islands", text = "Pack Islands").margin = uv_transform.pack_padding
 
 
 class UI_PT_UVTexel(Panel):
@@ -488,18 +496,20 @@ class UI_PT_UVTexel(Panel):
     def draw(self, context):
         # Image creation and generation
 
-        uv_props = context.scene.uv_properties
+        uv_props = context.scene.betools_settings
 
         layout = self.layout
         box = layout.box()
         col = box.column(align=True)
         row = col.row(align=True)
-        row.label(text="Map size: ")
-        row.label(text="  {} px".format(uv_props.image_size))
+        row.label(text="Texel Density: ")
+        row.prop(uv_props, "texel_density", text = "")
         row = col.row(align=True)
         row.operator("uv.be_get_texel", text="Get")
-        row.prop(uv_props, "texel_density")
-        row.operator("uv.be_get_texel", text="Set")
+        row.operator("uv.be_set_texel", text="Set")
+
+        col = box.column(align=True, heading='Helpers')
+        row = col.row()
         # Cube helper with size drop down
         # Mannequin helper
 
@@ -525,9 +535,10 @@ class UI_PT_UVColorID(Panel):
     # main settings
     # Map size, padding, resize, uv channels
     # Map selection (Checker, gravity, etc.)
-    # 
     # Texel density
     # Color ID stuff?
 
 bpy.types.Scene.snap_object = bpy.props.StringProperty()
-bpy.types.Scene.uv_properties = bpy.props.PointerProperty(type=BETOOLSProperties)
+# TODO rename this to betools_settings
+# uv_properties
+bpy.types.Scene.betools_settings = bpy.props.PointerProperty(type=BETOOLSProperties)

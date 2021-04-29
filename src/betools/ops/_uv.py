@@ -51,7 +51,7 @@ class BETOOLS_OT_UVTranslate(bpy.types.Operator):
 
     def execute(self, context):
 
-        uv_transform = context.scene.uv_properties
+        uv_transform = context.scene.betools_settings
         deltaU = uv_transform.translate_u
         deltaV = uv_transform.translate_v
 
@@ -78,7 +78,7 @@ class BETOOLS_OT_UVScale(bpy.types.Operator):
 
     def execute(self, context):
 
-        uv_transform = context.scene.uv_properties
+        uv_transform = context.scene.betools_settings
         scaleU = uv_transform.scale_u
         scaleV = uv_transform.scale_v
 
@@ -107,7 +107,7 @@ class BETOOLS_OT_UVRotate(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        uv_transform = context.scene.uv_properties
+        uv_transform = context.scene.betools_settings
         angle = uv_transform.angle
 
         obj = bpy.context.active_object
@@ -410,10 +410,12 @@ class BETOOLS_OT_IslandSort(bpy.types.Operator):
 
         islands = _uvs.get_selected_islands(bm, uv_layer)
 
-        padding = context.scene.uv_properties.sortPadding
+        padding = context.scene.betools_settings.sort_padding
         translation = padding
 
         if self.axis == 'VERTICAL':
+
+            """
             for island in islands:
                 # doing vertical sort, we want longest axis to be the width
                 # sort
@@ -425,6 +427,7 @@ class BETOOLS_OT_IslandSort(bpy.types.Operator):
                     tempList.append(island)
                     _uvs.rotate_island(me, tempList, uv_layer, 90)
                     bbox = _uvs.get_island_bounding_box(island, uv_layer)
+            """
             # sort by width
             sortedIslands = sorted(
                 islands,
@@ -436,6 +439,7 @@ class BETOOLS_OT_IslandSort(bpy.types.Operator):
                 _uvs.translate_island(me, island, uv_layer, delta.x, delta.y)
                 translation += bbox.get('height') + padding
         else:
+            """
             for island in islands:
                 bbox = _uvs.get_island_bounding_box(island, uv_layer)
                 if bbox.get('width') > bbox.get('height'):
@@ -444,6 +448,7 @@ class BETOOLS_OT_IslandSort(bpy.types.Operator):
                     tempList.append(island)
                     _uvs.rotate_island(me, tempList, uv_layer, 90)
                     bbox = _uvs.get_island_bounding_box(island, uv_layer)
+            """
             # sort by width
             sortedIslands = sorted(
                 islands,

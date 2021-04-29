@@ -30,10 +30,14 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
     random_scale : bpy.props.FloatProperty(name='rand_scale')
     random_rotate : bpy.props.FloatProperty(name='rand_rotate')
 
-    sortPadding : bpy.props.FloatProperty(name='Pad', default=0.0)
-    packPadding : bpy.props.FloatProperty(name='Pad', default=0.0)
+    sort_padding : bpy.props.FloatProperty(name='Pad', default=0.01)
+    pack_padding : bpy.props.FloatProperty(name='Pad', default=0.01)
 
-    texel_density : bpy.props.FloatProperty(name='Texel Density')
+    current_texel_density : bpy.props.FloatProperty(name='Texel Density', default=256.0)
+    texel_density : bpy.props.FloatProperty(name='Texel Density', default=256.0)
+    
+    # TODO Enum prop?
+    texel_density_units : bpy.props.StringProperty(name='Texel Density Units', default="Centimeters")
     image_size : bpy.props.IntProperty(name='Image Size')
     
     # TODO checkbox for auto rotate on sort
