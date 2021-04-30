@@ -535,8 +535,8 @@ class UI_PT_UVColorID(Panel):
     # main settings
     # Map size, padding, resize, uv channels
     # Map selection (Checker, gravity, etc.)
-    # Texel density
     # Color ID stuff?
+    # Explode mesh
 
 bpy.types.Scene.snap_object = bpy.props.StringProperty()
 # TODO rename this to betools_settings
