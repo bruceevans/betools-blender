@@ -3,13 +3,14 @@
 # brucein3d@gmail.com                                           #
 #################################################################
 
-
+import os
 import bpy
 import bmesh
 import math
 from bpy.props import EnumProperty, FloatVectorProperty, FloatProperty
 from mathutils import Vector
 from ..utils import _uvs
+from ..utils import _constants
 
 
 _UNITS = {
@@ -98,7 +99,28 @@ class BETOOLS_OT_CubeHelper(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
+
+        file_path = os.path.join(_constants.MDL_FOLDER, 'unit-cube.blend')
+        inner_path = 'Object'
+        object_name = 'unit-cube'
+
+        if not os.path.isfile(file_path):
+            return {'FINISHED'}
+
+        bpy.ops.wm.append(
+            filepath=os.path.join(file_path, inner_path, object_name),
+            directory=os.path.join(file_path, inner_path),
+            filename=object_name
+        )
+
         return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        # TODO if there's a selection
+        if bpy.context.object.mode != 'OBJECT':
+            return False
+        return True
 
 
 class BETOOLS_OT_ManHelper(bpy.types.Operator):
