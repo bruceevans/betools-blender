@@ -407,9 +407,6 @@ class UI_PT_UVTransform(Panel):
         row.prop(uv_transform, "angle")
         row.operator('uv.be_rotate', text='Rotate')
         # col = layout.column(align=True)
-        row = col.row(align=True)
-        row.operator('uv.be_rotate2', text='-90').angle=-90
-        row.operator('uv.be_rotate2', text='90').angle=90
 
     
 class UI_PT_UVLayout(Panel):
@@ -448,6 +445,9 @@ class UI_PT_UVLayout(Panel):
         row.operator('uv.be_snap_island', text="↘").direction = 'RIGHTBOTTOM'
 
         col = box.column(align=True)
+        row = col.row(align=True)
+        row.operator('uv.be_rotate2', text='-90').angle=-90
+        row.operator('uv.be_rotate2', text='90').angle=90
         row = col.row(align=True)
         row.operator('uv.be_flip', text="Flip H").direction = 'HORIZONTAL'
         row.operator('uv.be_flip', text="Flip V").direction = 'VERTICAL'
@@ -508,8 +508,13 @@ class UI_PT_UVTexel(Panel):
         row.operator("uv.be_get_texel", text="Get")
         row.operator("uv.be_set_texel", text="Set")
 
-        col = box.column(align=True, heading='Helpers')
+        col = box.column(align=True)
         row = col.row()
+        row.label(text="Texel Helpers")
+        row = col.row(align=True)
+        row.operator("uv.be_cube_helper", text="Cube")
+        row.operator("uv.be_man_helper", text="Mannequin")
+
         # Cube helper with size drop down
         # Mannequin helper
 

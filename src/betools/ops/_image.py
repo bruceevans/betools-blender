@@ -91,9 +91,24 @@ class BETOOLS_OT_SetTexel(bpy.types.Operator):
         return True
 
 
-# TODO
-# Cube Helper - .5m 1m 2m options
-# 6' mannequin helper
+class BETOOLS_OT_CubeHelper(bpy.types.Operator):
+    bl_idname = "uv.be_cube_helper"
+    bl_label = "Cube Helper"
+    bl_description = "Create a unit cube to visualize texel density"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        return {'FINISHED'}
+
+
+class BETOOLS_OT_ManHelper(bpy.types.Operator):
+    bl_idname = "uv.be_man_helper"
+    bl_label = "Cube Helper"
+    bl_description = "Create a 6'/1.83m mannequin to visualize texel density"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        return {'FINISHED'}
 
 
 def get_texel_density(op, context, uv_image, bm, uv_layer):
@@ -205,5 +220,12 @@ def get_island_area(bm, uv_layer, island):
             )
 
 
+
+# TODO
+# Cube Helper - .5m 1m 2m options
+# 6' mannequin helper
+
 bpy.utils.register_class(BETOOLS_OT_GetTexel)
 bpy.utils.register_class(BETOOLS_OT_SetTexel)
+bpy.utils.register_class(BETOOLS_OT_CubeHelper)
+bpy.utils.register_class(BETOOLS_OT_ManHelper)
