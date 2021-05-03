@@ -382,7 +382,7 @@ class UI_PT_UVTransform(Panel):
         uv_transform = context.scene.betools_settings
 
         col = layout.column(align=True)
-        col.label(text='Move')
+        col.label(text='Move', icon='ADD')
         row = col.row(align=True, heading="Move")
         col = layout.column(align=True)
         row = col.row(align=True)
