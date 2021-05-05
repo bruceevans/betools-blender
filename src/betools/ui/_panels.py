@@ -16,6 +16,7 @@ from .. ops import *
 from .. utils import _icon
 from .. utils import _constants
 from .. _settings import BETOOLSProperties
+from .. import _settings
 
 from bpy.props import StringProperty, FloatProperty, IntProperty, PointerProperty
 
@@ -225,7 +226,7 @@ class UI_PT_BEToolsPanel(Panel):
             box = layout.box()
             # row = layout.column().row(align=True)
             col = box.column(align=True)
-            col.operator("mesh.be_editpivot", text = "Edit Pivot", icon = "OBJECT_ORIGIN")
+            col.operator("mesh.be_editpivot", text = "Edit Pivot" if not _settings.edit_pivot_mode else "Set Pivot", icon = "OBJECT_ORIGIN")
             col.operator("mesh.be_center_pivot", text = "Center Pivot", icon = "OBJECT_ORIGIN")
             col.operator("mesh.be_pivot2cursor", text = "Pivot to Cursor", icon = "EMPTY_ARROWS")
             col.operator("view3d.snap_cursor_to_center", text = "Cursor to Origin")  # TODO ICON
@@ -254,7 +255,7 @@ class UI_PT_BEToolsPanel(Panel):
             row.prop_search(scene, "snap_object", bpy.data, "objects", text = "") # TODO icon
 
             row = col.row(align=True)
-            row.operator("mesh.be_snap_to_face", text = "Snap to Face") # TODO icon
+            row.operator("mesh.be_snap_to_face", text = "Snap Obj to Sel Face") # TODO icon
 
             mesh = bpy.context.object.data
 
@@ -264,13 +265,14 @@ class UI_PT_BEToolsPanel(Panel):
             col = box.column(align=False)
             col.use_property_decorate = False
 
-            row = col.row(align=True)
-            row.prop(mesh, "use_auto_smooth", text=" Auto Smooth")
-            row.active = mesh.use_auto_smooth and not mesh.has_custom_normals
+            if mesh:
+                row = col.row(align=True)
+                row.prop(mesh, "use_auto_smooth", text=" Auto Smooth")
+                row.active = mesh.use_auto_smooth and not mesh.has_custom_normals
 
-            row = col.row(align=True)
-            row.prop(mesh, "auto_smooth_angle", text="")
-            row.prop_decorator(mesh, "auto_smooth_angle")
+                row = col.row(align=True)
+                row.prop(mesh, "auto_smooth_angle", text="")
+                row.prop_decorator(mesh, "auto_smooth_angle")
 
             col = box.column(align=True)
             col.operator("object.shade_smooth", text = "Shade Smooth", icon = "SPHERECURVE")

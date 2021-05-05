@@ -5,6 +5,7 @@
 #################################################################
 
 import bpy
+from .. import _settings
 
 
 class CenterPivot(bpy.types.Operator):
@@ -20,6 +21,8 @@ class CenterPivot(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         if context.object is None:
+            return False
+        if _settings.edit_pivot_mode:
             return False
         return True
 
@@ -38,6 +41,8 @@ class Pivot2Cursor(bpy.types.Operator):
     def poll(cls, context):
         if context.object is None:
             return False
+        if _settings.edit_pivot_mode:
+            return False
         return True
 
 
@@ -54,6 +59,7 @@ class EditPivot(bpy.types.Operator):
         pivot = bpy.context.active_object
         pivot.name = obj.name + ".PivotHelper"
         pivot.location = obj.location
+        _settings.edit_pivot_mode = True
 
     def getPivot(self, context, obj):
         pivot = obj.name + ".PivotHelper"
@@ -82,6 +88,7 @@ class EditPivot(bpy.types.Operator):
         bpy.ops.object.delete()
         bpy.data.objects[obj.name].select_set(True)
         context.view_layer.objects.active = obj
+        _settings.edit_pivot_mode = False
         
     def execute(self, context):
         obj = bpy.context.active_object

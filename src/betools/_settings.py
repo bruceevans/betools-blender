@@ -4,6 +4,7 @@ import bpy
 import bmesh
 import operator
 
+edit_pivot_mode = False
 uv_selection_mode = ''
 uv_loops_selection = []
 uv_pivot_selection = ''
