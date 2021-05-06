@@ -367,26 +367,21 @@ class UI_PT_UVImage(Panel):
 
         col = box.column(align=True)
         row = col.row(align = True)
-        row.label(text="Map Size: ")
-        row.prop(context.scene.betools_settings, "map_size_dropdown", text="")
+        row.label(text="Map Size: ", icon="RADIOBUT_ON")
+        row.prop(context.scene.betools_settings, "map_size_dropdown", text="", icon="RADIOBUT_ON")
         row = col.row(align = True)
-        row.operator('uv.be_create_image', text='Blank Map')
-        row.operator('uv.be_create_image', text='Checker Map')
+        row.operator('uv.be_create_image', text='Blank Map', icon="RADIOBUT_ON")
+        row.operator('uv.be_create_image', text='Checker Map', icon="RADIOBUT_ON")
 
         row = col.row(align = True)
-        row.label(text="UV Channels")
+        row.label(text="UV Channels", icon="RADIOBUT_ON")
 
         row = col.row(align = True)
         group = row.row(align=True)
         group.prop(context.scene.betools_settings, "map_size_dropdown", text="")
         
         group = row.row(align=True)
-        r = group.column(align=True)
-        r.active = bpy.context.object.data.uv_layers.active_index > 0
         group.operator('uv.be_modify_uv_channel', text="", icon = 'ADD')
-
-        r = group.column(align=True)
-        r.active = bpy.context.object.data.uv_layers.active_index < (len(bpy.context.object.data.uv_layers)-1)
         group.operator('uv.be_modify_uv_channel', text="", icon = 'REMOVE')
 
 
@@ -410,16 +405,16 @@ class UI_PT_UVTransform(Panel):
         row = col.row(align=True)
         row.prop(uv_transform, "translate_u")
         row.prop(uv_transform, "translate_v")
-        row.operator('uv.be_translate', text='Move')
+        row.operator('uv.be_translate', text='', icon="RADIOBUT_ON")
 
         row = col.row(align=True)
         row.prop(uv_transform, "scale_u")
         row.prop(uv_transform, "scale_v")
-        row.operator('uv.be_scale', text='Scale')
+        row.operator('uv.be_scale', text='', icon="RADIOBUT_ON")
 
         row = col.row(align=True)
         row.prop(uv_transform, "angle")
-        row.operator('uv.be_rotate', text='Rotate')
+        row.operator('uv.be_rotate', text='', icon="RADIOBUT_ON")
 
     
 class UI_PT_UVLayout(Panel):
@@ -436,58 +431,49 @@ class UI_PT_UVLayout(Panel):
 
         layout = self.layout
         box = layout.box()
-        split = box.split()
-        col = split.column()
+        col = box.column(align=True)
+        
+        row = col.row(align=True)
+        row.operator('uv.be_flip', text="Flip H", icon="RADIOBUT_ON").direction = 'HORIZONTAL'
+        row.operator('uv.be_flip', text="Flip V", icon="RADIOBUT_ON").direction = 'VERTICAL'
+        row.separator()
+        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'LEFTTOP'
+        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'CENTERTOP'
+        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'RIGHTTOP'
 
-        col.operator('uv.be_orient_edge', text="Orient")
-        col.operator('uv.be_fit', text="Fit")
-        col.operator('uv.be_fill', text='Fill')
+        row = col.row(align=True)
+        row.operator('uv.be_rotate2', text='-90', icon="RADIOBUT_ON").angle=-90
+        row.operator('uv.be_rotate2', text='90', icon="RADIOBUT_ON").angle=90
+        row.separator()
+        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'LEFTCENTER'
+        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'CENTER'
+        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'RIGHTCENTER'
 
-        col = split.column()
         row = col.row(align=True)
-        row.operator('uv.be_snap_island', text="↖").direction = 'LEFTTOP'
-        row.operator('uv.be_snap_island', text="↑").direction = 'CENTERTOP'
-        row.operator('uv.be_snap_island', text="↗").direction = 'RIGHTTOP'
-        row = col.row(align=True)
-        row.operator('uv.be_snap_island', text="←").direction = 'LEFTCENTER'
-        row.operator('uv.be_snap_island', text=".").direction = 'CENTER'
-        row.operator('uv.be_snap_island', text="→").direction = 'RIGHTCENTER'
-        row = col.row(align=True)
-        row.operator('uv.be_snap_island', text="↙").direction = 'LEFTBOTTOM'
-        row.operator('uv.be_snap_island', text="↓").direction = 'CENTERBOTTOM'
-        row.operator('uv.be_snap_island', text="↘").direction = 'RIGHTBOTTOM'
+        row.operator('uv.be_fit', text="Fit", icon="RADIOBUT_ON")
+        row.operator('uv.be_fill', text='Fill', icon="RADIOBUT_ON")
+        row.separator()
+        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'LEFTBOTTOM'
+        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'CENTERBOTTOM'
+        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'RIGHTBOTTOM'
 
         col = box.column(align=True)
-        row = col.row(align=True)
-        row.operator('uv.be_rotate2', text='-90').angle=-90
-        row.operator('uv.be_rotate2', text='90').angle=90
-        row = col.row(align=True)
-        row.operator('uv.be_flip', text="Flip H").direction = 'HORIZONTAL'
-        row.operator('uv.be_flip', text="Flip V").direction = 'VERTICAL'
+        col.operator('uv.be_orient_edge', text="Orient to Edge", icon="RADIOBUT_ON")
+        col.operator("uv.be_stack", text='Stack Islands', icon="RADIOBUT_ON")
+        col.operator("uv.be_uv_squares_by_shape", text="Rectify", icon="RADIOBUT_ON")
+        col.operator("uv.be_uv_squares", text = "Squarify", icon="RADIOBUT_ON")
+        col.operator("uv.be_uv_face_rip", text = "Rip Faces", icon="RADIOBUT_ON")
 
-        col = box.column(align=True)
-        row = col.row(align=True)
-        row.operator("uv.be_stack")
-
-        col = box.column(align=True)
-        row = col.row(align=True)
-        row.operator("uv.be_uv_face_rip", text = "Rip Faces")
-
-        col = box.column(align=True)
-        row = col.row(align=True)
-        row.operator("uv.be_uv_squares_by_shape", text="Rectify")
-        row.operator("uv.be_uv_squares", text = "Squarify")
-
-        box = layout.box()
         col = box.column(align=True)
         row = col.row(align=True)
         row.label(text="Padding: ")
         row.prop(uv_transform, "sort_padding", text = "")
         row = col.row(align=True)
-        row.operator("uv.be_island_sort", text="Sort V").axis = 'VERTICAL'
-        row.operator("uv.be_island_sort", text="Sort H").axis = 'HORIZONTAL'
+        row.operator("uv.be_island_sort", text="Sort H", icon="RADIOBUT_ON").axis = 'HORIZONTAL'
+        row.operator("uv.be_island_sort", text="Sort V", icon="RADIOBUT_ON").axis = 'VERTICAL'
+
         row = col.row(align=True)
-        row.operator("uv.pack_islands", text = "Pack Islands").margin = uv_transform.pack_padding
+        row.operator("uv.pack_islands", text = "Pack Islands", icon="RADIOBUT_ON").margin = uv_transform.pack_padding
 
 
 class UI_PT_UVTexel(Panel):
@@ -509,18 +495,18 @@ class UI_PT_UVTexel(Panel):
         box = layout.box()
         col = box.column(align=True)
         row = col.row(align=True)
-        row.label(text="Texel Density: ")
+        row.label(text="Texel Density: ", icon="RADIOBUT_ON")
         row.prop(uv_props, "texel_density", text = "")
         row = col.row(align=True)
-        row.operator("uv.be_get_texel", text="Get")
-        row.operator("uv.be_set_texel", text="Set")
+        row.operator("uv.be_get_texel", text="Get", icon="RADIOBUT_ON")
+        row.operator("uv.be_set_texel", text="Set", icon="RADIOBUT_ON")
 
         col = box.column(align=True)
         row = col.row()
-        row.label(text="Texel Helpers")
+        row.label(text="Texel Helpers", icon="RADIOBUT_ON")
         row = col.row(align=True)
-        row.operator("uv.be_cube_helper", text="Cube")
-        row.operator("uv.be_man_helper", text="Mannequin")
+        row.operator("uv.be_cube_helper", text="Cube", icon="RADIOBUT_ON")
+        row.operator("uv.be_man_helper", text="Mannequin", icon="RADIOBUT_ON")
 
         # Cube helper with size drop down
         # Mannequin helper

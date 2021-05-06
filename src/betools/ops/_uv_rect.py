@@ -754,8 +754,8 @@ def RipUvFaces(context, operator):
             for l in f.loops:
                 luv = l[uv_layer]
                 luv.select = False
-
-        target.select = True
+        if target:
+            target.select = True
         return SuccessFinished(me, startTime)
 
     DeselectAll()

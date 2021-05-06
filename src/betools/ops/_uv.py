@@ -39,6 +39,25 @@ class BETOOLS_OT_UVCameraProject(bpy.types.Operator):
         bpy.ops.uv.project_from_view(camera_bounds=False, correct_aspect=True, scale_to_bounds=False)
         return {'FINISHED'}
 
+    @classmethod
+    def poll(cls, context):
+        if not bpy.context.active_object:
+            return False
+        #Only in Edit mode
+        if bpy.context.active_object.mode != 'EDIT':
+            return False
+        #Requires UV map
+        if not bpy.context.object.data.uv_layers:
+            return False
+        # Selective sync off
+        if bpy.context.scene.tool_settings.use_uv_select_sync:
+            return False
+        #Only in UV editor mode
+        if bpy.context.area.type != 'IMAGE_EDITOR':
+            return False
+
+        return True
+
 
 class BETOOLS_OT_UVTranslate(bpy.types.Operator):
     """ Uses menu properties
@@ -69,6 +88,25 @@ class BETOOLS_OT_UVTranslate(bpy.types.Operator):
             _uvs.translate_island(me, island, uv_layer, deltaU, deltaV)
         return {'FINISHED'}
 
+    @classmethod
+    def poll(cls, context):
+        if not bpy.context.active_object:
+            return False
+        #Only in Edit mode
+        if bpy.context.active_object.mode != 'EDIT':
+            return False
+        #Requires UV map
+        if not bpy.context.object.data.uv_layers:
+            return False
+        # Selective sync off
+        if bpy.context.scene.tool_settings.use_uv_select_sync:
+            return False
+        #Only in UV editor mode
+        if bpy.context.area.type != 'IMAGE_EDITOR':
+            return False
+
+        return True
+
 
 class BETOOLS_OT_UVScale(bpy.types.Operator):
     bl_idname = "uv.be_scale"
@@ -95,6 +133,25 @@ class BETOOLS_OT_UVScale(bpy.types.Operator):
         for island in islands:
             _uvs.scale_island(me, island, uv_layer, scaleU, scaleV)
         return {'FINISHED'}
+    
+    @classmethod
+    def poll(cls, context):
+        if not bpy.context.active_object:
+            return False
+        #Only in Edit mode
+        if bpy.context.active_object.mode != 'EDIT':
+            return False
+        #Requires UV map
+        if not bpy.context.object.data.uv_layers:
+            return False
+        # Selective sync off
+        if bpy.context.scene.tool_settings.use_uv_select_sync:
+            return False
+        #Only in UV editor mode
+        if bpy.context.area.type != 'IMAGE_EDITOR':
+            return False
+
+        return True
 
 
 class BETOOLS_OT_UVRotate(bpy.types.Operator):
@@ -124,6 +181,25 @@ class BETOOLS_OT_UVRotate(bpy.types.Operator):
 
         return {'FINISHED'}
 
+    @classmethod
+    def poll(cls, context):
+        if not bpy.context.active_object:
+            return False
+        #Only in Edit mode
+        if bpy.context.active_object.mode != 'EDIT':
+            return False
+        #Requires UV map
+        if not bpy.context.object.data.uv_layers:
+            return False
+        # Selective sync off
+        if bpy.context.scene.tool_settings.use_uv_select_sync:
+            return False
+        #Only in UV editor mode
+        if bpy.context.area.type != 'IMAGE_EDITOR':
+            return False
+
+        return True
+
 
 class BETOOLS_OT_UVRotate2(bpy.types.Operator):
     bl_idname = "uv.be_rotate2"
@@ -148,8 +224,26 @@ class BETOOLS_OT_UVRotate2(bpy.types.Operator):
             return {'FINISHED'}
 
         _uvs.rotate_island(me, islands, uv_layer, self.angle)
-
         return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        if not bpy.context.active_object:
+            return False
+        #Only in Edit mode
+        if bpy.context.active_object.mode != 'EDIT':
+            return False
+        #Requires UV map
+        if not bpy.context.object.data.uv_layers:
+            return False
+        # Selective sync off
+        if bpy.context.scene.tool_settings.use_uv_select_sync:
+            return False
+        #Only in UV editor mode
+        if bpy.context.area.type != 'IMAGE_EDITOR':
+            return False
+
+        return True
 
 
 class BETOOLS_OT_Fill(bpy.types.Operator):
@@ -184,8 +278,26 @@ class BETOOLS_OT_Fill(bpy.types.Operator):
 
         for island in islands:
             _uvs.translate_island(me, island, uv_layer, -deltaU, -delatV)
-
         return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        if not bpy.context.active_object:
+            return False
+        #Only in Edit mode
+        if bpy.context.active_object.mode != 'EDIT':
+            return False
+        #Requires UV map
+        if not bpy.context.object.data.uv_layers:
+            return False
+        # Selective sync off
+        if bpy.context.scene.tool_settings.use_uv_select_sync:
+            return False
+        #Only in UV editor mode
+        if bpy.context.area.type != 'IMAGE_EDITOR':
+            return False
+
+        return True
 
 
 class BETOOLS_OT_Fit(bpy.types.Operator):
@@ -219,8 +331,26 @@ class BETOOLS_OT_Fit(bpy.types.Operator):
 
         for island in islands:
             _uvs.translate_island(me, island, uv_layer, -deltaU, -delatV)
-
         return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        if not bpy.context.active_object:
+            return False
+        #Only in Edit mode
+        if bpy.context.active_object.mode != 'EDIT':
+            return False
+        #Requires UV map
+        if not bpy.context.object.data.uv_layers:
+            return False
+        # Selective sync off
+        if bpy.context.scene.tool_settings.use_uv_select_sync:
+            return False
+        #Only in UV editor mode
+        if bpy.context.area.type != 'IMAGE_EDITOR':
+            return False
+
+        return True
 
 
 class BETOOLS_OT_OrientEdge(bpy.types.Operator):
@@ -239,6 +369,10 @@ class BETOOLS_OT_OrientEdge(bpy.types.Operator):
         angle_count = 0
 
         uv_edges = _uvs.get_selected_uv_edges(bm, uv_layer)
+        if not uv_edges:
+            self.report({'INFO'}, 'Select a UV edge')
+            return {'FINISHED'}
+
         for edge in uv_edges:
             angle = math.degrees(_uvs.get_uv_edge_angle(edge[0].uv, edge[1].uv))
             angle_sum += angle
@@ -246,9 +380,29 @@ class BETOOLS_OT_OrientEdge(bpy.types.Operator):
         average_angle = angle_sum / angle_count
         _uvs.store_selection()
         islands = _uvs.get_selected_islands(bm, uv_layer)
+        
         _uvs.rotate_island(me, islands, uv_layer, average_angle)
         _uvs.restore_selection(bm, uv_layer)
         return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        if not bpy.context.active_object:
+            return False
+        #Only in Edit mode
+        if bpy.context.active_object.mode != 'EDIT':
+            return False
+        #Requires UV map
+        if not bpy.context.object.data.uv_layers:
+            return False
+        # Selective sync off
+        if bpy.context.scene.tool_settings.use_uv_select_sync:
+            return False
+        #Only in UV editor mode
+        if bpy.context.area.type != 'IMAGE_EDITOR':
+            return False
+
+        return True
 
 
 class BETOOLS_OT_UVProject(bpy.types.Operator):
@@ -286,10 +440,21 @@ class BETOOLS_OT_UVProject(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        if context.object is None:
+        if not bpy.context.active_object:
             return False
-        if not bpy.context.object.mode == 'EDIT':
+        #Only in Edit mode
+        if bpy.context.active_object.mode != 'EDIT':
             return False
+        #Requires UV map
+        if not bpy.context.object.data.uv_layers:
+            return False
+        # Selective sync off
+        if bpy.context.scene.tool_settings.use_uv_select_sync:
+            return False
+        #Only in UV editor mode
+        if bpy.context.area.type != 'IMAGE_EDITOR':
+            return False
+
         return True
 
 
@@ -320,7 +485,7 @@ class BETOOLS_OT_IslandSnap(bpy.types.Operator):
         #Only in UV editor mode
         if bpy.context.area.type != 'IMAGE_EDITOR':
             return False
-        # island selection TODO
+
         return True
 
     def execute(self, context):
@@ -379,6 +544,25 @@ class BETOOLS_OT_IslandStack(bpy.types.Operator):
 
         return {'FINISHED'}
 
+    @classmethod
+    def poll(cls, context):
+        if not bpy.context.active_object:
+            return False
+        #Only in Edit mode
+        if bpy.context.active_object.mode != 'EDIT':
+            return False
+        #Requires UV map
+        if not bpy.context.object.data.uv_layers:
+            return False
+        # Selective sync off
+        if bpy.context.scene.tool_settings.use_uv_select_sync:
+            return False
+        #Only in UV editor mode
+        if bpy.context.area.type != 'IMAGE_EDITOR':
+            return False
+
+        return True
+
 
 class BETOOLS_OT_IslandSort(bpy.types.Operator):
     bl_idname = "uv.be_island_sort"
@@ -409,6 +593,9 @@ class BETOOLS_OT_IslandSort(bpy.types.Operator):
         uv_layer = bm.loops.layers.uv.verify()
 
         islands = _uvs.get_selected_islands(bm, uv_layer)
+        if not islands:
+            self.report({'INFO'}, 'Select UV islands')
+            return {'FINISHED'}
 
         padding = context.scene.betools_settings.sort_padding
         translation = padding
@@ -462,6 +649,25 @@ class BETOOLS_OT_IslandSort(bpy.types.Operator):
 
         return {'FINISHED'}
 
+    @classmethod
+    def poll(cls, context):
+        if not bpy.context.active_object:
+            return False
+        #Only in Edit mode
+        if bpy.context.active_object.mode != 'EDIT':
+            return False
+        #Requires UV map
+        if not bpy.context.object.data.uv_layers:
+            return False
+        # Selective sync off
+        if bpy.context.scene.tool_settings.use_uv_select_sync:
+            return False
+        #Only in UV editor mode
+        if bpy.context.area.type != 'IMAGE_EDITOR':
+            return False
+
+        return True
+
 
 class BETOOLS_OT_FlipIsland(bpy.types.Operator):
     bl_idname = "uv.be_flip"
@@ -487,12 +693,11 @@ class BETOOLS_OT_FlipIsland(bpy.types.Operator):
 
         islands = _uvs.get_selected_islands(bm, uv_layer)
 
-        scale = Vector(( -1.0, 1.0 )) if self.direction == "HORIZONTAL" else Vector(( 1.0, -1.0 ))
-
         if not islands:
             self.report({'INFO'}, 'Select UV islands')
             return {'FINISHED'}
 
+        scale = Vector(( -1.0, 1.0 )) if self.direction == "HORIZONTAL" else Vector(( 1.0, -1.0 ))
         for island in islands:
             bbox = _uvs.get_island_bounding_box(island, uv_layer)
             delta = Vector(( -bbox.get('center').x, -bbox.get('center').y ))
@@ -501,6 +706,25 @@ class BETOOLS_OT_FlipIsland(bpy.types.Operator):
             _uvs.translate_island(me, island, uv_layer, -delta.x, -delta.y)
 
         return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        if not bpy.context.active_object:
+            return False
+        #Only in Edit mode
+        if bpy.context.active_object.mode != 'EDIT':
+            return False
+        #Requires UV map
+        if not bpy.context.object.data.uv_layers:
+            return False
+        # Selective sync off
+        if bpy.context.scene.tool_settings.use_uv_select_sync:
+            return False
+        #Only in UV editor mode
+        if bpy.context.area.type != 'IMAGE_EDITOR':
+            return False
+
+        return True
 
 
 bpy.utils.register_class(BETOOLS_OT_IslandSnap)
