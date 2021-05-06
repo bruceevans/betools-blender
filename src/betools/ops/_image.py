@@ -54,6 +54,9 @@ class BETOOLS_OT_GetTexel(bpy.types.Operator):
             return {'FINISHED'}
 
         texel_density = get_texel_density(self, context, current_texture, bm, uv_layer)
+        if not texel_density:
+            return {'FINISHED'}
+
         context.scene.betools_settings.texel_density = texel_density
         return {'FINISHED'}
 
@@ -77,8 +80,10 @@ class BETOOLS_OT_SetTexel(bpy.types.Operator):
 
         current_texture = _uvs.get_current_image()
         texel_density = context.scene.betools_settings.texel_density
+        if not texel_density:
+            return {'FINISHED'}
+            
         set_texel_density(self, context, current_texture, bm, me, uv_layer, texel_density)
-
         return {'FINISHED'}
 
     @classmethod
@@ -127,6 +132,26 @@ class BETOOLS_OT_ManHelper(bpy.types.Operator):
     bl_idname = "uv.be_man_helper"
     bl_label = "Cube Helper"
     bl_description = "Create a 6'/1.83m mannequin to visualize texel density"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        return {'FINISHED'}
+
+    
+class BETOOLS_OT_CreateImage(bpy.types.Operator):
+    bl_idname = "uv.be_create_image"
+    bl_label = "Create Image"
+    bl_description = "Create an image for the UV editor"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        return {'FINISHED'}
+
+    
+class BETOOLS_OT_ModifyUVChannel(bpy.types.Operator):
+    bl_idname = "uv.be_modify_uv_channel"
+    bl_label = "Add or remove a UV Channel"
+    bl_description = "Create an image for the UV editor"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
@@ -251,3 +276,5 @@ bpy.utils.register_class(BETOOLS_OT_GetTexel)
 bpy.utils.register_class(BETOOLS_OT_SetTexel)
 bpy.utils.register_class(BETOOLS_OT_CubeHelper)
 bpy.utils.register_class(BETOOLS_OT_ManHelper)
+bpy.utils.register_class(BETOOLS_OT_CreateImage)
+bpy.utils.register_class(BETOOLS_OT_ModifyUVChannel)

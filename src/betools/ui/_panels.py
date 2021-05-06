@@ -226,16 +226,17 @@ class UI_PT_BEToolsPanel(Panel):
             box = layout.box()
             # row = layout.column().row(align=True)
             col = box.column(align=True)
-            col.operator("mesh.be_editpivot", text = "Edit Pivot" if not _settings.edit_pivot_mode else "Set Pivot", icon = "OBJECT_ORIGIN")
+            row=col.row(align=True)
+            row.alert = True if _settings.edit_pivot_mode else False
+            row.operator("mesh.be_editpivot", text = "Edit Pivot" if not _settings.edit_pivot_mode else "Set Pivot", icon = "OBJECT_ORIGIN")
             col.operator("mesh.be_center_pivot", text = "Center Pivot", icon = "OBJECT_ORIGIN")
             col.operator("mesh.be_pivot2cursor", text = "Pivot to Cursor", icon = "EMPTY_ARROWS")
             col.operator("view3d.snap_cursor_to_center", text = "Cursor to Origin")  # TODO ICON
 
             layout.label(text="Mesh Tools")
+
             box = layout.box()
-
             col = box.column(align=True)
-
             row = col.row(align=True)
             row.operator("mesh.smart_mirror", text = "X", icon_value = _icon.getIcon("MIRROR_X")).direction='X'
             row.operator("mesh.smart_mirror", text = "Y", icon_value = _icon.getIcon("MIRROR_Y")).direction='Y'
@@ -343,9 +344,7 @@ class UI_PT_ExportPanel(Panel):
         col.operator('mesh.be_export_selected_fbx', text = 'Export Sel as FBX')
         col.operator('mesh.be_export_scene_fbx', text = 'Export FBX')
         # TODO simple obj export to temp area
-        
 
-# TODO Clean up panel
 
 ###############################################
 # UV Panels
@@ -364,8 +363,31 @@ class UI_PT_UVImage(Panel):
     def draw(self, context):
         # Image creation and generation
         layout = self.layout
-        col = layout.column(align=True)
-        row = col.row(align=True)
+        box = layout.box()
+
+        col = box.column(align=True)
+        row = col.row(align = True)
+        row.label(text="Map Size: ")
+        row.prop(context.scene.betools_settings, "map_size_dropdown", text="")
+        row = col.row(align = True)
+        row.operator('uv.be_create_image', text='Blank Map')
+        row.operator('uv.be_create_image', text='Checker Map')
+
+        row = col.row(align = True)
+        row.label(text="UV Channels")
+
+        row = col.row(align = True)
+        group = row.row(align=True)
+        group.prop(context.scene.betools_settings, "map_size_dropdown", text="")
+        
+        group = row.row(align=True)
+        r = group.column(align=True)
+        r.active = bpy.context.object.data.uv_layers.active_index > 0
+        group.operator('uv.be_modify_uv_channel', text="", icon = 'ADD')
+
+        r = group.column(align=True)
+        r.active = bpy.context.object.data.uv_layers.active_index < (len(bpy.context.object.data.uv_layers)-1)
+        group.operator('uv.be_modify_uv_channel', text="", icon = 'REMOVE')
 
 
 class UI_PT_UVTransform(Panel):
@@ -378,37 +400,26 @@ class UI_PT_UVTransform(Panel):
     bl_region_type = "UI"
 
     def draw(self, context):
+
         layout = self.layout
-        col = layout.column(align=True)
+        box = layout.box()
 
         uv_transform = context.scene.betools_settings
 
-        col = layout.column(align=True)
-        col.label(text='Move', icon='ADD')
-        row = col.row(align=True, heading="Move")
-        col = layout.column(align=True)
+        col = box.column(align=True)
         row = col.row(align=True)
         row.prop(uv_transform, "translate_u")
         row.prop(uv_transform, "translate_v")
         row.operator('uv.be_translate', text='Move')
 
-        col = layout.column(align=True)
-        col.label(text="Scale")
-        row = col.row(align=True, heading="Scale")
-        col = layout.column(align=True)
         row = col.row(align=True)
         row.prop(uv_transform, "scale_u")
         row.prop(uv_transform, "scale_v")
         row.operator('uv.be_scale', text='Scale')
 
-        col = layout.column(align=True)
-        col.label(text="Rotate")
-        row = col.row(align=True, heading="Rotate")
-        col = layout.column(align=True)
         row = col.row(align=True)
         row.prop(uv_transform, "angle")
         row.operator('uv.be_rotate', text='Rotate')
-        # col = layout.column(align=True)
 
     
 class UI_PT_UVLayout(Panel):
@@ -475,12 +486,6 @@ class UI_PT_UVLayout(Panel):
         row = col.row(align=True)
         row.operator("uv.be_island_sort", text="Sort V").axis = 'VERTICAL'
         row.operator("uv.be_island_sort", text="Sort H").axis = 'HORIZONTAL'
-
-        box = layout.box()
-        col = box.column(align=True)
-        row = col.row(align=True)
-        row.label(text="Padding: ")
-        row.prop(uv_transform, "pack_padding", text="")
         row = col.row(align=True)
         row.operator("uv.pack_islands", text = "Pack Islands").margin = uv_transform.pack_padding
 

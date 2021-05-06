@@ -4,6 +4,8 @@ import bpy
 import bmesh
 import operator
 
+from . utils import _constants
+
 edit_pivot_mode = False
 uv_selection_mode = ''
 uv_loops_selection = []
@@ -37,10 +39,21 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
     current_texel_density : bpy.props.FloatProperty(name='Texel Density', default=256.0)
     texel_density : bpy.props.FloatProperty(name='Texel Density', default=256.0)
     
-    # TODO Enum prop?
     texel_density_units : bpy.props.StringProperty(name='Texel Density Units', default="Centimeters")
     image_size : bpy.props.IntProperty(name='Image Size')
+
+    map_size_dropdown : bpy.props.EnumProperty(
+        items = _constants.MAP_SIZES,
+		name = "Texture Map Size",
+        default = '1024'
+	)
+
+    uv_channel_dropdown : bpy.props.EnumProperty(
+        items = _constants.MAP_SIZES,
+		name = "Texture Map Size",
+        default = '1024'
+	)
     
-    # TODO checkbox for auto rotate on sort
+    # TODO checkbox pref for auto rotate on sort
 
 bpy.utils.register_class(BETOOLSProperties)
