@@ -503,13 +503,11 @@ class UI_PT_UVTexel(Panel):
 
         col = box.column(align=True)
         row = col.row()
-        row.label(text="Texel Helpers", icon="RADIOBUT_ON")
+        row.label(text="Texel Cubes", icon="RADIOBUT_ON")
         row = col.row(align=True)
-        row.operator("uv.be_cube_helper", text="Cube", icon="RADIOBUT_ON")
-        row.operator("uv.be_man_helper", text="Mannequin", icon="RADIOBUT_ON")
-
-        # Cube helper with size drop down
-        # Mannequin helper
+        row.operator("uv.be_cube_helper", text="1m", icon="RADIOBUT_ON")
+        row.operator("uv.be_cube_helper", text="2m", icon="RADIOBUT_ON") # TODO
+        row.operator("uv.be_cube_helper", text="4m", icon="RADIOBUT_ON") # TODO
 
 
 class UI_PT_UVColorID(Panel):
