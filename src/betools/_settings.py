@@ -18,6 +18,7 @@ face_selection = []      # indices
 
 game_engine = ''        # Unreal or Unity
 
+uv_channels = []
 
 class BETOOLSProperties(bpy.types.PropertyGroup):
 
@@ -49,9 +50,8 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
 	)
 
     uv_channel_dropdown : bpy.props.EnumProperty(
-        items = _constants.MAP_SIZES,
-		name = "Texture Map Size",
-        default = '1024'
+        items = uv_channels,
+		name = "UV Channels"
 	)
     
     # TODO checkbox pref for auto rotate on sort

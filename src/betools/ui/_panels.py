@@ -350,6 +350,7 @@ class UI_PT_ExportPanel(Panel):
 # UV Panels
 ###############################################
 
+import bmesh
 
 class UI_PT_UVImage(Panel):
     """ Main panel for the UV image editor
@@ -367,19 +368,26 @@ class UI_PT_UVImage(Panel):
 
         col = box.column(align=True)
         row = col.row(align = True)
-        row.label(text="Map Size: ", icon="RADIOBUT_ON")
+        row.label(text="Map Size: ")
         row.prop(context.scene.betools_settings, "map_size_dropdown", text="", icon="RADIOBUT_ON")
         row = col.row(align = True)
-        row.operator('uv.be_create_image', text='Blank Map', icon="RADIOBUT_ON")
-        row.operator('uv.be_create_image', text='Checker Map', icon="RADIOBUT_ON")
+        row.operator('uv.be_create_image', text='Create Image', icon="RADIOBUT_ON")
 
+        col = box.column(align=True)
         row = col.row(align = True)
-        row.label(text="UV Channels", icon="RADIOBUT_ON")
+        row.label(text="Checker Map: ")
+        row.prop(context.scene.betools_settings, "map_size_dropdown", text="")
+        row = col.row(align = True)
+        row.operator('uv.be_create_image', text='Assign Map', icon="RADIOBUT_ON")
 
+        col = box.column(align=True)
+        row = col.row(align = True)
+        row.label(text="UV Channels")
         row = col.row(align = True)
         group = row.row(align=True)
-        group.prop(context.scene.betools_settings, "map_size_dropdown", text="")
-        
+
+        # _settings.uv_channels = TODO
+        group.prop(context.scene.betools_settings, "uv_channel_dropdown", text="")
         group = row.row(align=True)
         group.operator('uv.be_modify_uv_channel', text="", icon = 'ADD')
         group.operator('uv.be_modify_uv_channel', text="", icon = 'REMOVE')
