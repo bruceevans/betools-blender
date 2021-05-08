@@ -9,6 +9,7 @@ import math
 from bpy.props import EnumProperty, FloatVectorProperty, FloatProperty
 from mathutils import Vector
 from ..utils import _uvs
+from .. import _settings
 
 
 _SNAP_POINTS = {
@@ -672,7 +673,7 @@ class BETOOLS_OT_IslandSort(bpy.types.Operator):
         #Only in UV editor mode
         if bpy.context.area.type != 'IMAGE_EDITOR':
             return False
-
+            
         return True
 
 
@@ -734,6 +735,65 @@ class BETOOLS_OT_FlipIsland(bpy.types.Operator):
         return True
 
 
+class BETOOLS_OT_AddUVMap(bpy.types.Operator):
+    bl_idname = "uv.be_add_uv_map"
+    bl_label = "Sort Islands"
+    bl_description = "Sort islands vertically or horizontally"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        bpy.ops.mesh.uv_texture_add()
+        maps = _settings.get_uv_maps(self, context)
+        _settings.set_uv_map_dropdown(self, context, len(maps)-1)
+        return({'FINISHED'})
+
+
+class BETOOLS_OT_RemUVMap(bpy.types.Operator):
+    bl_idname = "uv.be_remove_uv_map"
+    bl_label = "Sort Islands"
+    bl_description = "Sort islands vertically or horizontally"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        bpy.ops.mesh.uv_texture_remove()
+        maps = _settings.get_uv_maps(self, context)
+        _settings.set_uv_map_dropdown(self, context, len(maps)-1)
+        return({'FINISHED'})
+
+
+class BETOOLS_OT_ModifyUVChannel(bpy.types.Operator):
+    bl_idname = "uv.be_modify_uv_channel"
+    bl_label = "Edit Mode"
+    bl_description = "Toggle to UV Map rename mode"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        _settings.uv_map_rename_mode = True
+        return {'FINISHED'}
+
+class BETOOLS_OT_RenameUVMap(bpy.types.Operator):
+    bl_idname = "uv.be_uv_rename"
+    bl_label = "Rename UV Map"
+    bl_description = "Rename UV Map to rename property"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        # TODO rename
+        # Check if name already exists
+        # bpy.context.object.data.uv_layers[index]
+        for layer in bpy.context.object.data.uv_layers:
+            if layer.name == context.scene.betools_settings.uv_map_new_name:
+                self.report({'ERROR_INVALID_INPUT'}, "Name already exists!")
+                return {'FINISHED'}
+
+        index = int(context.scene.betools_settings.uv_maps)
+        bpy.context.object.data.uv_layers[index].name = context.scene.betools_settings.uv_map_new_name
+        context.scene.betools_settings.uv_map_new_name = "New UV Map"
+
+        _settings.uv_map_rename_mode = False
+        return {'FINISHED'}
+
+
 bpy.utils.register_class(BETOOLS_OT_IslandSnap)
 bpy.utils.register_class(BETOOLS_OT_UVCameraProject)
 bpy.utils.register_class(BETOOLS_OT_UVTranslate)
@@ -747,3 +807,7 @@ bpy.utils.register_class(BETOOLS_OT_UVProject)
 bpy.utils.register_class(BETOOLS_OT_IslandStack)
 bpy.utils.register_class(BETOOLS_OT_IslandSort)
 bpy.utils.register_class(BETOOLS_OT_FlipIsland)
+bpy.utils.register_class(BETOOLS_OT_AddUVMap)
+bpy.utils.register_class(BETOOLS_OT_RemUVMap)
+bpy.utils.register_class(BETOOLS_OT_ModifyUVChannel)
+bpy.utils.register_class(BETOOLS_OT_RenameUVMap)

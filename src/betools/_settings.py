@@ -18,20 +18,28 @@ face_selection = []      # indices
 
 game_engine = ''        # Unreal or Unity or Source?
 
-active_uv_channel = None
+uv_map_rename_mode = False
 
 id_colors = []
 
+def set_uv_map_dropdown(self, context, index):
+    if bpy.context.active_object != None:
+        if bpy.context.active_object.type == 'MESH':
+            if bpy.context.object.data.uv_layers:
+                bpy.context.object.data.uv_layers[index].active_render = True
+                get_uv_maps(self, context)
+                bpy.context.scene.betools_settings.uv_maps = str(index)
+
 def on_uv_map_dropdown(self, context):
+    print("UV MAP DROPDOWN")
     if bpy.context.active_object != None:
         if bpy.context.active_object.type == 'MESH':
             if bpy.context.object.data.uv_layers:
                 # Change Mesh UV Channel
-                index = int(bpy.context.scene.betools_settings.uv_map_dropdown)
+                index = int(bpy.context.scene.betools_settings.uv_maps)
                 if index < len(bpy.context.object.data.uv_layers):
                     bpy.context.object.data.uv_layers.active_index = index
                     bpy.context.object.data.uv_layers[index].active_render = True
-                    active_uv_channel = bpy.context.object.data.uv_layers[index]
 
 def get_uv_maps(self, context):
     if bpy.context.active_object == None:
@@ -84,11 +92,17 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
         default = 'CHECKER'
 	)
 
-    uv_map_dropdown : bpy.props.EnumProperty(
+    # TODO uv map index selection
+    # bpy.context.object.data.active_index = 1
+
+    # uv_map_dropdown
+    uv_maps : bpy.props.EnumProperty(
         items = get_uv_maps,
 		name = "UV Maps",
         update = on_uv_map_dropdown
 	)
+
+    uv_map_new_name : bpy.props.StringProperty(name='Rename UV Map', default = 'New UV Map')
 
     # TODO checkbox pref for auto rotate on sort
 

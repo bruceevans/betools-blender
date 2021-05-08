@@ -382,17 +382,21 @@ class UI_PT_UVImage(Panel):
 
         col = box.column(align=True)
         row = col.row(align = True)
-        row.label(text="UV Channels")
+        row.label(text="UV Maps")
         row = col.row(align = True)
         group = row.row(align=True)
 
         # _settings.uv_channels = TODO
-        group.prop(context.scene.betools_settings, "uv_map_dropdown", text="")
+        group.prop(context.scene.betools_settings, "uv_maps", text="")
         group = row.row(align=True)
         # TODO edit/rename
         group.operator('uv.be_modify_uv_channel', text="", icon = 'GREASEPENCIL')
-        group.operator('mesh.uv_texture_add', text="", icon = 'ADD') # TODO wrap with a refresh
-        group.operator('mesh.uv_texture_remove', text="", icon = 'REMOVE') # TODO
+        group.operator('uv.be_add_uv_map', text="", icon = 'ADD')
+        group.operator('uv.be_remove_uv_map', text="", icon = 'REMOVE')
+        if _settings.uv_map_rename_mode:
+            row = col.row(align = True)
+            row.prop(context.scene.betools_settings, "uv_map_new_name", text="")
+            row.operator('uv.be_uv_rename', text = "", icon='CHECKMARK')
 
 
 class UI_PT_UVTransform(Panel):

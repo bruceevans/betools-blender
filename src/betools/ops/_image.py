@@ -143,17 +143,6 @@ class BETOOLS_OT_CreateImage(bpy.types.Operator):
         return {'FINISHED'}
 
 
-# TODO Rename
-class BETOOLS_OT_ModifyUVChannel(bpy.types.Operator):
-    bl_idname = "uv.be_modify_uv_channel"
-    bl_label = "Add or remove a UV Channel"
-    bl_description = "Create an image for the UV editor"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    def execute(self, context):
-        return {'FINISHED'}
-
-
 def get_texel_density(op, context, uv_image, bm, uv_layer):
 
     mesh_faces = get_selected_object_faces()
@@ -263,13 +252,10 @@ def get_island_area(bm, uv_layer, island):
             )
 
 
-
 # TODO
 # Cube Helper - .5m 1m 2m options
-# 6' mannequin helper
 
 bpy.utils.register_class(BETOOLS_OT_GetTexel)
 bpy.utils.register_class(BETOOLS_OT_SetTexel)
 bpy.utils.register_class(BETOOLS_OT_CubeHelper)
 bpy.utils.register_class(BETOOLS_OT_CreateImage)
-bpy.utils.register_class(BETOOLS_OT_ModifyUVChannel)
