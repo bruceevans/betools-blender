@@ -29,6 +29,13 @@ _PROJECTION_SWIZZLE = {
     'Z': 'xy'
 }
 
+# TODO export layout to image
+# TODO show distortion
+# TODO minimize stretch? Relax?
+# TODO udim?
+# TODO pin/unpin
+
+
 class BETOOLS_OT_UVCameraProject(bpy.types.Operator):
     bl_idname = "mesh.be_uv_camera_project"
     bl_label = "Project Camera"

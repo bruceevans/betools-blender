@@ -1,4 +1,5 @@
 
+import bpy
 
 # color ID ops
 
@@ -15,3 +16,16 @@ choose your faces and apply
     - Apply button
 
 """
+
+class BETOOLS_OT_AddColor(bpy.types.Operator):
+    bl_idname = "uv.be_add_color"
+    bl_label = "Add Color for ID Map"
+    bl_description = "Add a color to use in a color ID map bake"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+
+        return {'FINISHED'}
+
+
+bpy.utils.register_class(BETOOLS_OT_AddColor)

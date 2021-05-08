@@ -30,19 +30,11 @@ MAP_SIZES = [
 		('8192', '8192', '')
 	]
 
-"""
-MAP_SIZES = {
-		'32': ('32', '32', ''), 
-		'64': ('64', '64', ''), 
-		'128': ('128', '128', ''), 
-		'256': ('256', '256', ''), 
-		'512': ('512', '512', ''), 
-		'1024': ('1024', '1024', ''), 
-		'2048': ('2048', '2048', ''), 
-		'4096': ('4096', '4096', ''),
-		'8192': ('8192', '8192', '')
-}
-"""
+CHECKER_MAPS = [
+	('CHECKER', 'Checker', 'Standard checker map'),
+	('GRAVITY', 'Gravity', 'Gravity map'),
+	('SIMPLE', 'Simple Checker', 'Simple checker map')
+]
 
 BASE_FOLDER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MDL_FOLDER = os.path.join(BASE_FOLDER, "resources\mdl")

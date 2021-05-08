@@ -16,9 +16,36 @@ selection_mode = (False, False, True)
 vert_selection = []     # indices
 face_selection = []      # indices
 
-game_engine = ''        # Unreal or Unity
+game_engine = ''        # Unreal or Unity or Source?
 
-uv_channels = []
+active_uv_channel = None
+
+id_colors = []
+
+def on_uv_map_dropdown(self, context):
+    if bpy.context.active_object != None:
+        if bpy.context.active_object.type == 'MESH':
+            if bpy.context.object.data.uv_layers:
+                # Change Mesh UV Channel
+                index = int(bpy.context.scene.betools_settings.uv_map_dropdown)
+                if index < len(bpy.context.object.data.uv_layers):
+                    bpy.context.object.data.uv_layers.active_index = index
+                    bpy.context.object.data.uv_layers[index].active_render = True
+                    active_uv_channel = bpy.context.object.data.uv_layers[index]
+
+def get_uv_maps(self, context):
+    if bpy.context.active_object == None:
+        return[]
+    if bpy.context.active_object.type != 'MESH':
+        return[]
+    if not bpy.context.object.data.uv_layers:
+        return []
+    maps = []
+    count = 0
+    for uv_loop in bpy.context.object.data.uv_layers:
+        maps.append((str(count), uv_loop.name, "Switching to {}".format(uv_loop.name), count))
+        count += 1
+    return maps
 
 class BETOOLSProperties(bpy.types.PropertyGroup):
 
@@ -43,17 +70,26 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
     texel_density_units : bpy.props.StringProperty(name='Texel Density Units', default="Centimeters")
     image_size : bpy.props.IntProperty(name='Image Size')
 
+    material_name : bpy.props.StringProperty(name='Material Name', default='New Color')
+
     map_size_dropdown : bpy.props.EnumProperty(
         items = _constants.MAP_SIZES,
 		name = "Texture Map Size",
         default = '1024'
 	)
 
-    uv_channel_dropdown : bpy.props.EnumProperty(
-        items = uv_channels,
-		name = "UV Channels"
+    checker_map_dropdown : bpy.props.EnumProperty(
+        items = _constants.CHECKER_MAPS,
+		name = "Checker Maps",
+        default = 'CHECKER'
 	)
-    
+
+    uv_map_dropdown : bpy.props.EnumProperty(
+        items = get_uv_maps,
+		name = "UV Maps",
+        update = on_uv_map_dropdown
+	)
+
     # TODO checkbox pref for auto rotate on sort
 
 bpy.utils.register_class(BETOOLSProperties)

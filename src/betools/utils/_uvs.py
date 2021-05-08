@@ -19,6 +19,8 @@ from pprint import pprint
 # UV Selections - uvs, faces, islands #
 #######################################
 
+# TODO anywhere there is a uv.select test, also test for pinning
+
 
 def store_selection():
     bm = bmesh.from_edit_mesh(bpy.context.active_object.data)
@@ -238,7 +240,6 @@ def get_area_triangle_uv(A, B, C, size_x, size_y):
 	return get_area_triangle(A, B, C)
 
 def get_area_triangle(A,B,C):
-	# Heron's formula: http://www.1728.org/triang.htm
 	# area = square root (s • (s - a) • (s - b) • (s - c))
 	a = (B-A).length
 	b = (C-B).length
@@ -268,6 +269,7 @@ def get_island_bounding_box(island, uv_layers):
 
     for face in island:
         for loop in face.loops:
+            # TODO and not pinned big todo
             if loop[uv_layers].select:
                 selection = True
                 uv = loop[uv_layers].uv

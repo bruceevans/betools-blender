@@ -369,14 +369,14 @@ class UI_PT_UVImage(Panel):
         col = box.column(align=True)
         row = col.row(align = True)
         row.label(text="Map Size: ")
-        row.prop(context.scene.betools_settings, "map_size_dropdown", text="", icon="RADIOBUT_ON")
+        row.prop(context.scene.betools_settings, "map_size_dropdown", text="")
         row = col.row(align = True)
         row.operator('uv.be_create_image', text='Create Image', icon="RADIOBUT_ON")
 
         col = box.column(align=True)
         row = col.row(align = True)
         row.label(text="Checker Map: ")
-        row.prop(context.scene.betools_settings, "map_size_dropdown", text="")
+        row.prop(context.scene.betools_settings, "checker_map_dropdown", text="")
         row = col.row(align = True)
         row.operator('uv.be_create_image', text='Assign Map', icon="RADIOBUT_ON")
 
@@ -387,10 +387,12 @@ class UI_PT_UVImage(Panel):
         group = row.row(align=True)
 
         # _settings.uv_channels = TODO
-        group.prop(context.scene.betools_settings, "uv_channel_dropdown", text="")
+        group.prop(context.scene.betools_settings, "uv_map_dropdown", text="")
         group = row.row(align=True)
-        group.operator('uv.be_modify_uv_channel', text="", icon = 'ADD')
-        group.operator('uv.be_modify_uv_channel', text="", icon = 'REMOVE')
+        # TODO edit/rename
+        group.operator('uv.be_modify_uv_channel', text="", icon = 'GREASEPENCIL')
+        group.operator('mesh.uv_texture_add', text="", icon = 'ADD') # TODO wrap with a refresh
+        group.operator('mesh.uv_texture_remove', text="", icon = 'REMOVE') # TODO
 
 
 class UI_PT_UVTransform(Panel):
@@ -503,7 +505,7 @@ class UI_PT_UVTexel(Panel):
         box = layout.box()
         col = box.column(align=True)
         row = col.row(align=True)
-        row.label(text="Texel Density: ", icon="RADIOBUT_ON")
+        row.label(text="Texel Density: ")
         row.prop(uv_props, "texel_density", text = "")
         row = col.row(align=True)
         row.operator("uv.be_get_texel", text="Get", icon="RADIOBUT_ON")
@@ -530,11 +532,15 @@ class UI_PT_UVColorID(Panel):
 
     def draw(self, context):
         # Image creation and generation
+        uv_props = context.scene.betools_settings
+
         layout = self.layout
         col = layout.column(align=True)
         row = col.row(align=True)
-
-        return {'FINISHED'}
+        row.label(text="Material Name: ")
+        row = col.row(align=True)
+        row.prop(uv_props, "material_name", text = "")
+        row.operator("uv.be_add_color", text="", icon="ADD")
 
     # main settings
     # Map size, padding, resize, uv channels

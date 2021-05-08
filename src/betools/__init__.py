@@ -23,6 +23,7 @@ if "bpy" in locals():
     imp.reload(ops._autosmooth)
     imp.reload(ops._bevel)
     imp.reload(ops._collision)
+    imp.reload(ops._color_id)
     imp.reload(ops._edge)
     imp.reload(ops._export)
     imp.reload(ops._hardedgeseam)
@@ -48,6 +49,7 @@ else:
     from .ops import _autosmooth
     from .ops import _bevel
     from .ops import _collision
+    from .ops import _color_id
     from .ops import _edge
     from .ops import _export
     from .ops import _hardedgeseam
@@ -86,7 +88,7 @@ classes = (
     _panels.UI_PT_UVColorID
 )
 
-addon_keymaps =[]
+addon_keymaps = []
 
 def register():
     for cls in classes:
