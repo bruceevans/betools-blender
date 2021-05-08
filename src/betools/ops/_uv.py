@@ -706,9 +706,10 @@ class BETOOLS_OT_FlipIsland(bpy.types.Operator):
             return {'FINISHED'}
 
         scale = Vector(( -1.0, 1.0 )) if self.direction == "HORIZONTAL" else Vector(( 1.0, -1.0 ))
+        bbox = _uvs.get_selection_bounding_box()
+        delta = Vector(( -bbox.get('center').x, -bbox.get('center').y ))
         for island in islands:
-            bbox = _uvs.get_island_bounding_box(island, uv_layer)
-            delta = Vector(( -bbox.get('center').x, -bbox.get('center').y ))
+            # TODO transform selection
             _uvs.translate_island(me, island, uv_layer, delta.x, delta.y)
             _uvs.scale_island(me, island, uv_layer, scale.x, scale.y)
             _uvs.translate_island(me, island, uv_layer, -delta.x, -delta.y)
@@ -771,6 +772,7 @@ class BETOOLS_OT_ModifyUVChannel(bpy.types.Operator):
         _settings.uv_map_rename_mode = True
         return {'FINISHED'}
 
+
 class BETOOLS_OT_RenameUVMap(bpy.types.Operator):
     bl_idname = "uv.be_uv_rename"
     bl_label = "Rename UV Map"
@@ -778,9 +780,6 @@ class BETOOLS_OT_RenameUVMap(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        # TODO rename
-        # Check if name already exists
-        # bpy.context.object.data.uv_layers[index]
         for layer in bpy.context.object.data.uv_layers:
             if layer.name == context.scene.betools_settings.uv_map_new_name:
                 self.report({'ERROR_INVALID_INPUT'}, "Name already exists!")
