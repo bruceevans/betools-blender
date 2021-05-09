@@ -23,7 +23,6 @@ _UNITS = {
 
 # TODO Assign Map
 # TODO Create Image
-# TODO Wrap remove map with a refresh
 
 
 class BETOOLS_OT_GetTexel(bpy.types.Operator):
@@ -139,7 +138,49 @@ class BETOOLS_OT_CreateImage(bpy.types.Operator):
     bl_description = "Create an image for the UV editor"
     bl_options = {'REGISTER', 'UNDO'}
 
+    size : bpy.props.IntProperty(
+        name='Size',
+        default=2048
+    )
+
     def execute(self, context):
+        image = bpy.data.images.new("BT_Image", width=self.size, height=self.size)
+        bpy.context.area.spaces.active.image = image
+        return {'FINISHED'}
+
+
+class BETOOLS_OT_AssignMat(bpy.types.Operator):
+    bl_idname = "uv.be_assign_mat"
+    bl_label = "Assign Material"
+    bl_description = "Assign a preset checker map at a given size"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    size : bpy.props.IntProperty(
+        name='Size',
+        default=2048
+    )
+
+    def execute(self, context):
+
+        file_path = os.path.join(_constants.IMG_FOLDER, 'materials.blend')
+        inner_path = 'Materials'
+        material_name ='BT_Checker_{}'.format(_constants.MATERIAL_SIZES.get(str(self.size)))
+
+        print(file_path)
+        print(material_name)
+
+        if not os.path.isfile(file_path):
+            return {'FINISHED'}
+
+        bpy.ops.wm.append(
+            filepath=os.path.join(file_path, inner_path, material_name),
+            directory=os.path.join(file_path, inner_path),
+            filename=material_name
+        )
+        # TODO image
+        # TODO assign mat 
+
+        # bpy.context.area.spaces.active.image = image
         return {'FINISHED'}
 
 
@@ -259,3 +300,4 @@ bpy.utils.register_class(BETOOLS_OT_GetTexel)
 bpy.utils.register_class(BETOOLS_OT_SetTexel)
 bpy.utils.register_class(BETOOLS_OT_CubeHelper)
 bpy.utils.register_class(BETOOLS_OT_CreateImage)
+bpy.utils.register_class(BETOOLS_OT_AssignMat)

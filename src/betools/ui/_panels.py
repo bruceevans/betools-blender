@@ -371,18 +371,24 @@ class UI_PT_UVImage(Panel):
         row.label(text="Map Size: ")
         row.prop(context.scene.betools_settings, "map_size_dropdown", text="")
         row = col.row(align = True)
-        row.operator('uv.be_create_image', text='Create Image', icon="RADIOBUT_ON")
-
-        col = box.column(align=True)
-        row = col.row(align = True)
-        row.label(text="Checker Map: ")
+        # row.label(text="Checker Map: ")
         row.prop(context.scene.betools_settings, "checker_map_dropdown", text="")
         row = col.row(align = True)
-        row.operator('uv.be_create_image', text='Assign Map', icon="RADIOBUT_ON")
-
-        col = box.column(align=True)
+        row.operator(
+            'uv.be_assign_mat',
+            text='Assign Checker Map',
+            icon="RADIOBUT_ON"
+            ).size=int(context.scene.betools_settings.map_size_dropdown)
         row = col.row(align = True)
-        row.label(text="UV Maps")
+        row.operator(
+            'uv.be_create_image',
+            text='Create Blank Image',
+            icon="RADIOBUT_ON"
+            ).size=int(context.scene.betools_settings.map_size_dropdown)
+
+        # col = box.column(align=True)
+        row = col.row(align = True)
+        row.label(text="UV Channels")
         row = col.row(align = True)
         group = row.row(align=True)
 
