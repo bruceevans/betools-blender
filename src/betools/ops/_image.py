@@ -162,25 +162,27 @@ class BETOOLS_OT_AssignMat(bpy.types.Operator):
 
     def execute(self, context):
 
-        file_path = os.path.join(_constants.IMG_FOLDER, 'materials.blend')
-        inner_path = 'Materials'
+        file_path = os.path.join(_constants.MDL_FOLDER, 'materials.blend')
+        inner_path = 'Material'
+        # 'BT_{}_{}.format(..., _constants.MATERIAL_SIZES.get(str(self.size)))
         material_name ='BT_Checker_{}'.format(_constants.MATERIAL_SIZES.get(str(self.size)))
-
-        print(file_path)
-        print(material_name)
 
         if not os.path.isfile(file_path):
             return {'FINISHED'}
+
+        # TODO if it exists already, return
 
         bpy.ops.wm.append(
             filepath=os.path.join(file_path, inner_path, material_name),
             directory=os.path.join(file_path, inner_path),
             filename=material_name
         )
-        # TODO image
-        # TODO assign mat 
 
+        # TODO assign mat
+        # TODO get image from material and open in uv editor
+        # image = ...
         # bpy.context.area.spaces.active.image = image
+
         return {'FINISHED'}
 
 
