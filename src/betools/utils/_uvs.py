@@ -377,8 +377,8 @@ def translate_island(mesh, island, uv_layer, deltaX, deltaY):
 
     bmesh.update_edit_mesh(mesh)
 
-def translate_uvs(mesh, uv_layer, deltaX, deltaY):
-    uvs = get_selected_uvs(mesh, uv_layer)
+def translate_uvs(bmesh, uv_layer, deltaX, deltaY):
+    uvs = get_selected_uvs(bmesh, uv_layer)
     if not uvs:
         return
     for uv in uvs:
@@ -410,8 +410,8 @@ def scale_island(mesh, island, uv_layer, scaleU, scaleV):
 
     bmesh.update_edit_mesh(mesh)
 
-def scale_uvs(mesh, uv_layer, scaleU, scaleV):
-    uvs = get_selected_uvs(mesh, uv_layer)
+def scale_uvs(bmesh, uv_layer, scaleU, scaleV):
+    uvs = get_selected_uvs(bmesh, uv_layer)
     if not uvs:
         return
 
@@ -431,7 +431,7 @@ def scale_uvs(mesh, uv_layer, scaleU, scaleV):
             uv.uv[0] += pivot.x
             uv.uv[1] += pivot.y
 
-def rotate_island(mesh, islands, uv_layer, angle):
+def rotate_island(bmesh, islands, uv_layer, angle):
     """ rotate """
     cos_theta, sin_theta = math.cos(math.radians(-angle)), math.sin(math.radians(-angle))
     
@@ -477,10 +477,8 @@ def rotate_island(mesh, islands, uv_layer, angle):
                     loop_uv.uv[0] = duR + pivot.x
                     loop_uv.uv[1] = dvR + pivot.y
 
-    bmesh.update_edit_mesh(mesh)
-
-def rotate_uvs(mesh, uv_layer, angle):
-    uvs = get_selected_uvs(mesh, uv_layer)
+def rotate_uvs(bmesh, uv_layer, angle):
+    uvs = get_selected_uvs(bmesh, uv_layer)
     if not uvs:
         return
     cos_theta, sin_theta = math.cos(math.radians(-angle)), math.sin(math.radians(-angle))

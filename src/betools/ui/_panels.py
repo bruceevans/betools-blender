@@ -408,7 +408,7 @@ class UI_PT_UVTransform(Panel):
 
         row = col.row(align=True)
         row.prop(settings, "angle")
-        row.operator('uv.be_rotate', text='', icon="RADIOBUT_ON")
+        row.operator('uv.be_rotate', text='', icon="RADIOBUT_ON").angle = settings.angle
 
     
 class UI_PT_UVLayout(Panel):
@@ -436,8 +436,8 @@ class UI_PT_UVLayout(Panel):
         row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'RIGHTTOP'
 
         row = col.row(align=True)
-        row.operator('uv.be_rotate2', text='-90', icon="RADIOBUT_ON").angle=-90
-        row.operator('uv.be_rotate2', text='90', icon="RADIOBUT_ON").angle=90
+        row.operator('uv.be_rotate', text='-90', icon="RADIOBUT_ON").angle=-90
+        row.operator('uv.be_rotate', text='90', icon="RADIOBUT_ON").angle=90
         row.separator()
         row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'LEFTCENTER'
         row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'CENTER'
@@ -560,8 +560,8 @@ class UI_PT_UVUtils(Panel):
 
         col = box.column(align=True)
         row = col.row(align = True)
-        row.label(text="UV Maps: ")
-        row = col.row(align = True)
+        row.label(text="UV Maps:")
+        # row = col.row(align = True)
         group = row.row(align=True)
 
         group.prop(context.scene.betools_settings, "uv_maps", text="")
@@ -577,8 +577,8 @@ class UI_PT_UVUtils(Panel):
 
         col = box.column(align=True)
         row = col.row(align=True)
-        row.label(text = "Show UV Distortion: ")
-        row = col.row(align=True)
+        row.label(text = "UV Stretch:")
+        # row = col.row(align=True)
         row.prop(settings, "show_uv_stretch", text = "")
         row.prop(settings, "uv_stretch_type", text = "")
 

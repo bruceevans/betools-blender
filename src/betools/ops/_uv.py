@@ -74,6 +74,7 @@ class BETOOLS_OT_UVTranslate(bpy.types.Operator):
     def execute(self, context):
 
         uv_transform = context.scene.betools_settings
+        # TODO add as a property
         deltaU = uv_transform.translate_u
         deltaV = uv_transform.translate_v
 
@@ -81,14 +82,10 @@ class BETOOLS_OT_UVTranslate(bpy.types.Operator):
         me = obj.data
         bm = bmesh.from_edit_mesh(me)
         uv_layer = bm.loops.layers.uv.verify()
-        islands = _uvs.get_selected_islands(bm, uv_layer)
 
-        if not islands:
-            self.report({'INFO'}, 'Select UV islands')
-            return {'FINISHED'}
+        _uvs.translate_uvs(bm, uv_layer, deltaU, deltaV)
+        bmesh.update_edit_mesh(me)
 
-        for island in islands:
-            _uvs.translate_island(me, island, uv_layer, deltaU, deltaV)
         return {'FINISHED'}
 
     @classmethod
@@ -120,6 +117,7 @@ class BETOOLS_OT_UVScale(bpy.types.Operator):
     def execute(self, context):
 
         uv_transform = context.scene.betools_settings
+        # TODO add as prop
         scaleU = uv_transform.scale_u
         scaleV = uv_transform.scale_v
 
@@ -127,14 +125,9 @@ class BETOOLS_OT_UVScale(bpy.types.Operator):
         me = obj.data
         bm = bmesh.from_edit_mesh(me)
         uv_layer = bm.loops.layers.uv.verify()
-        islands = _uvs.get_selected_islands(bm, uv_layer)
+        _uvs.scale_uvs(bm, uv_layer, scaleU, scaleV)
+        bmesh.update_edit_mesh(me)
 
-        if not islands:
-            self.report({'INFO'}, 'Select UV islands')
-            return {'FINISHED'}
-
-        for island in islands:
-            _uvs.scale_island(me, island, uv_layer, scaleU, scaleV)
         return {'FINISHED'}
     
     @classmethod
@@ -158,54 +151,7 @@ class BETOOLS_OT_UVScale(bpy.types.Operator):
 
 
 class BETOOLS_OT_UVRotate(bpy.types.Operator):
-    """ Gets angle from UI prop
-    """
-
     bl_idname = "uv.be_rotate"
-    bl_label = "Rotate UVs"
-    bl_description = "Rotate UVs in UV space"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    def execute(self, context):
-        uv_transform = context.scene.betools_settings
-        angle = uv_transform.angle
-
-        obj = bpy.context.active_object
-        me = obj.data
-        bm = bmesh.from_edit_mesh(me)
-        uv_layer = bm.loops.layers.uv.verify()
-        islands = _uvs.get_selected_islands(bm, uv_layer)
-
-        if not islands:
-            self.report({'INFO'}, 'Select UV islands')
-            return {'FINISHED'}
-
-        _uvs.rotate_island(me, islands, uv_layer, angle)
-
-        return {'FINISHED'}
-
-    @classmethod
-    def poll(cls, context):
-        if not bpy.context.active_object:
-            return False
-        #Only in Edit mode
-        if bpy.context.active_object.mode != 'EDIT':
-            return False
-        #Requires UV map
-        if not bpy.context.object.data.uv_layers:
-            return False
-        # Selective sync off
-        if bpy.context.scene.tool_settings.use_uv_select_sync:
-            return False
-        #Only in UV editor mode
-        if bpy.context.area.type != 'IMAGE_EDITOR':
-            return False
-
-        return True
-
-
-class BETOOLS_OT_UVRotate2(bpy.types.Operator):
-    bl_idname = "uv.be_rotate2"
     bl_label = "Rotate UVs"
     bl_description = "Rotate UVs in UV space"
     bl_options = {'REGISTER', 'UNDO'}
@@ -220,13 +166,10 @@ class BETOOLS_OT_UVRotate2(bpy.types.Operator):
         me = obj.data
         bm = bmesh.from_edit_mesh(me)
         uv_layer = bm.loops.layers.uv.verify()
-        islands = _uvs.get_selected_islands(bm, uv_layer)
 
-        if not islands:
-            self.report({'INFO'}, 'Select UV islands')
-            return {'FINISHED'}
+        _uvs.rotate_uvs(bm, uv_layer, self.angle)
+        bmesh.update_edit_mesh(me)
 
-        _uvs.rotate_island(me, islands, uv_layer, self.angle)
         return {'FINISHED'}
 
     @classmethod
@@ -386,6 +329,7 @@ class BETOOLS_OT_OrientEdge(bpy.types.Operator):
         
         _uvs.rotate_island(me, islands, uv_layer, average_angle)
         _uvs.restore_selection(bm, uv_layer)
+        bmesh.update_edit_mesh(me)
         return {'FINISHED'}
 
     @classmethod
@@ -697,7 +641,7 @@ class BETOOLS_OT_FlipIsland(bpy.types.Operator):
         scale = Vector(( -1.0, 1.0 )) if self.direction == "HORIZONTAL" else Vector(( 1.0, -1.0 ))
         _uvs.scale_uvs(bm, uv_layer, scale.x, scale.y)
         bmesh.update_edit_mesh(me)
-        
+
         return {'FINISHED'}
 
     @classmethod
@@ -782,7 +726,6 @@ bpy.utils.register_class(BETOOLS_OT_UVCameraProject)
 bpy.utils.register_class(BETOOLS_OT_UVTranslate)
 bpy.utils.register_class(BETOOLS_OT_UVScale)
 bpy.utils.register_class(BETOOLS_OT_UVRotate)
-bpy.utils.register_class(BETOOLS_OT_UVRotate2)
 bpy.utils.register_class(BETOOLS_OT_Fill)
 bpy.utils.register_class(BETOOLS_OT_Fit)
 bpy.utils.register_class(BETOOLS_OT_OrientEdge)
