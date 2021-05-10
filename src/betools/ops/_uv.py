@@ -30,12 +30,7 @@ _PROJECTION_SWIZZLE = {
     'Z': 'xy'
 }
 
-# TODO export layout to image
-# TODO show distortion
-# TODO minimize stretch? Relax?
 # TODO udim?
-# TODO pin/unpin
-
 
 class BETOOLS_OT_UVCameraProject(bpy.types.Operator):
     bl_idname = "mesh.be_uv_camera_project"
@@ -738,8 +733,8 @@ class BETOOLS_OT_FlipIsland(bpy.types.Operator):
 
 class BETOOLS_OT_AddUVMap(bpy.types.Operator):
     bl_idname = "uv.be_add_uv_map"
-    bl_label = "Sort Islands"
-    bl_description = "Sort islands vertically or horizontally"
+    bl_label = "Add UV Map"
+    bl_description = "Add another UV map/channel"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
@@ -751,8 +746,8 @@ class BETOOLS_OT_AddUVMap(bpy.types.Operator):
 
 class BETOOLS_OT_RemUVMap(bpy.types.Operator):
     bl_idname = "uv.be_remove_uv_map"
-    bl_label = "Sort Islands"
-    bl_description = "Sort islands vertically or horizontally"
+    bl_label = "Remove UV Map"
+    bl_description = "Remove the current UV map/channel"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):

@@ -47,15 +47,15 @@ class BEPreferencesPanel(bpy.types.AddonPreferences):
         # TODO drop down for meters, centimeters
         col.prop(self, "game_engine", icon='RESTRICT_VIEW_OFF')
         if self.game_engine == 'UE4':
-            col.label(text="Using Unreal Engine Presets")
+            col.label(text="Using Unreal Engine Presets: ")
         elif self.game_engine == 'Unity':
-            col.label(text="Using Unity Engine Presets")
+            col.label(text="Using Unity Engine Presets: ")
 
         # TODO quick export path
 
         box.separator()
         box = layout.box()
-        box.label(text = "More Info and Other Junk")
+        box.label(text = "More Info and Other Junk: ")
         row = box.row(align=True)
         # TODO docs
         row.operator('wm.url_open', text='Donate', icon='HELP').url = 'https://gumroad.com/l/KFvsF'
@@ -198,7 +198,7 @@ class UI_PT_BEToolsPanel(Panel):
     def draw(self, context):
 
         layout = self.layout
-        layout.label(text="Viewport Display")
+        layout.label(text="Viewport Display: ")
         box = layout.box()
 
         # row = layout.column().row(align=True)
@@ -208,7 +208,7 @@ class UI_PT_BEToolsPanel(Panel):
         col.operator("mesh.be_toggle_shaded", text = "Toggle Shaded", icon = "SHADING_SOLID")
         col.operator("view3d.toggle_xray", text = "Toggle XRay", icon = "XRAY")
 
-        layout.label(text="Snapping")
+        layout.label(text="Snapping: ")
         box = layout.box()
 
         col = box.column(align=True)
@@ -222,7 +222,7 @@ class UI_PT_BEToolsPanel(Panel):
         if object is None or len(bpy.context.selected_objects) == 0:
             layout.label(text='Select a Mesh!')
         else:
-            layout.label(text="Pivot")
+            layout.label(text="Pivot: ")
             box = layout.box()
             # row = layout.column().row(align=True)
             col = box.column(align=True)
@@ -233,7 +233,7 @@ class UI_PT_BEToolsPanel(Panel):
             col.operator("mesh.be_pivot2cursor", text = "Pivot to Cursor", icon = "EMPTY_ARROWS")
             col.operator("view3d.snap_cursor_to_center", text = "Cursor to Origin")  # TODO ICON
 
-            layout.label(text="Mesh Tools")
+            layout.label(text="Mesh Tools: ")
 
             box = layout.box()
             col = box.column(align=True)
@@ -260,7 +260,7 @@ class UI_PT_BEToolsPanel(Panel):
 
             mesh = bpy.context.object.data
 
-            layout.label(text="Shading")
+            layout.label(text="Shading: ")
             box = layout.box()
 
             col = box.column(align=False)
@@ -281,7 +281,7 @@ class UI_PT_BEToolsPanel(Panel):
             col.operator("mesh.be_recalc_normals", text = "Recalculate Normals", icon = "NORMALS_FACE")
             col.operator("mesh.be_toggle_fo", text = "Show Face Orientation", icon = "ORIENTATION_NORMAL")
 
-            layout.label(text="UVs")
+            layout.label(text="UVs: ")
             box = layout.box()
             col = box.column(align=True)
             col.operator("mesh.seams_from_hard_edge", text = "Hard Edges To Seams", icon = "MOD_EDGESPLIT")
@@ -313,7 +313,7 @@ class UI_PT_CollisionPanel(Panel):
         if object is None or len(bpy.context.selected_objects) == 0:
             col.label(text='Select a Mesh!')
         else:
-            layout.label(text='UE4 Collision')
+            layout.label(text='UE4 Collision: ')
             box = layout.box()
             col = box.column()
             row = col.row(align=True)
@@ -337,8 +337,7 @@ class UI_PT_ExportPanel(Panel):
 
     def draw(self, context):
         layout = self.layout
-        # TODO quick imports
-        layout.label(text="Export")
+        layout.label(text="Export: ")
         box = layout.box()
         col = box.column(align=True)
         col.operator('mesh.be_export_selected_fbx', text = 'Export Sel as FBX')
@@ -352,58 +351,33 @@ class UI_PT_ExportPanel(Panel):
 
 import bmesh
 
-class UI_PT_UVImage(Panel):
-    """ Main panel for the UV image editor
-    """
 
-    bl_label = "Be Tools"
+class UI_PT_UVImage(Panel):
+    bl_label = "BE Tools"
     bl_category = "Be Tools"
     bl_space_type = "IMAGE_EDITOR"
     bl_region_type = "UI"
 
     def draw(self, context):
-        # Image creation and generation
         layout = self.layout
         box = layout.box()
-
         col = box.column(align=True)
+
         row = col.row(align = True)
         row.label(text="Map Size: ")
         row.prop(context.scene.betools_settings, "map_size_dropdown", text="")
-        row = col.row(align = True)
-        # row.label(text="Checker Map: ")
-        row.prop(context.scene.betools_settings, "checker_map_dropdown", text="")
-        row = col.row(align = True)
-        row.operator(
-            'uv.be_assign_mat',
-            text='Assign Checker Map',
-            icon="RADIOBUT_ON"
-            ).size=int(context.scene.betools_settings.map_size_dropdown)
-        row = col.row(align = True)
         row.operator(
             'uv.be_create_image',
-            text='Create Blank Image',
-            icon="RADIOBUT_ON"
+            text='',
+            icon="MESH_PLANE"
             ).size=int(context.scene.betools_settings.map_size_dropdown)
-
-        # col = box.column(align=True)
         row = col.row(align = True)
-        row.label(text="UV Channels")
-        row = col.row(align = True)
-        group = row.row(align=True)
-
-        # _settings.uv_channels = TODO
-        group.prop(context.scene.betools_settings, "uv_maps", text="")
-        group = row.row(align=True)
-        # TODO edit/rename
-        group.operator('uv.be_modify_uv_channel', text="", icon = 'GREASEPENCIL')
-        group.operator('uv.be_add_uv_map', text="", icon = 'ADD')
-        group.operator('uv.be_remove_uv_map', text="", icon = 'REMOVE')
-        if _settings.uv_map_rename_mode:
-            row = col.row(align = True)
-            row.prop(context.scene.betools_settings, "uv_map_new_name", text="")
-            row.operator('uv.be_uv_rename', text = "", icon='CHECKMARK')
-
+        row.prop(context.scene.betools_settings, "checker_map_dropdown", text="")
+        row.operator(
+            'uv.be_assign_mat',
+            text='',
+            icon="TEXTURE_DATA"
+            ).size=int(context.scene.betools_settings.map_size_dropdown)
 
 class UI_PT_UVTransform(Panel):
     """ Main panel for the UV image editor
@@ -419,21 +393,21 @@ class UI_PT_UVTransform(Panel):
         layout = self.layout
         box = layout.box()
 
-        uv_transform = context.scene.betools_settings
+        settings = context.scene.betools_settings
 
         col = box.column(align=True)
         row = col.row(align=True)
-        row.prop(uv_transform, "translate_u")
-        row.prop(uv_transform, "translate_v")
+        row.prop(settings, "translate_u")
+        row.prop(settings, "translate_v")
         row.operator('uv.be_translate', text='', icon="RADIOBUT_ON")
 
         row = col.row(align=True)
-        row.prop(uv_transform, "scale_u")
-        row.prop(uv_transform, "scale_v")
+        row.prop(settings, "scale_u")
+        row.prop(settings, "scale_v")
         row.operator('uv.be_scale', text='', icon="RADIOBUT_ON")
 
         row = col.row(align=True)
-        row.prop(uv_transform, "angle")
+        row.prop(settings, "angle")
         row.operator('uv.be_rotate', text='', icon="RADIOBUT_ON")
 
     
@@ -447,7 +421,7 @@ class UI_PT_UVLayout(Panel):
     bl_region_type = "UI"
 
     def draw(self, context):
-        uv_transform = context.scene.betools_settings
+        settings = context.scene.betools_settings
 
         layout = self.layout
         box = layout.box()
@@ -484,16 +458,28 @@ class UI_PT_UVLayout(Panel):
         col.operator("uv.be_uv_squares", text = "Squarify", icon="RADIOBUT_ON")
         col.operator("uv.be_uv_face_rip", text = "Rip Faces", icon="RADIOBUT_ON")
 
+        # pinning
+        row = col.row(align=True)
+        row.operator("uv.pin", text="Pin UVs", icon="RADIOBUT_ON").clear=False
+        row.operator("uv.pin", text="Unpin UVs", icon="RADIOBUT_ON").clear=True
+
+        col = box.column(align=True)
+        row = col.row(align=True)
+        row.label(text = "Relax Strength: ")
+        row.prop(settings, "relax_iterations", text="")
+        row = col.row(align=True)
+        row.operator("uv.minimize_stretch", text="Relax UV Angles").iterations=settings.relax_iterations * 100
+
         col = box.column(align=True)
         row = col.row(align=True)
         row.label(text="Padding: ")
-        row.prop(uv_transform, "sort_padding", text = "")
+        row.prop(settings, "sort_padding", text = "")
         row = col.row(align=True)
         row.operator("uv.be_island_sort", text="Sort H", icon="RADIOBUT_ON").axis = 'HORIZONTAL'
         row.operator("uv.be_island_sort", text="Sort V", icon="RADIOBUT_ON").axis = 'VERTICAL'
 
         row = col.row(align=True)
-        row.operator("uv.pack_islands", text = "Pack Islands", icon="RADIOBUT_ON").margin = uv_transform.pack_padding
+        row.operator("uv.pack_islands", text = "Pack Islands", icon="RADIOBUT_ON").margin = settings.pack_padding
 
 
 class UI_PT_UVTexel(Panel):
@@ -523,11 +509,12 @@ class UI_PT_UVTexel(Panel):
 
         col = box.column(align=True)
         row = col.row()
-        row.label(text="Texel Cubes", icon="RADIOBUT_ON")
+        row.label(text="Texel Cubes: ", icon="MESH_CUBE")
         row = col.row(align=True)
-        row.operator("uv.be_cube_helper", text="1m", icon="RADIOBUT_ON")
-        row.operator("uv.be_cube_helper", text="2m", icon="RADIOBUT_ON") # TODO
-        row.operator("uv.be_cube_helper", text="4m", icon="RADIOBUT_ON") # TODO
+        row.operator("uv.be_cube_helper", text=".5m").size = ".5M"
+        row.operator("uv.be_cube_helper", text="1m").size = "1M"
+        row.operator("uv.be_cube_helper", text="2m").size = "2M"
+        row.operator("uv.be_cube_helper", text="4m").size = "4M"
 
 
 class UI_PT_UVColorID(Panel):
@@ -552,13 +539,58 @@ class UI_PT_UVColorID(Panel):
         row.prop(uv_props, "material_name", text = "")
         row.operator("uv.be_add_color", text="", icon="ADD")
 
-    # main settings
-    # Map size, padding, resize, uv channels
     # Map selection (Checker, gravity, etc.)
     # Color ID stuff?
     # Explode mesh
 
+
+class UI_PT_UVUtils(Panel):
+    """ UV Utilities
+    """
+    bl_label = "Utilities"
+    bl_category = "Be Tools"
+    bl_space_type = "IMAGE_EDITOR"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        settings = context.scene.betools_settings
+        layout = self.layout
+        box = layout.box()
+
+        col = box.column(align=True)
+        row = col.row(align = True)
+        row.label(text="UV Maps: ")
+        row = col.row(align = True)
+        group = row.row(align=True)
+
+        group.prop(context.scene.betools_settings, "uv_maps", text="")
+        group = row.row(align=True)
+        group.operator('uv.be_modify_uv_channel', text="", icon = 'GREASEPENCIL')
+        group.operator('uv.be_add_uv_map', text="", icon = 'ADD')
+        group.operator('uv.be_remove_uv_map', text="", icon = 'REMOVE')
+
+        if _settings.uv_map_rename_mode:
+            row = col.row(align = True)
+            row.prop(context.scene.betools_settings, "uv_map_new_name", text="")
+            row.operator('uv.be_uv_rename', text = "", icon='CHECKMARK')
+
+        col = box.column(align=True)
+        row = col.row(align=True)
+        row.label(text = "Show UV Distortion: ")
+        row = col.row(align=True)
+        row.prop(settings, "show_uv_stretch", text = "")
+        row.prop(settings, "uv_stretch_type", text = "")
+
+        col = box.column(align=True)
+        row = col.row(align=True)
+        row.operator("uv.export_layout", text="Export UV Layout", icon="RADIOBUT_ON")
+
+        col = box.column(align=True)
+        row = col.row(align=True)
+        row.label(text="UDIM")
+
+        # TODO UDIM
+
 bpy.types.Scene.snap_object = bpy.props.StringProperty()
-# TODO rename this to betools_settings
-# uv_properties
 bpy.types.Scene.betools_settings = bpy.props.PointerProperty(type=BETOOLSProperties)

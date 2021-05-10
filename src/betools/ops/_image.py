@@ -21,10 +21,6 @@ _UNITS = {
 }
 
 
-# TODO Assign Map
-# TODO Create Image
-
-
 class BETOOLS_OT_GetTexel(bpy.types.Operator):
     bl_idname = "uv.be_get_texel"
     bl_label = "Get Texel Density"
@@ -107,11 +103,22 @@ class BETOOLS_OT_CubeHelper(bpy.types.Operator):
     bl_description = "Create a unit cube to visualize texel density"
     bl_options = {'REGISTER', 'UNDO'}
 
+    size : EnumProperty (
+        name = "Cube Size",
+        default = "1M",
+        items = [
+            ('.5M', '.5m', 'Half meter'),
+            ('1M', '1m', 'One meter'),
+            ('2M', '2m', 'Two meters'),
+            ('4M', '4m', 'Four meters')
+        ]
+    )
+
     def execute(self, context):
 
         file_path = os.path.join(_constants.MDL_FOLDER, 'unit-cube.blend')
         inner_path = 'Object'
-        object_name = 'unit-cube'
+        object_name = 'unit-cube-{}'.format(self.size)
 
         if not os.path.isfile(file_path):
             return {'FINISHED'}
@@ -160,17 +167,36 @@ class BETOOLS_OT_AssignMat(bpy.types.Operator):
         default=2048
     )
 
+    @classmethod
+    def poll(cls, context):
+        if bpy.context.object.mode != 'OBJECT':
+            return False
+        return True
+
     def execute(self, context):
 
-        file_path = os.path.join(_constants.MDL_FOLDER, 'materials.blend')
-        inner_path = 'Material'
-        # 'BT_{}_{}.format(..., _constants.MATERIAL_SIZES.get(str(self.size)))
-        material_name ='BT_Checker_{}'.format(_constants.MATERIAL_SIZES.get(str(self.size)))
-
-        if not os.path.isfile(file_path):
+        selected_objects = [obj for obj in bpy.context.selected_objects]
+        if not selected_objects:
+            self.report({'ERROR_INVALID_INPUT'}, "Select a mesh")
             return {'FINISHED'}
 
-        # TODO if it exists already, return
+        file_path = os.path.join(_constants.MDL_FOLDER, 'materials.blend')
+        if not os.path.isfile(file_path):
+            self.report({'WARNING'}, "Resources are missing from BE Tools! Reinstall the addon.")
+            return {'FINISHED'}
+        inner_path = 'Material'
+
+        size = _constants.MATERIAL_SIZES.get(str(self.size))
+        selected_map = context.scene.betools_settings.checker_map_dropdown.capitalize()  # lower case the enum
+        material_name ='BT_{}_{}'.format(selected_map, size)
+
+        for mat in bpy.data.materials:
+            if mat.name == material_name:
+                material = bpy.data.materials.get(material_name)
+                for obj in selected_objects:
+                    obj.select_set(True)
+                    assign_material(obj, material)
+                return {'FINISHED'}
 
         bpy.ops.wm.append(
             filepath=os.path.join(file_path, inner_path, material_name),
@@ -178,12 +204,32 @@ class BETOOLS_OT_AssignMat(bpy.types.Operator):
             filename=material_name
         )
 
-        # TODO assign mat
-        # TODO get image from material and open in uv editor
-        # image = ...
-        # bpy.context.area.spaces.active.image = image
+        # Assign material
+        for obj in selected_objects:
+            obj.select_set(True)
+            material = bpy.data.materials.get(material_name)
+            assign_material(obj, material)
 
         return {'FINISHED'}
+
+
+def assign_material(obj, mat):
+    if obj.data.materials:
+        obj.data.materials[0] = mat
+    else:
+        obj.data.materials.append(mat)
+
+    image = None
+
+    nodes = mat.node_tree.nodes
+    for node in nodes:
+        if node.type == 'TEX_IMAGE':
+            image = node.image
+            break
+
+    if image:
+        # open in image editor
+        bpy.context.area.spaces.active.image = image
 
 
 def get_texel_density(op, context, uv_image, bm, uv_layer):
@@ -282,9 +328,8 @@ def get_selected_object_faces():
 
 	return object_faces_indices
 
+"""
 def get_island_area(bm, uv_layer, island):
-    """ Return the uv area and matching mesh face area
-    """
 
     for face in island:
         uv_tri = [loop[uv_layer].uv for loop in face.loops]
@@ -293,10 +338,7 @@ def get_island_area(bm, uv_layer, island):
         uv_area = _uvs.get_area_triangle_uv(
             uv_tri[0], uv_tri[1], uv_tri[2],
             )
-
-
-# TODO
-# Cube Helper - .5m 1m 2m options
+"""
 
 bpy.utils.register_class(BETOOLS_OT_GetTexel)
 bpy.utils.register_class(BETOOLS_OT_SetTexel)

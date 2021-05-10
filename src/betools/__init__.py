@@ -85,7 +85,8 @@ classes = (
     _panels.UI_PT_UVTransform,
     _panels.UI_PT_UVLayout,
     _panels.UI_PT_UVTexel,
-    _panels.UI_PT_UVColorID
+    _panels.UI_PT_UVColorID,
+    _panels.UI_PT_UVUtils
 )
 
 addon_keymaps = []

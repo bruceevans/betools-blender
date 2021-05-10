@@ -49,9 +49,18 @@ def get_uv_maps(self, context):
     maps = []
     count = 0
     for uv_loop in bpy.context.object.data.uv_layers:
-        maps.append((str(count), uv_loop.name, "Switching to {}".format(uv_loop.name), count))
+        maps.append((str(count), uv_loop.name, "UV Map: {}".format(uv_loop.name), count))
         count += 1
     return maps
+
+def show_uv_stretch(self, context):
+    if bpy.context.space_data.uv_editor.show_stretch:
+        bpy.context.space_data.uv_editor.show_stretch = False
+    else:
+        bpy.context.space_data.uv_editor.show_stretch = True
+
+def uv_stretch_type(self, context):
+    bpy.context.space_data.uv_editor.display_stretch_type = context.scene.betools_settings.uv_stretch_type
 
 class BETOOLSProperties(bpy.types.PropertyGroup):
 
@@ -70,6 +79,12 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
     sort_padding : bpy.props.FloatProperty(name='Pad', default=0.01)
     pack_padding : bpy.props.FloatProperty(name='Pad', default=0.01)
 
+    relax_iterations : bpy.props.IntProperty(
+        name="Relaxe Iterations (hundreds)",
+        default=4,
+        min=0,
+        max=50)
+
     current_texel_density : bpy.props.FloatProperty(name='Texel Density', default=256.0)
     texel_density : bpy.props.FloatProperty(name='Texel Density', default=256.0)
     
@@ -77,6 +92,21 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
     image_size : bpy.props.IntProperty(name='Image Size')
 
     material_name : bpy.props.StringProperty(name='Material Name', default='New Color')
+
+    show_uv_stretch : bpy.props.BoolProperty(
+        name = "UV Stretch",
+        default = False,
+        update = show_uv_stretch
+    )
+
+    uv_stretch_type : bpy.props.EnumProperty(
+        items = [
+            ('ANGLE', 'Angle', ''),
+            ('AREA', 'Area', '')
+        ],
+        name = "UV Stretch Type",
+        update = uv_stretch_type
+    )
 
     map_size_dropdown : bpy.props.EnumProperty(
         items = _constants.MAP_SIZES,
