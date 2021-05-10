@@ -167,13 +167,12 @@ class BETOOLS_OT_AssignMat(bpy.types.Operator):
         default=2048
     )
 
-    @classmethod
-    def poll(cls, context):
-        if bpy.context.object.mode != 'OBJECT':
-            return False
-        return True
-
     def execute(self, context):
+
+        original_mode = bpy.context.object.mode
+
+        if bpy.context.object.mode == 'EDIT':
+            bpy.ops.object.mode_set(mode = 'OBJECT')
 
         selected_objects = [obj for obj in bpy.context.selected_objects]
         if not selected_objects:
@@ -209,6 +208,8 @@ class BETOOLS_OT_AssignMat(bpy.types.Operator):
             obj.select_set(True)
             material = bpy.data.materials.get(material_name)
             assign_material(obj, material)
+
+        bpy.ops.object.mode_set(mode = original_mode)
 
         return {'FINISHED'}
 
