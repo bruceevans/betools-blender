@@ -58,7 +58,6 @@ class BETOOLS_OT_UVCameraProject(bpy.types.Operator):
         #Only in UV editor mode
         if bpy.context.area.type != 'IMAGE_EDITOR':
             return False
-
         return True
 
 
@@ -83,7 +82,11 @@ class BETOOLS_OT_UVTranslate(bpy.types.Operator):
         bm = bmesh.from_edit_mesh(me)
         uv_layer = bm.loops.layers.uv.verify()
 
-        _uvs.translate_uvs(bm, uv_layer, deltaU, deltaV)
+        uvs = _uvs.get_selected_uvs(bm, uv_layer)
+        if not uvs:
+            self.report({'ERROR_INVALID_INPUT'}, "Select some UVs!")
+
+        _uvs.translate_uvs(bm, uv_layer, uvs, deltaU, deltaV)
         bmesh.update_edit_mesh(me)
 
         return {'FINISHED'}
@@ -104,7 +107,6 @@ class BETOOLS_OT_UVTranslate(bpy.types.Operator):
         #Only in UV editor mode
         if bpy.context.area.type != 'IMAGE_EDITOR':
             return False
-
         return True
 
 
@@ -125,7 +127,12 @@ class BETOOLS_OT_UVScale(bpy.types.Operator):
         me = obj.data
         bm = bmesh.from_edit_mesh(me)
         uv_layer = bm.loops.layers.uv.verify()
-        _uvs.scale_uvs(bm, uv_layer, scaleU, scaleV)
+
+        uvs = _uvs.get_selected_uvs(bm, uv_layer)
+        if not uvs:
+            self.report({'ERROR_INVALID_INPUT'}, "Select some UVs!")
+
+        _uvs.scale_uvs(bm, uv_layer, uvs, scaleU, scaleV)
         bmesh.update_edit_mesh(me)
 
         return {'FINISHED'}
@@ -146,7 +153,6 @@ class BETOOLS_OT_UVScale(bpy.types.Operator):
         #Only in UV editor mode
         if bpy.context.area.type != 'IMAGE_EDITOR':
             return False
-
         return True
 
 
@@ -167,7 +173,11 @@ class BETOOLS_OT_UVRotate(bpy.types.Operator):
         bm = bmesh.from_edit_mesh(me)
         uv_layer = bm.loops.layers.uv.verify()
 
-        _uvs.rotate_uvs(bm, uv_layer, self.angle)
+        uvs = _uvs.get_selected_uvs(bm, uv_layer)
+        if not uvs:
+            self.report({'ERROR_INVALID_INPUT'}, "Select some UVs!")
+
+        _uvs.rotate_uvs(bm, uv_layer, uvs, self.angle)
         bmesh.update_edit_mesh(me)
 
         return {'FINISHED'}
@@ -188,7 +198,6 @@ class BETOOLS_OT_UVRotate(bpy.types.Operator):
         #Only in UV editor mode
         if bpy.context.area.type != 'IMAGE_EDITOR':
             return False
-
         return True
 
 
@@ -204,22 +213,20 @@ class BETOOLS_OT_Fill(bpy.types.Operator):
         me = obj.data
         bm = bmesh.from_edit_mesh(me)
         uv_layer = bm.loops.layers.uv.verify()
-        
-        islands = _uvs.get_selected_islands(bm, uv_layer)
 
-        if not islands:
-            self.report({'INFO'}, 'Select UV islands')
-            return {'FINISHED'}
+        uvs = _uvs.get_selected_uvs(bm, uv_layer)
+        if not uvs:
+            self.report({'ERROR_INVALID_INPUT'}, "Select some UVs!")
 
         bounding_box = _uvs.get_selection_bounding_box()
         scaleU = 1.00 / bounding_box.get('width')
         scaleV = 1.00 / bounding_box.get('height')
-        _uvs.scale_uvs(bm, uv_layer, scaleU, scaleV)
+        _uvs.scale_uvs(bm, uv_layer, uvs, scaleU, scaleV)
 
         bounding_box = _uvs.get_selection_bounding_box()
         deltaU = -bounding_box.get('min').x
         deltaV = -bounding_box.get('min').y
-        _uvs.translate_uvs(bm, uv_layer, deltaU, deltaV)
+        _uvs.translate_uvs(bm, uv_layer, uvs, deltaU, deltaV)
         
         bmesh.update_edit_mesh(me)
         return {'FINISHED'}
@@ -240,7 +247,6 @@ class BETOOLS_OT_Fill(bpy.types.Operator):
         #Only in UV editor mode
         if bpy.context.area.type != 'IMAGE_EDITOR':
             return False
-
         return True
 
 
@@ -255,26 +261,21 @@ class BETOOLS_OT_Fit(bpy.types.Operator):
         me = obj.data
         bm = bmesh.from_edit_mesh(me)
         uv_layer = bm.loops.layers.uv.verify()
-        islands = _uvs.get_selected_islands(bm, uv_layer)
 
-        if not islands:
-            self.report({'INFO'}, 'Select UV islands')
-            return {'FINISHED'}
+        uvs = _uvs.get_selected_uvs(bm, uv_layer)
+        if not uvs:
+            self.report({'ERROR_INVALID_INPUT'}, "Select some UVs!")
 
         bounding_box = _uvs.get_selection_bounding_box()
-
         max_size = max(bounding_box.get("width"), bounding_box.get("height"))
         scalar = 1.00 / max_size
-
-        for island in islands:
-            _uvs.scale_island(me, island, uv_layer, scalar, scalar)
+        _uvs.scale_uvs(bm, uv_layer, uvs, scalar, scalar)
 
         bounding_box = _uvs.get_selection_bounding_box()
-        deltaU = bounding_box.get('min').x
-        delatV = bounding_box.get('min').y
-
-        for island in islands:
-            _uvs.translate_island(me, island, uv_layer, -deltaU, -delatV)
+        deltaU = -bounding_box.get('min').x
+        deltaV = -bounding_box.get('min').y
+        _uvs.translate_uvs(bm, uv_layer, uvs, deltaU, deltaV)
+        bmesh.update_edit_mesh(me)
         return {'FINISHED'}
 
     @classmethod
@@ -287,13 +288,6 @@ class BETOOLS_OT_Fit(bpy.types.Operator):
         #Requires UV map
         if not bpy.context.object.data.uv_layers:
             return False
-        # Selective sync off
-        if bpy.context.scene.tool_settings.use_uv_select_sync:
-            return False
-        #Only in UV editor mode
-        if bpy.context.area.type != 'IMAGE_EDITOR':
-            return False
-
         return True
 
 
@@ -308,27 +302,52 @@ class BETOOLS_OT_OrientEdge(bpy.types.Operator):
         me = obj.data
         bm = bmesh.from_edit_mesh(me)
         uv_layer = bm.loops.layers.uv.verify()
-        
-        angle_sum = 0
-        angle_count = 0
 
-        uv_edges = _uvs.get_selected_uv_edges(bm, uv_layer)
-        if not uv_edges:
-            self.report({'INFO'}, 'Select a UV edge')
-            return {'FINISHED'}
-
-        for edge in uv_edges:
-            angle = math.degrees(_uvs.get_uv_edge_angle(edge[0].uv, edge[1].uv))
-            angle_sum += angle
-            angle_count += 1
-        average_angle = angle_sum / angle_count
         _uvs.store_selection()
         islands = _uvs.get_selected_islands(bm, uv_layer)
-        
-        _uvs.rotate_island(me, islands, uv_layer, average_angle)
+        _uvs.restore_selection(bm, uv_layer)
+
+        for island in islands:
+            # get each selected uv on the island
+            angle_sum = 0
+            angle_count = 0
+            edges = self.get_selected_island_edges(bm, island, uv_layer)
+
+            for edge in edges:
+                angle = math.degrees(_uvs.get_uv_edge_angle(edge[0].uv, edge[1].uv))
+                angle_sum += angle
+                angle_count += 1
+            average_angle = angle_sum / angle_count
+            _uvs.rotate_island(me, [island], uv_layer, average_angle)
+
         _uvs.restore_selection(bm, uv_layer)
         bmesh.update_edit_mesh(me)
         return {'FINISHED'}
+
+    def get_selected_island_edges(self, bm, island, uv_layer):
+        faces = []
+        for face in island:
+            for loop in face.loops:
+                if loop[uv_layer].select:
+                    faces.append(face)
+                    break
+
+        uv_edges = []
+        for face in faces:
+            for loop in face.loops:
+                uv_edge = []
+                uv_edge.append(loop[uv_layer])
+                uv_edge.append(loop.link_loop_next[uv_layer])
+                uv_edges.append(uv_edge)
+        
+        selected_uv_edges = []
+        for edge in uv_edges:
+            if edge[0].select and not edge[0].pin_uv:
+                if edge[1].select and not edge[1].pin_uv:
+                    selected_uv_edges.append(edge)
+
+        # TODO optimize
+        return selected_uv_edges
 
     @classmethod
     def poll(cls, context):
@@ -346,7 +365,6 @@ class BETOOLS_OT_OrientEdge(bpy.types.Operator):
         #Only in UV editor mode
         if bpy.context.area.type != 'IMAGE_EDITOR':
             return False
-
         return True
 
 
@@ -378,9 +396,14 @@ class BETOOLS_OT_UVProject(bpy.types.Operator):
                     loop_uv = loop[uv_layer]
                     loop_uv.select = True
                     loop_uv.uv = getattr(loop.vert.co, _PROJECTION_SWIZZLE.get(self.axis))
-        
+
         bmesh.update_edit_mesh(me)
         bpy.ops.uv.be_fit()
+        # center
+        bounding_box = _uvs.get_selection_bounding_box()
+        deltaX = .5 - bounding_box.get('center').x
+        deltaY = .5 - bounding_box.get('center').y
+        _uvs.translate_uvs(bm, uv_layer, deltaX, deltaY)
         return {'FINISHED'}
 
     @classmethod
@@ -393,13 +416,6 @@ class BETOOLS_OT_UVProject(bpy.types.Operator):
         #Requires UV map
         if not bpy.context.object.data.uv_layers:
             return False
-        # Selective sync off
-        if bpy.context.scene.tool_settings.use_uv_select_sync:
-            return False
-        #Only in UV editor mode
-        if bpy.context.area.type != 'IMAGE_EDITOR':
-            return False
-
         return True
 
 
@@ -430,7 +446,6 @@ class BETOOLS_OT_IslandSnap(bpy.types.Operator):
         #Only in UV editor mode
         if bpy.context.area.type != 'IMAGE_EDITOR':
             return False
-
         return True
 
     def execute(self, context):
@@ -439,12 +454,11 @@ class BETOOLS_OT_IslandSnap(bpy.types.Operator):
         bm = bmesh.from_edit_mesh(me)
         uv_layer = bm.loops.layers.uv.verify()
 
-        islands = _uvs.get_selected_islands(bm, uv_layer)
-        if not islands:
-            return {'FINISHED'}
-        # bounds = _uvs.getIslandBoundingBox(islands)
-        bounds = _uvs.get_selection_bounding_box()
+        uvs = _uvs.get_selected_uvs(bm, uv_layer)
+        if not uvs:
+            self.report({'ERROR_INVALID_INPUT'}, "Select some UVs!")
 
+        bounds = _uvs.get_selection_bounding_box()
         x = _SNAP_POINTS.get(self.direction)[0]
         y = _SNAP_POINTS.get(self.direction)[1]
         target = _SNAP_POINTS.get(self.direction)[2]
@@ -452,9 +466,9 @@ class BETOOLS_OT_IslandSnap(bpy.types.Operator):
         xDelta = target.x-bounds.get(x).x
         yDelta = target.y-bounds.get(y).y
 
-        for island in islands:
-            _uvs.translate_island(me, island, uv_layer, xDelta, yDelta)
+        _uvs.translate_uvs(bm, uv_layer, uvs, xDelta, yDelta)
 
+        bmesh.update_edit_mesh(me)
         return {'FINISHED'}
 
 
@@ -505,7 +519,6 @@ class BETOOLS_OT_IslandStack(bpy.types.Operator):
         #Only in UV editor mode
         if bpy.context.area.type != 'IMAGE_EDITOR':
             return False
-
         return True
 
 
@@ -546,20 +559,6 @@ class BETOOLS_OT_IslandSort(bpy.types.Operator):
         translation = padding
 
         if self.axis == 'VERTICAL':
-
-            """
-            for island in islands:
-                # doing vertical sort, we want longest axis to be the width
-                # sort
-                bbox = _uvs.get_island_bounding_box(island, uv_layer)
-                # TODO check for rotate
-                if bbox.get('height') > bbox.get('width'):
-                    # rotate by 90
-                    tempList = []
-                    tempList.append(island)
-                    _uvs.rotate_island(me, tempList, uv_layer, 90)
-                    bbox = _uvs.get_island_bounding_box(island, uv_layer)
-            """
             # sort by width
             sortedIslands = sorted(
                 islands,
@@ -571,16 +570,6 @@ class BETOOLS_OT_IslandSort(bpy.types.Operator):
                 _uvs.translate_island(me, island, uv_layer, delta.x, delta.y)
                 translation += bbox.get('height') + padding
         else:
-            """
-            for island in islands:
-                bbox = _uvs.get_island_bounding_box(island, uv_layer)
-                if bbox.get('width') > bbox.get('height'):
-                    # rotate by 90
-                    tempList = []
-                    tempList.append(island)
-                    _uvs.rotate_island(me, tempList, uv_layer, 90)
-                    bbox = _uvs.get_island_bounding_box(island, uv_layer)
-            """
             # sort by width
             sortedIslands = sorted(
                 islands,
@@ -610,7 +599,6 @@ class BETOOLS_OT_IslandSort(bpy.types.Operator):
         #Only in UV editor mode
         if bpy.context.area.type != 'IMAGE_EDITOR':
             return False
-            
         return True
 
 
@@ -635,9 +623,12 @@ class BETOOLS_OT_FlipIsland(bpy.types.Operator):
         me = obj.data
         bm = bmesh.from_edit_mesh(me)
         uv_layer = bm.loops.layers.uv.verify()
+        uvs = _uvs.get_selected_uvs(bm, uv_layer)
+        if not uvs:
+            self.report({'ERROR_INVALID_INPUT'}, "Select some UVs!")
 
         scale = Vector(( -1.0, 1.0 )) if self.direction == "HORIZONTAL" else Vector(( 1.0, -1.0 ))
-        _uvs.scale_uvs(bm, uv_layer, scale.x, scale.y)
+        _uvs.scale_uvs(bm, uv_layer, uvs, scale.x, scale.y)
         bmesh.update_edit_mesh(me)
 
         return {'FINISHED'}
@@ -658,7 +649,6 @@ class BETOOLS_OT_FlipIsland(bpy.types.Operator):
         #Only in UV editor mode
         if bpy.context.area.type != 'IMAGE_EDITOR':
             return False
-
         return True
 
 

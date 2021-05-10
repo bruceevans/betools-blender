@@ -349,6 +349,7 @@ class UI_PT_ExportPanel(Panel):
 # UV Panels
 ###############################################
 
+
 import bmesh
 
 
@@ -366,17 +367,20 @@ class UI_PT_UVImage(Panel):
         row = col.row(align = True)
         row.label(text="Map Size: ")
         row.prop(context.scene.betools_settings, "map_size_dropdown", text="")
-        row.operator(
-            'uv.be_create_image',
-            text='',
-            icon="MESH_PLANE"
-            ).size=int(context.scene.betools_settings.map_size_dropdown)
+
         row = col.row(align = True)
         row.prop(context.scene.betools_settings, "checker_map_dropdown", text="")
         row.operator(
             'uv.be_assign_mat',
-            text='',
+            text='Assign',
             icon="TEXTURE_DATA"
+            ).size=int(context.scene.betools_settings.map_size_dropdown)
+
+        row = col.row(align = True)
+        row.operator(
+            'uv.be_create_image',
+            text='Create Blank Image',
+            icon="MESH_PLANE"
             ).size=int(context.scene.betools_settings.map_size_dropdown)
 
 class UI_PT_UVTransform(Panel):

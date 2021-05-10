@@ -367,10 +367,7 @@ def translate_island(mesh, island, uv_layer, deltaX, deltaY):
 
     bmesh.update_edit_mesh(mesh)
 
-def translate_uvs(bmesh, uv_layer, deltaX, deltaY):
-    uvs = get_selected_uvs(bmesh, uv_layer)
-    if not uvs:
-        return
+def translate_uvs(bmesh, uv_layer, uvs, deltaX, deltaY):
     for uv in uvs:
         if not uv.pin_uv:
             uv.uv[0] += deltaX
@@ -400,10 +397,7 @@ def scale_island(mesh, island, uv_layer, scaleU, scaleV):
 
     bmesh.update_edit_mesh(mesh)
 
-def scale_uvs(bmesh, uv_layer, scaleU, scaleV):
-    uvs = get_selected_uvs(bmesh, uv_layer)
-    if not uvs:
-        return
+def scale_uvs(bmesh, uv_layer, uvs, scaleU, scaleV):
 
     bounding_box = get_selection_bounding_box()
     center = (bounding_box.get("max") - bounding_box.get("min"))/2
@@ -467,10 +461,8 @@ def rotate_island(bmesh, islands, uv_layer, angle):
                     loop_uv.uv[0] = duR + pivot.x
                     loop_uv.uv[1] = dvR + pivot.y
 
-def rotate_uvs(bmesh, uv_layer, angle):
-    uvs = get_selected_uvs(bmesh, uv_layer)
-    if not uvs:
-        return
+def rotate_uvs(bmesh, uv_layer, uvs, angle):
+
     cos_theta, sin_theta = math.cos(math.radians(-angle)), math.sin(math.radians(-angle))
     bounding_box = get_selection_bounding_box()
     center = (bounding_box.get("max") - bounding_box.get("min"))/2
