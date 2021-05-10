@@ -694,21 +694,10 @@ class BETOOLS_OT_FlipIsland(bpy.types.Operator):
         bm = bmesh.from_edit_mesh(me)
         uv_layer = bm.loops.layers.uv.verify()
 
-        islands = _uvs.get_selected_islands(bm, uv_layer)
-
-        if not islands:
-            self.report({'INFO'}, 'Select UV islands')
-            return {'FINISHED'}
-
         scale = Vector(( -1.0, 1.0 )) if self.direction == "HORIZONTAL" else Vector(( 1.0, -1.0 ))
-        bbox = _uvs.get_selection_bounding_box()
-        delta = Vector(( -bbox.get('center').x, -bbox.get('center').y ))
-        for island in islands:
-            # TODO transform selection
-            _uvs.translate_island(me, island, uv_layer, delta.x, delta.y)
-            _uvs.scale_island(me, island, uv_layer, scale.x, scale.y)
-            _uvs.translate_island(me, island, uv_layer, -delta.x, -delta.y)
-
+        _uvs.scale_uvs(bm, uv_layer, scale.x, scale.y)
+        bmesh.update_edit_mesh(me)
+        
         return {'FINISHED'}
 
     @classmethod

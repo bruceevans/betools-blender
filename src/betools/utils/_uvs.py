@@ -20,9 +20,6 @@ from pprint import pprint
 #######################################
 
 
-# TODO anywhere there is a uv.select test, also test for pinning
-
-
 def store_selection():
     bm = bmesh.from_edit_mesh(bpy.context.active_object.data)
     uv_layers = bm.loops.layers.uv.verify()
@@ -270,7 +267,6 @@ def get_island_bounding_box(island, uv_layers):
 
     for face in island:
         for loop in face.loops:
-            # TODO and not pinned big todo
             if loop[uv_layers].select:
                 selection = True
                 uv = loop[uv_layers].uv
@@ -345,6 +341,18 @@ def match_face_selection(bm, uv_layers):
             for loop in face.loops:
                 loop[uv_layers].select = True
 
+def get_selected_uvs(bm, uv_layer):
+
+    uvs = []
+
+    for face in bm.faces:
+        for loop in face.loops:
+            if loop[uv_layer].select:
+                uvs.append(loop[uv_layer])
+
+    return uvs
+
+
 #######################################
 #  UV Transforms
 #######################################
@@ -360,15 +368,23 @@ def translate_island(mesh, island, uv_layer, deltaX, deltaY):
             deltaY (float)
 
     """
-
-    # adjust uv coordinates
     for face in island:
         for loop in face.loops:
             loop_uv = loop[uv_layer]
-            loop_uv.uv[0] += deltaX
-            loop_uv.uv[1] += deltaY
+            if not loop_uv.pin_uv:
+                loop_uv.uv[0] += deltaX
+                loop_uv.uv[1] += deltaY
 
     bmesh.update_edit_mesh(mesh)
+
+def translate_uvs(mesh, uv_layer, deltaX, deltaY):
+    uvs = get_selected_uvs(mesh, uv_layer)
+    if not uvs:
+        return
+    for uv in uvs:
+        if not uv.pin_uv:
+            uv.uv[0] += deltaX
+            uv.uv[1] += deltaY
 
 def scale_island(mesh, island, uv_layer, scaleU, scaleV):
     """ scale """
@@ -381,17 +397,39 @@ def scale_island(mesh, island, uv_layer, scaleU, scaleV):
     for face in island:
         for loop in face.loops:
             loop_uv = loop[uv_layer]
+            if not loop_uv.pin_uv:
 
-            loop_uv.uv[0] -= pivot.x
-            loop_uv.uv[1] -= pivot.y
+                loop_uv.uv[0] -= pivot.x
+                loop_uv.uv[1] -= pivot.y
 
-            loop_uv.uv[0] *= scaleU
-            loop_uv.uv[1] *= scaleV
+                loop_uv.uv[0] *= scaleU
+                loop_uv.uv[1] *= scaleV
 
-            loop_uv.uv[0] += pivot.x
-            loop_uv.uv[1] += pivot.y
+                loop_uv.uv[0] += pivot.x
+                loop_uv.uv[1] += pivot.y
 
     bmesh.update_edit_mesh(mesh)
+
+def scale_uvs(mesh, uv_layer, scaleU, scaleV):
+    uvs = get_selected_uvs(mesh, uv_layer)
+    if not uvs:
+        return
+
+    bounding_box = get_selection_bounding_box()
+    center = (bounding_box.get("max") - bounding_box.get("min"))/2
+    box_max = bounding_box.get("max")
+    pivot = box_max - center
+
+    for uv in uvs:
+        if not uv.pin_uv:
+            uv.uv[0] -= pivot.x
+            uv.uv[1] -= pivot.y
+
+            uv.uv[0] *= scaleU
+            uv.uv[1] *= scaleV
+
+            uv.uv[0] += pivot.x
+            uv.uv[1] += pivot.y
 
 def rotate_island(mesh, islands, uv_layer, angle):
     """ rotate """
@@ -408,15 +446,16 @@ def rotate_island(mesh, islands, uv_layer, angle):
             for face in island:
                 for loop in face.loops:
                     loop_uv = loop[uv_layer]
+                    if not loop_uv.pin_uv:
 
-                    loop_uv.uv[0] -= pivot.x
-                    loop_uv.uv[1] -= pivot.y
+                        loop_uv.uv[0] -= pivot.x
+                        loop_uv.uv[1] -= pivot.y
 
-                    duR = loop_uv.uv[0] * cos_theta - loop_uv.uv[1] * sin_theta
-                    dvR = loop_uv.uv[0] * sin_theta + loop_uv.uv[1] * cos_theta
+                        duR = loop_uv.uv[0] * cos_theta - loop_uv.uv[1] * sin_theta
+                        dvR = loop_uv.uv[0] * sin_theta + loop_uv.uv[1] * cos_theta
 
-                    loop_uv.uv[0] = duR + pivot.x
-                    loop_uv.uv[1] = dvR + pivot.y
+                        loop_uv.uv[0] = duR + pivot.x
+                        loop_uv.uv[1] = dvR + pivot.y
     else:
         # dealing with a single island
         bounding_box = get_island_bounding_box(islands[0], uv_layer)
@@ -427,21 +466,40 @@ def rotate_island(mesh, islands, uv_layer, angle):
         for face in islands[0]:
             for loop in face.loops:
                 loop_uv = loop[uv_layer]
+                if not loop_uv.pin_uv:
 
-                loop_uv.uv[0] -= pivot.x
-                loop_uv.uv[1] -= pivot.y
+                    loop_uv.uv[0] -= pivot.x
+                    loop_uv.uv[1] -= pivot.y
 
-                duR = loop_uv.uv[0] * cos_theta - loop_uv.uv[1] * sin_theta
-                dvR = loop_uv.uv[0] * sin_theta + loop_uv.uv[1] * cos_theta
+                    duR = loop_uv.uv[0] * cos_theta - loop_uv.uv[1] * sin_theta
+                    dvR = loop_uv.uv[0] * sin_theta + loop_uv.uv[1] * cos_theta
 
-                loop_uv.uv[0] = duR + pivot.x
-                loop_uv.uv[1] = dvR + pivot.y
+                    loop_uv.uv[0] = duR + pivot.x
+                    loop_uv.uv[1] = dvR + pivot.y
 
     bmesh.update_edit_mesh(mesh)
 
+def rotate_uvs(mesh, uv_layer, angle):
+    uvs = get_selected_uvs(mesh, uv_layer)
+    if not uvs:
+        return
+    cos_theta, sin_theta = math.cos(math.radians(-angle)), math.sin(math.radians(-angle))
+    bounding_box = get_selection_bounding_box()
+    center = (bounding_box.get("max") - bounding_box.get("min"))/2
+    box_max = bounding_box.get("max")
+    pivot = box_max - center
+    for uv in uvs:
+        if not uv.pin_uv:
+            uv.uv[0] -= pivot.x
+            uv.uv[1] -= pivot.y
+
+            duR = uv.uv[0] * cos_theta - uv.uv[1] * sin_theta
+            dvR = uv.uv[0] * sin_theta + uv.uv[1] * cos_theta
+
+            uv.uv[0] = duR + pivot.x
+            uv.uv[1] = dvR + pivot.y
 
 # TODO trim tools
-            
 
 #######################################
 #  Image Helpers
