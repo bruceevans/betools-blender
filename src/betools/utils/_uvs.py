@@ -168,6 +168,8 @@ def get_uv_edge_angle(uv1, uv2):
     return math.atan2(uv2[1] - uv1[1], uv2[0] - uv1[0])
 
 def get_uvs_from_verts(bm, uv_layers):
+    """ Create vert to uv indices
+    """
     vert_uv = {}
     for face in bm.faces:
         for loop in face.loops:
@@ -238,24 +240,12 @@ def get_area_triangle_uv(A, B, C, size_x, size_y):
 	return get_area_triangle(A, B, C)
 
 def get_area_triangle(A,B,C):
-	# area = square root (s • (s - a) • (s - b) • (s - c))
 	a = (B-A).length
 	b = (C-B).length
 	c = (A-C).length
 	s = (a+b+c)/2
 
 	return math.sqrt(s * abs(s-a) * abs(s-b) * abs(s-c))
-
-"""
-def get_uv_layer(ops_obj, bm):
-    # get UV layer
-    if not bm.loops.layers.uv:
-        ops_obj.report({'WARNING'},
-                        "Object must have more than one UV map")
-        return None
-    uv_layer = bm.loops.layers.uv.verify()
-    return uv_layer
-"""
 
 def get_island_bounding_box(island, uv_layers):
 

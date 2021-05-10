@@ -22,6 +22,7 @@ uv_map_rename_mode = False
 
 id_colors = []
 
+
 def set_uv_map_dropdown(self, context, index):
     if bpy.context.active_object != None:
         if bpy.context.active_object.type == 'MESH':
@@ -61,6 +62,8 @@ def show_uv_stretch(self, context):
 
 def uv_stretch_type(self, context):
     bpy.context.space_data.uv_editor.display_stretch_type = context.scene.betools_settings.uv_stretch_type
+
+
 
 class BETOOLSProperties(bpy.types.PropertyGroup):
 
@@ -129,5 +132,6 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
     uv_map_new_name : bpy.props.StringProperty(name='Rename UV Map', default = 'New UV Map')
 
     # TODO checkbox pref for auto rotate on sort
+
 
 bpy.utils.register_class(BETOOLSProperties)

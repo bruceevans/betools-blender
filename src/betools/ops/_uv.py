@@ -204,6 +204,7 @@ class BETOOLS_OT_Fill(bpy.types.Operator):
         me = obj.data
         bm = bmesh.from_edit_mesh(me)
         uv_layer = bm.loops.layers.uv.verify()
+        
         islands = _uvs.get_selected_islands(bm, uv_layer)
 
         if not islands:
@@ -211,19 +212,16 @@ class BETOOLS_OT_Fill(bpy.types.Operator):
             return {'FINISHED'}
 
         bounding_box = _uvs.get_selection_bounding_box()
-
         scaleU = 1.00 / bounding_box.get('width')
         scaleV = 1.00 / bounding_box.get('height')
-
-        for island in islands:
-            _uvs.scale_island(me, island, uv_layer, scaleU, scaleV)
+        _uvs.scale_uvs(bm, uv_layer, scaleU, scaleV)
 
         bounding_box = _uvs.get_selection_bounding_box()
-        deltaU = bounding_box.get('min').x
-        delatV = bounding_box.get('min').y
-
-        for island in islands:
-            _uvs.translate_island(me, island, uv_layer, -deltaU, -delatV)
+        deltaU = -bounding_box.get('min').x
+        deltaV = -bounding_box.get('min').y
+        _uvs.translate_uvs(bm, uv_layer, deltaU, deltaV)
+        
+        bmesh.update_edit_mesh(me)
         return {'FINISHED'}
 
     @classmethod
