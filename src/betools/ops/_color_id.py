@@ -1,6 +1,9 @@
 
 import bpy
+import bmesh
 from bpy.props import IntProperty
+
+from ..utils import _uvs
 from .. import _settings
 
 # color ID ops
@@ -77,8 +80,32 @@ class BETOOLS_OT_AssignColor(bpy.types.Operator):
     )
 
     def execute(self, context):
+        obj = bpy.context.active_object
+        me = obj.data
+        bm = bmesh.from_edit_mesh(me)
+        uv_layer = bm.loops.layers.uv.verify()
+        uvs = _uvs.get_selected_uvs(bm, uv_layer)
+        if not uvs:
+            self.report({'ERROR_INVALID_INPUT'}, "Select some UVs!")
+
+        # create a new material name "BE_ID_#"
+        # modify the color to match
+        # assign to selected faces via selected uvs
+        # update
 
         return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        if not bpy.context.active_object:
+            return False
+        #Only in Edit mode
+        if bpy.context.active_object.mode != 'EDIT':
+            return False
+        #Requires UV map
+        if not bpy.context.object.data.uv_layers:
+            return False
+        return True
 
 
 class BETOOLS_OT_BakeID(bpy.types.Operator):
@@ -93,11 +120,20 @@ class BETOOLS_OT_BakeID(bpy.types.Operator):
 
     def execute(self, context):
 
+        # create the ID Map based on current map size or use existing map
+        # create a new ID_Map material to view the results
+        # switch to cycles
+        # diffuse bake mode - color only
+        # select object (object mode?)
+        # run bake
+
         return {'FINISHED'}
 
     @classmethod
     def poll(cls, context):
         if not _settings.id_colors:
+            return False
+        if not bpy.context.active_object:
             return False
         return True
 
