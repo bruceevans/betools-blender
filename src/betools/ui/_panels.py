@@ -533,18 +533,28 @@ class UI_PT_UVColorID(Panel):
 
     def draw(self, context):
         # Image creation and generation
-        uv_props = context.scene.betools_settings
+        settings = context.scene.betools_settings
 
         layout = self.layout
-        col = layout.column(align=True)
+        box = layout.box()
+        col = box.column(align=True)
         row = col.row(align=True)
         row.label(text="Material Name: ")
         row = col.row(align=True)
-        row.prop(uv_props, "material_name", text = "")
+        row.prop(settings, "material_name", text = "")
         row.operator("uv.be_add_color", text="", icon="ADD")
 
-    # Map selection (Checker, gravity, etc.)
-    # Color ID stuff?
+        for i in range(len(_settings.id_colors)):
+            row = col.row(align=True)
+            row.label(text=_settings.id_colors[i].get("name"))
+            row.prop(settings, "color_id_{}".format(i), text="")
+            row.operator("uv.be_assign_color", text="", icon="CHECKMARK").index=i
+            row.operator("uv.be_remove_color", text="", icon="REMOVE").index=i
+
+        col = layout.column()
+        col.scale_y = 1.75
+        col.operator("uv.be_bake_id", text="Bake ID Map", icon="RADIOBUT_ON").bleed = 1
+
     # Explode mesh
 
 

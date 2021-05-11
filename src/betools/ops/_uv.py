@@ -30,7 +30,6 @@ _PROJECTION_SWIZZLE = {
     'Z': 'xy'
 }
 
-# TODO udim?
 
 class BETOOLS_OT_UVCameraProject(bpy.types.Operator):
     bl_idname = "mesh.be_uv_camera_project"
@@ -709,6 +708,16 @@ class BETOOLS_OT_RenameUVMap(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class BETOOLS_OT_RandomizeUVs(bpy.types.Operator):
+    bl_idname = "uv.be_uv_randomize"
+    bl_label = "Rename UV Map"
+    bl_description = "Slightly randomize the UV islands"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        # TODO
+        return {'FINISHED'}
+
 bpy.utils.register_class(BETOOLS_OT_IslandSnap)
 bpy.utils.register_class(BETOOLS_OT_UVCameraProject)
 bpy.utils.register_class(BETOOLS_OT_UVTranslate)
@@ -725,3 +734,4 @@ bpy.utils.register_class(BETOOLS_OT_AddUVMap)
 bpy.utils.register_class(BETOOLS_OT_RemUVMap)
 bpy.utils.register_class(BETOOLS_OT_ModifyUVChannel)
 bpy.utils.register_class(BETOOLS_OT_RenameUVMap)
+bpy.utils.register_class(BETOOLS_OT_RandomizeUVs)
