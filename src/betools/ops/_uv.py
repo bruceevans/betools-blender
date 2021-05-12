@@ -402,7 +402,8 @@ class BETOOLS_OT_UVProject(bpy.types.Operator):
         bounding_box = _uvs.get_selection_bounding_box()
         deltaX = .5 - bounding_box.get('center').x
         deltaY = .5 - bounding_box.get('center').y
-        _uvs.translate_uvs(bm, uv_layer, deltaX, deltaY)
+        uvs = _uvs.get_selected_uvs(bm, uv_layer)
+        _uvs.translate_uvs(bm, uv_layer, uvs, deltaX, deltaY)
         return {'FINISHED'}
 
     @classmethod

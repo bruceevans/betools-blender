@@ -13,7 +13,7 @@ class BETOOLS_OT_VertSnap(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        context.scene.tool_settings.use_snap = True
+        # context.scene.tool_settings.use_snap = True
         context.scene.tool_settings.snap_elements = {'VERTEX'}
         context.scene.tool_settings.snap_target = 'CENTER'
         return {'FINISHED'}
@@ -30,9 +30,8 @@ class BETOOLS_OT_VertSnapClosest(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        context.scene.tool_settings.use_snap = True
+        # context.scene.tool_settings.use_snap = True
         context.scene.tool_settings.snap_elements = {'VERTEX'}
-        
         context.scene.tool_settings.snap_target = 'CLOSEST'
         return {'FINISHED'}
     
@@ -48,7 +47,7 @@ class BETOOLS_OT_GridSnap(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        context.scene.tool_settings.use_snap = True
+        # context.scene.tool_settings.use_snap = True
         context.scene.tool_settings.snap_elements = {'INCREMENT'}
         context.scene.tool_settings.use_snap_grid_absolute = True
         return {'FINISHED'}

@@ -197,11 +197,13 @@ class UI_PT_BEToolsPanel(Panel):
 
     def draw(self, context):
 
+        settings = context.scene.betools_settings
+        tool_settings = context.tool_settings
+
         layout = self.layout
         layout.label(text="Viewport Display: ")
         box = layout.box()
 
-        # row = layout.column().row(align=True)
         col = box.column(align=True)
 
         col.operator("mesh.be_toggle_wireframe", text = "Toggle Wireframe", icon = "SHADING_WIRE")
@@ -212,6 +214,8 @@ class UI_PT_BEToolsPanel(Panel):
         box = layout.box()
 
         col = box.column(align=True)
+        row = col.row(align=True)
+        row.prop(tool_settings, "use_snap", text="Snapping")
         row = col.row(align=True)
         row.operator("mesh.be_vert_snap", text = "Vertex", icon = "SNAP_VERTEX")
         row.operator("mesh.be_closest_vert_snap", text = "Close Vert", icon = "SNAP_GRID")

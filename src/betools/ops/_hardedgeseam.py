@@ -34,16 +34,12 @@ class SeamHardEdge(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         sm = tuple(bpy.context.tool_settings.mesh_select_mode)
-
         if not sm[1]:
             return False
-
         if context.object is None:
             return False
-
         if not bpy.context.active_object.mode == 'EDIT':
             return False
-
         return True
 
 bpy.utils.register_class(SeamHardEdge)

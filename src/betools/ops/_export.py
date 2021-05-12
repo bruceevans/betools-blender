@@ -33,6 +33,7 @@ class ExportScene(bpy.types.Operator):
         bpy.ops.export_scene.fbx('INVOKE_DEFAULT')
         return {'FINISHED'}
 
+# TODO Quick sculpt export
 # TODO UE4 Export
 # TODO Unity Export
 

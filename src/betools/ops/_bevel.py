@@ -14,7 +14,7 @@ class SmartBevel(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def bevel(self):
-        selection_mode = (tuple(bpy.context.scene.tool_settings.mesh_select_mode))
+        selection_mode = tuple(bpy.context.scene.tool_settings.mesh_select_mode)
         if selection_mode[0]:
             bpy.ops.mesh.bevel('INVOKE_DEFAULT',affect='VERTICES')
         elif selection_mode[1]:

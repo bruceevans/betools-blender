@@ -25,6 +25,9 @@ name_template = {
     "color": "hex_color"
 }
 
+##############################################################################
+##############################################################################
+
 def set_uv_map_dropdown(self, context, index):
     if bpy.context.active_object != None:
         if bpy.context.active_object.type == 'MESH':
@@ -89,7 +92,16 @@ def get_rename():
     )
 
 
+##############################################################################
+##############################################################################
+
+
 class BETOOLSProperties(bpy.types.PropertyGroup):
+
+    snapping : bpy.props.BoolProperty(
+        name='Snapping',
+        default=False
+    )
 
     translate_u : bpy.props.FloatProperty(name='U')
     translate_v : bpy.props.FloatProperty(name='V')
