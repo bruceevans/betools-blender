@@ -718,6 +718,7 @@ class BETOOLS_OT_RandomizeUVs(bpy.types.Operator):
         # TODO
         return {'FINISHED'}
 
+
 bpy.utils.register_class(BETOOLS_OT_IslandSnap)
 bpy.utils.register_class(BETOOLS_OT_UVCameraProject)
 bpy.utils.register_class(BETOOLS_OT_UVTranslate)

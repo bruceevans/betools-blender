@@ -497,7 +497,6 @@ class UI_PT_UVTexel(Panel):
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
-        # Image creation and generation
 
         uv_props = context.scene.betools_settings
 
@@ -543,22 +542,31 @@ class UI_PT_UVColorID(Panel):
         row = col.row(align=True)
         row.prop(settings, "material_name", text = "")
         row.operator("uv.be_add_color", text="", icon="ADD")
+        row.operator("uv.be_remove_color", text="", icon="REMOVE")
 
-        for i in range(len(_settings.id_colors)):
+        col = box.column(align=True)
+
+        for i in range(len(context.scene.betools_settings.id_colors)):
             row = col.row(align=True)
-            row.label(text=_settings.id_colors[i].get("name"))
+            row.label(text=context.scene.betools_settings.id_colors[i].get("name"))
             row.prop(settings, "color_id_{}".format(i), text="")
+            row.operator("uv.be_enable_rename_color", text="", icon="GREASEPENCIL").index=i
             row.operator("uv.be_assign_color", text="", icon="CHECKMARK").index=i
-            row.operator("uv.be_remove_color", text="", icon="REMOVE").index=i
+            if context.scene.betools_settings.id_colors[i].get("rename"):
+                row = col.row(align=True)
+                row.prop(settings, "rename_material", text="")
+                row.operator("uv.be_rename_color", text="", icon="CHECKMARK").index=i
+            # row.operator("uv.be_remove_color", text="", icon="REMOVE").index=i
 
         col = layout.column()
         col.scale_y = 1.75
-        col.operator("uv.be_bake_id", text="Bake ID Map", icon="RADIOBUT_ON").bleed = 1
-
-    # Explode mesh
+        bake = col.operator("uv.be_bake_id", text="Bake ID Map", icon="RADIOBUT_ON")
+        bake.margin = 8
+        bake.size = int(settings.map_size_dropdown)
 
 
 class UI_PT_UVUtils(Panel):
+
     """ UV Utilities
     """
     bl_label = "Utilities"
@@ -607,4 +615,4 @@ class UI_PT_UVUtils(Panel):
         # TODO UDIM
 
 bpy.types.Scene.snap_object = bpy.props.StringProperty()
-bpy.types.Scene.betools_settings = bpy.props.PointerProperty(type=BETOOLSProperties)
+# bpy.types.Scene.betools_settings = bpy.props.PointerProperty(type=BETOOLSProperties)

@@ -20,7 +20,7 @@ game_engine = ''        # Unreal or Unity or Source?
 
 uv_map_rename_mode = False
 
-id_colors = []
+# id_colors = []
 name_template = {
     "name": "name",
     "color": "hex_color"
@@ -68,8 +68,7 @@ def uv_stretch_type(self, context):
     bpy.context.space_data.uv_editor.display_stretch_type = context.scene.betools_settings.uv_stretch_type
 
 def on_color_updated(self, value):
-
-    for i, color in enumerate(id_colors):
+    for i, color in enumerate(bpy.context.scene.betools_settings.id_colors):
         print(value)
 
     """
@@ -79,7 +78,8 @@ def on_color_updated(self, value):
         print(id_colors[i].get("color"))
     """
 
-def get_color():
+def get_color(index=None):
+
     return bpy.props.FloatVectorProperty(
         name="Color",
         description="Set Color for ID",
@@ -120,8 +120,12 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
     texel_density_units : bpy.props.StringProperty(name='Texel Density Units', default="Centimeters")
     image_size : bpy.props.IntProperty(name='Image Size')
 
-    material_name : bpy.props.StringProperty(name='Material Name', default='New Color')
+    material_name : bpy.props.StringProperty(name='New Color', default='New Color')
+    rename_material : bpy.props.StringProperty(name='Rename Color', default='New Color')
 
+    id_colors = []
+
+    # color vals
     color_id_0 : get_color()
     color_id_1 : get_color()
     color_id_2 : get_color()
@@ -173,9 +177,6 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
 	)
 
     uv_map_new_name : bpy.props.StringProperty(name='Rename UV Map', default = 'New UV Map')
-
     color_id_count : bpy.props.IntProperty(name = "Color ID Count", default = 0)
 
     # TODO checkbox pref for auto rotate on sort
-
-bpy.utils.register_class(BETOOLSProperties)

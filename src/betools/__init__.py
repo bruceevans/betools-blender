@@ -86,7 +86,8 @@ classes = (
     _panels.UI_PT_UVLayout,
     _panels.UI_PT_UVTexel,
     _panels.UI_PT_UVColorID,
-    _panels.UI_PT_UVUtils
+    _panels.UI_PT_UVUtils,
+    _settings.BETOOLSProperties 
 )
 
 addon_keymaps = []
@@ -94,6 +95,7 @@ addon_keymaps = []
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
+    bpy.types.Scene.betools_settings = bpy.props.PointerProperty(type=_settings.BETOOLSProperties)
 
     # handle keymaps
     kc = bpy.context.window_manager.keyconfigs.addon
@@ -103,9 +105,9 @@ def register():
     addon_keymaps.append((km, kmi))
 
 def unregister():
+    del bpy.types.Scene.betools_settings
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
-
     for km, kmi in addon_keymaps:
         km.keymap_items.remove(kmi)
     addon_keymaps.clear()
