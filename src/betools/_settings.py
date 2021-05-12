@@ -78,7 +78,7 @@ def on_color_updated(self, value):
         print(id_colors[i].get("color"))
     """
 
-def get_color(index=None):
+def get_color():
 
     return bpy.props.FloatVectorProperty(
         name="Color",
@@ -88,6 +88,18 @@ def get_color(index=None):
         size=3,
         max=1.0, min=0.0
         # set=on_color_updated
+    )
+
+def get_name():
+    return bpy.props.StringProperty(
+        name="Color ID Name",
+        default = "New Color"
+    )
+
+def get_rename():
+    return bpy.props.BoolProperty(
+        name = "Rename ID Color",
+        default = False
     )
 
 
@@ -122,26 +134,75 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
 
     material_name : bpy.props.StringProperty(name='New Color', default='New Color')
     rename_material : bpy.props.StringProperty(name='Rename Color', default='New Color')
+    color_id_count : bpy.props.IntProperty(name="Color ID Count", default = 0)
+    color_id_pixel_bleed : bpy.props.IntProperty(name="Bleed", default = 8)
 
-    id_colors = []
+    # id_colors = []
 
     # color vals
     color_id_0 : get_color()
+    color_id_0_name : get_name()
+    color_id_0_rename : get_rename()
+
     color_id_1 : get_color()
+    color_id_1_name : get_name()
+    color_id_1_rename : get_rename()
+
     color_id_2 : get_color()
+    color_id_2_name : get_name()
+    color_id_2_rename : get_rename()
+
     color_id_3 : get_color()
+    color_id_3_name : get_name()
+    color_id_3_rename : get_rename()
+
     color_id_4 : get_color()
+    color_id_4_name : get_name()
+    color_id_4_rename : get_rename()
+
     color_id_5 : get_color()
+    color_id_5_name : get_name()
+    color_id_5_rename : get_rename()
+
     color_id_6 : get_color()
+    color_id_6_name : get_name()
+    color_id_6_rename : get_rename()
+
     color_id_7 : get_color()
+    color_id_7_name : get_name()
+    color_id_7_rename : get_rename()
+
     color_id_8 : get_color()
+    color_id_8_name : get_name()
+    color_id_8_rename : get_rename()
+
     color_id_9 : get_color()
+    color_id_9_name : get_name()
+    color_id_9_rename : get_rename()
+
     color_id_10 : get_color()
+    color_id_10_name : get_name()
+    color_id_10_rename : get_rename()
+
     color_id_11 : get_color()
+    color_id_11_name : get_name()
+    color_id_11_rename : get_rename()
+
     color_id_12 : get_color()
+    color_id_12_name : get_name()
+    color_id_12_rename : get_rename()
+
     color_id_13 : get_color()
+    color_id_13_name : get_name()
+    color_id_13_rename : get_rename()
+
     color_id_14 : get_color()
+    color_id_14_name : get_name()
+    color_id_14_rename : get_rename()
+
     color_id_15 : get_color()
+    color_id_15_name : get_name()
+    color_id_15_rename : get_rename()
 
     show_uv_stretch : bpy.props.BoolProperty(
         name = "UV Stretch",
@@ -177,6 +238,5 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
 	)
 
     uv_map_new_name : bpy.props.StringProperty(name='Rename UV Map', default = 'New UV Map')
-    color_id_count : bpy.props.IntProperty(name = "Color ID Count", default = 0)
-
+    
     # TODO checkbox pref for auto rotate on sort

@@ -29,21 +29,31 @@ class BETOOLS_OT_AddColor(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        settings = context.scene.betools_settings
 
-        if len(settings.id_colors) > 15:
+        settings = context.scene.betools_settings
+        settings.color_id_count += 1
+
+        if settings.color_id_count > 15:
             self.report({"WARNING"}, "Reached the maximum number of colors!")
             return {'FINISHED'}
 
         # get the name from settings
+
+        """
         material ={
             "name": settings.material_name,
             "color": (.1, .2, .7),  # random color or pick from list
-            "index": len(settings.id_colors),
+            "index": settings.color_id_count,
             "rename": False,
             "material": ""
         }
-        settings.id_colors.append(material)
+        """
+        # settings.id_colors.append(material)
+
+        # set the appropriate settings
+        setattr(settings, "color_id_{}_name".format(settings.color_id_count - 1), settings.material_name)
+
+        # reset
         settings.material_name = "New Color"
 
         return {'FINISHED'}
@@ -56,8 +66,11 @@ class BETOOLS_OT_RemoveColor(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        if context.scene.betools_settings.id_colors:
-            del context.scene.betools_settings.id_colors[len(context.scene.betools_settings.id_colors)-1]
+        # if context.scene.betools_settings.id_colors:
+            # del context.scene.betools_settings.id_colors[len(context.scene.betools_settings.id_colors)-1]
+        
+        settings = context.scene.betools_settings
+        settings.color_id_count -= 1
 
         return {'FINISHED'}
 
@@ -73,7 +86,8 @@ class BETOOLS_OT_EnableRename(bpy.types.Operator):
     )
 
     def execute(self, context):
-        context.scene.betools_settings.id_colors[self.index]["rename"] = True
+        settings = context.scene.betools_settings
+        setattr(settings, "color_id_{}_rename".format(self.index), True)
         return {'FINISHED'}
 
 
@@ -88,9 +102,10 @@ class BETOOLS_OT_RenameID(bpy.types.Operator):
     )
 
     def execute(self, context):
-        context.scene.betools_settings.id_colors[self.index]["name"] = context.scene.betools_settings.rename_material
-        context.scene.betools_settings.rename_material = "New Color"
-        context.scene.betools_settings.id_colors[self.index]["rename"] = False
+        settings = context.scene.betools_settings
+        setattr(settings, "color_id_{}_name".format(self.index), settings.rename_material)
+        settings.rename_material = "New Color"
+        setattr(settings, "color_id_{}_rename".format(self.index), False)
         return {'FINISHED'}
 
     
@@ -116,17 +131,10 @@ class BETOOLS_OT_AssignColor(bpy.types.Operator):
 
         # modify the color to match
         color = tuple(getattr(settings, "color_id_{}".format(self.index))) + (1.0,)
-        print(color)
-        print(type(color))
-        context.scene.betools_settings.id_colors[self.index]["color"] = color
-        material_name = "BE_ID_{}".format(_settings.id_colors[self.index].get("name"))
-        context.scene.betools_settings.id_colors[self.index]["material"] = material_name
+        material_name = "BE_ID_{}".format(getattr(settings, "color_id_{}_name".format(self.index)))
         
-        # create a new material name "BE_ID_#"
         mat = bpy.data.materials.new(name=material_name)
         mat.use_nodes=True
-        # mat.diffuse_color = color
-        # bpy.data.materials["Material"].node_tree.nodes["Principled BSDF"].inputs[0].default_value = (0.8, 0.216668, 0.191132, 1)
         mat.node_tree.nodes["Principled BSDF"].inputs[0].default_value = color
         obj.data.materials.append(mat)
 
@@ -186,9 +194,10 @@ class BETOOLS_OT_BakeID(bpy.types.Operator):
         obj = bpy.context.active_object
         # create the ID Map based on current map size or use existing map
         image = bpy.data.images.new("Color_ID", width=self.size, height=self.size)
+        image.use_fake_user = True
+
         # add it to the materials as a image texture node
         for mat in obj.data.materials:
-            # mat.use_nodes=True
             nodes = mat.node_tree.nodes
             node = nodes.new('ShaderNodeTexImage')
             node.image = image
@@ -201,6 +210,7 @@ class BETOOLS_OT_BakeID(bpy.types.Operator):
         bpy.context.scene.render.bake.use_pass_direct = False
         bpy.context.scene.render.bake.use_pass_indirect = False
         bpy.context.scene.render.bake.use_pass_color = True
+        bpy.context.scene.render.bake.margin = self.margin
         # select object (object mode?)
         previous_mode = bpy.context.object.mode
         bpy.ops.object.mode_set(mode='OBJECT')
@@ -214,12 +224,31 @@ class BETOOLS_OT_BakeID(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        
-        if not context.scene.betools_settings.id_colors:
-            return False
         if not bpy.context.active_object:
             return False
         return True
+
+
+class BETOOLS_OT_ClearIDMats(bpy.types.Operator):
+    bl_idname = "uv.be_clear_id_mats"
+    bl_label = "Clear ID Mats"
+    bl_description = "Remove all the materials created from the ID bake"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        # get the object's mats
+        previous_mode = bpy.context.object.mode
+        bpy.ops.object.mode_set(mode='OBJECT')
+        obj = bpy.context.active_object
+        for idx, mat in enumerate(obj.data.materials):
+            context.object.active_material_index = idx
+            if mat:
+                if mat.name.startswith("BE_ID"):
+                    bpy.ops.object.material_slot_remove()
+                    bpy.data.materials.remove(mat)
+        bpy.ops.object.mode_set(mode=previous_mode)
+
+        return {'FINISHED'}
 
 
 bpy.utils.register_class(BETOOLS_OT_AddColor)
@@ -228,3 +257,4 @@ bpy.utils.register_class(BETOOLS_OT_EnableRename)
 bpy.utils.register_class(BETOOLS_OT_RenameID)
 bpy.utils.register_class(BETOOLS_OT_AssignColor)
 bpy.utils.register_class(BETOOLS_OT_BakeID)
+bpy.utils.register_class(BETOOLS_OT_ClearIDMats)

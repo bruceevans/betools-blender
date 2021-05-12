@@ -546,23 +546,31 @@ class UI_PT_UVColorID(Panel):
 
         col = box.column(align=True)
 
-        for i in range(len(context.scene.betools_settings.id_colors)):
+        for i in range(settings.color_id_count):
             row = col.row(align=True)
-            row.label(text=context.scene.betools_settings.id_colors[i].get("name"))
+            row.label(text=getattr(settings, "color_id_{}_name".format(i)))
             row.prop(settings, "color_id_{}".format(i), text="")
             row.operator("uv.be_enable_rename_color", text="", icon="GREASEPENCIL").index=i
             row.operator("uv.be_assign_color", text="", icon="CHECKMARK").index=i
-            if context.scene.betools_settings.id_colors[i].get("rename"):
+            if getattr(settings, "color_id_{}_rename".format(i)):
                 row = col.row(align=True)
                 row.prop(settings, "rename_material", text="")
                 row.operator("uv.be_rename_color", text="", icon="CHECKMARK").index=i
-            # row.operator("uv.be_remove_color", text="", icon="REMOVE").index=i
 
-        col = layout.column()
+
+        col = layout.column(align=True)
+        row=col.row(align=True)
+        row.label(text="Bleed: ")
+        row.prop(settings, "color_id_pixel_bleed", text = "")
+
+        col = layout.column(align=True)
         col.scale_y = 1.75
         bake = col.operator("uv.be_bake_id", text="Bake ID Map", icon="RADIOBUT_ON")
-        bake.margin = 8
+        bake.margin = settings.color_id_pixel_bleed
         bake.size = int(settings.map_size_dropdown)
+
+        col = layout.column()
+        col.operator("uv.be_clear_id_mats", text="Clear ID Materials")
 
 
 class UI_PT_UVUtils(Panel):
