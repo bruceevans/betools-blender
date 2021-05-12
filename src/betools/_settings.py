@@ -238,5 +238,3 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
 	)
 
     uv_map_new_name : bpy.props.StringProperty(name='Rename UV Map', default = 'New UV Map')
-    
-    # TODO checkbox pref for auto rotate on sort

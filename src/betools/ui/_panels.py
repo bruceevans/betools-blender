@@ -360,28 +360,76 @@ class UI_PT_UVImage(Panel):
     bl_region_type = "UI"
 
     def draw(self, context):
+
+        settings = context.scene.betools_settings
+
         layout = self.layout
         box = layout.box()
         col = box.column(align=True)
 
         row = col.row(align = True)
         row.label(text="Map Size: ")
-        row.prop(context.scene.betools_settings, "map_size_dropdown", text="")
+        row.prop(settings, "map_size_dropdown", text="")
 
         row = col.row(align = True)
-        row.prop(context.scene.betools_settings, "checker_map_dropdown", text="")
+        row.prop(settings, "checker_map_dropdown", text="")
         row.operator(
             'uv.be_assign_mat',
             text='Assign',
             icon="TEXTURE_DATA"
-            ).size=int(context.scene.betools_settings.map_size_dropdown)
+            ).size=int(settings.map_size_dropdown)
 
         row = col.row(align = True)
         row.operator(
             'uv.be_create_image',
             text='Create Blank Image',
             icon="MESH_PLANE"
-            ).size=int(context.scene.betools_settings.map_size_dropdown)
+            ).size=int(settings.map_size_dropdown)
+
+        # TODO padding
+
+
+class UI_PT_UVUtils(Panel):
+    bl_category = "Be Tools"
+    bl_label = "Utilities"
+    bl_parent_id = "UI_PT_UVImage"
+    bl_region_type = "UI"
+    bl_space_type = "IMAGE_EDITOR"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        settings = context.scene.betools_settings
+        layout = self.layout
+
+        # layout.use_property_split = True
+        layout.use_property_decorate = False
+
+        col = layout.column(align=True)
+        row = col.row(align = True)
+        row.label(text="UV Channels:")
+        row = col.row(align = True)
+        group = row.row(align=True)
+        group.prop(settings, "uv_maps", text="")
+        group = row.row(align=True)
+        group.operator('uv.be_modify_uv_channel', text="", icon = 'GREASEPENCIL')
+        group.operator('uv.be_add_uv_map', text="", icon = 'ADD')
+        group.operator('uv.be_remove_uv_map', text="", icon = 'REMOVE')
+        if _settings.uv_map_rename_mode:
+            row = col.row(align = True)
+            row.prop(settings, "uv_map_new_name", text="")
+            row.operator('uv.be_uv_rename', text = "", icon='CHECKMARK')
+
+        col = layout.column(align=True)
+        row = col.row(align=True)
+        row.label(text = "UV Stretch: ")
+        row = col.row()
+        row.prop(settings, "show_uv_stretch", text = "")
+        row.prop(settings, "uv_stretch_type", text = "")
+
+        col = layout.column(align=True)
+        row = col.row(align=True)
+        row.operator("uv.export_layout", text="Export UV Layout", icon="RADIOBUT_ON")
+
 
 class UI_PT_UVTransform(Panel):
     """ Main panel for the UV image editor
@@ -557,7 +605,6 @@ class UI_PT_UVColorID(Panel):
                 row.prop(settings, "rename_material", text="")
                 row.operator("uv.be_rename_color", text="", icon="CHECKMARK").index=i
 
-
         col = layout.column(align=True)
         row=col.row(align=True)
         row.label(text="Bleed: ")
@@ -573,54 +620,4 @@ class UI_PT_UVColorID(Panel):
         col.operator("uv.be_clear_id_mats", text="Clear ID Materials")
 
 
-class UI_PT_UVUtils(Panel):
-
-    """ UV Utilities
-    """
-    bl_label = "Utilities"
-    bl_category = "Be Tools"
-    bl_space_type = "IMAGE_EDITOR"
-    bl_region_type = "UI"
-    bl_options = {'DEFAULT_CLOSED'}
-
-    def draw(self, context):
-        settings = context.scene.betools_settings
-        layout = self.layout
-        box = layout.box()
-
-        col = box.column(align=True)
-        row = col.row(align = True)
-        row.label(text="UV Maps:")
-        # row = col.row(align = True)
-        group = row.row(align=True)
-
-        group.prop(context.scene.betools_settings, "uv_maps", text="")
-        group = row.row(align=True)
-        group.operator('uv.be_modify_uv_channel', text="", icon = 'GREASEPENCIL')
-        group.operator('uv.be_add_uv_map', text="", icon = 'ADD')
-        group.operator('uv.be_remove_uv_map', text="", icon = 'REMOVE')
-
-        if _settings.uv_map_rename_mode:
-            row = col.row(align = True)
-            row.prop(context.scene.betools_settings, "uv_map_new_name", text="")
-            row.operator('uv.be_uv_rename', text = "", icon='CHECKMARK')
-
-        col = box.column(align=True)
-        row = col.row(align=True)
-        row.label(text = "UV Stretch:")
-        # row = col.row(align=True)
-        row.prop(settings, "show_uv_stretch", text = "")
-        row.prop(settings, "uv_stretch_type", text = "")
-
-        col = box.column(align=True)
-        row = col.row(align=True)
-        row.operator("uv.export_layout", text="Export UV Layout", icon="RADIOBUT_ON")
-
-        col = box.column(align=True)
-        row = col.row(align=True)
-        row.label(text="UDIM")
-
-        # TODO UDIM
-
 bpy.types.Scene.snap_object = bpy.props.StringProperty()
-# bpy.types.Scene.betools_settings = bpy.props.PointerProperty(type=BETOOLSProperties)

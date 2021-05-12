@@ -87,7 +87,7 @@ classes = (
     _panels.UI_PT_UVTexel,
     _panels.UI_PT_UVColorID,
     _panels.UI_PT_UVUtils,
-    _settings.BETOOLSProperties 
+    _settings.BETOOLSProperties
 )
 
 addon_keymaps = []

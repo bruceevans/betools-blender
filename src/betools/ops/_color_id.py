@@ -70,7 +70,8 @@ class BETOOLS_OT_RemoveColor(bpy.types.Operator):
             # del context.scene.betools_settings.id_colors[len(context.scene.betools_settings.id_colors)-1]
         
         settings = context.scene.betools_settings
-        settings.color_id_count -= 1
+        if settings.color_id_count > 0:
+            settings.color_id_count -= 1
 
         return {'FINISHED'}
 
