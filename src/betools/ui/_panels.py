@@ -400,11 +400,9 @@ class UI_PT_UVUtils(Panel):
     def draw(self, context):
         settings = context.scene.betools_settings
         layout = self.layout
+        box = layout.box()
 
-        # layout.use_property_split = True
-        layout.use_property_decorate = False
-
-        col = layout.column(align=True)
+        col = box.column(align=True)
         row = col.row(align = True)
         row.label(text="UV Channels:")
         row = col.row(align = True)
@@ -419,14 +417,13 @@ class UI_PT_UVUtils(Panel):
             row.prop(settings, "uv_map_new_name", text="")
             row.operator('uv.be_uv_rename', text = "", icon='CHECKMARK')
 
-        col = layout.column(align=True)
-        row = col.row(align=True)
-        row.label(text = "UV Stretch: ")
+        col = box.column(align=True)
         row = col.row()
-        row.prop(settings, "show_uv_stretch", text = "")
+        row.label(text="UV Stretch:")
+        row.prop(settings, "show_uv_stretch", text="")
         row.prop(settings, "uv_stretch_type", text = "")
 
-        col = layout.column(align=True)
+        col = box.column(align=True)
         row = col.row(align=True)
         row.operator("uv.export_layout", text="Export UV Layout", icon="RADIOBUT_ON")
 
@@ -510,7 +507,6 @@ class UI_PT_UVLayout(Panel):
         col.operator("uv.be_uv_squares", text = "Squarify", icon="RADIOBUT_ON")
         col.operator("uv.be_uv_face_rip", text = "Rip Faces", icon="RADIOBUT_ON")
 
-        # pinning
         row = col.row(align=True)
         row.operator("uv.pin", text="Pin UVs", icon="RADIOBUT_ON").clear=False
         row.operator("uv.pin", text="Unpin UVs", icon="RADIOBUT_ON").clear=True

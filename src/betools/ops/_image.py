@@ -133,7 +133,6 @@ class BETOOLS_OT_CubeHelper(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        # TODO if there's a selection
         if bpy.context.object.mode != 'OBJECT':
             return False
         return True
@@ -328,18 +327,6 @@ def get_selected_object_faces():
 	bpy.ops.object.mode_set(mode=previous_mode)
 
 	return object_faces_indices
-
-"""
-def get_island_area(bm, uv_layer, island):
-
-    for face in island:
-        uv_tri = [loop[uv_layer].uv for loop in face.loops]
-        vert_tri = [vert.co for vert in face.verts]
-
-        uv_area = _uvs.get_area_triangle_uv(
-            uv_tri[0], uv_tri[1], uv_tri[2],
-            )
-"""
 
 bpy.utils.register_class(BETOOLS_OT_GetTexel)
 bpy.utils.register_class(BETOOLS_OT_SetTexel)

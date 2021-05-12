@@ -6,21 +6,6 @@ from bpy.props import IntProperty
 from ..utils import _uvs
 from .. import _settings
 
-# color ID ops
-
-
-"""
-basically, there's an add button, you click add and select a color,
-choose your faces and apply
-
-4-5 colors per row so it doesn't get too crazy
-
-1. Add buton
-2. Color row (max 4 colrs)
-    - Color bar (picker)
-    - Apply button
-
-"""
 
 class BETOOLS_OT_AddColor(bpy.types.Operator):
     bl_idname = "uv.be_add_color"
@@ -29,7 +14,6 @@ class BETOOLS_OT_AddColor(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-
         settings = context.scene.betools_settings
         settings.color_id_count += 1
 
@@ -37,25 +21,8 @@ class BETOOLS_OT_AddColor(bpy.types.Operator):
             self.report({"WARNING"}, "Reached the maximum number of colors!")
             return {'FINISHED'}
 
-        # get the name from settings
-
-        """
-        material ={
-            "name": settings.material_name,
-            "color": (.1, .2, .7),  # random color or pick from list
-            "index": settings.color_id_count,
-            "rename": False,
-            "material": ""
-        }
-        """
-        # settings.id_colors.append(material)
-
-        # set the appropriate settings
         setattr(settings, "color_id_{}_name".format(settings.color_id_count - 1), settings.material_name)
-
-        # reset
         settings.material_name = "New Color"
-
         return {'FINISHED'}
 
 
@@ -66,9 +33,6 @@ class BETOOLS_OT_RemoveColor(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        # if context.scene.betools_settings.id_colors:
-            # del context.scene.betools_settings.id_colors[len(context.scene.betools_settings.id_colors)-1]
-        
         settings = context.scene.betools_settings
         if settings.color_id_count > 0:
             settings.color_id_count -= 1

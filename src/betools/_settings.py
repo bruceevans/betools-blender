@@ -20,12 +20,10 @@ game_engine = ''        # Unreal or Unity or Source?
 
 uv_map_rename_mode = False
 
-# id_colors = []
 name_template = {
     "name": "name",
     "color": "hex_color"
 }
-
 
 def set_uv_map_dropdown(self, context, index):
     if bpy.context.active_object != None:
@@ -67,17 +65,6 @@ def show_uv_stretch(self, context):
 def uv_stretch_type(self, context):
     bpy.context.space_data.uv_editor.display_stretch_type = context.scene.betools_settings.uv_stretch_type
 
-def on_color_updated(self, value):
-    for i, color in enumerate(bpy.context.scene.betools_settings.id_colors):
-        print(value)
-
-    """
-    for i in range(len(id_colors)):
-        id_colors[i]["color"]: getattr(context.scene.betools_settings, 'color_id_{}'.format(i))
-        print("Bad")
-        print(id_colors[i].get("color"))
-    """
-
 def get_color():
 
     return bpy.props.FloatVectorProperty(
@@ -87,7 +74,6 @@ def get_color():
         default=(.1, .2, .8),
         size=3,
         max=1.0, min=0.0
-        # set=on_color_updated
     )
 
 def get_name():
@@ -137,9 +123,6 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
     color_id_count : bpy.props.IntProperty(name="Color ID Count", default = 0)
     color_id_pixel_bleed : bpy.props.IntProperty(name="Bleed", default = 8)
 
-    # id_colors = []
-
-    # color vals
     color_id_0 : get_color()
     color_id_0_name : get_name()
     color_id_0_rename : get_rename()
