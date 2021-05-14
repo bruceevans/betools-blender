@@ -83,7 +83,7 @@ class BETOOLS_MT_VertexMenu(BETOOLS_MT_PieMenu):
     def draw(self, context):
 
         self.pie_menu.operator("mesh.merge", text = "Merge Center", icon = "STICKY_UVS_VERT").type = 'CENTER' # TODO wrap
-        self.pie_menu.operator("mesh.be_bevel", text = "Chamfer Vertices", icon_value = _icon.getIcon("CHAMFER"))
+        self.pie_menu.operator("mesh.be_bevel", text = "Chamfer Vertices", icon_value = _icon.get_icon("CHAMFER"))
         self.pie_menu.operator("mesh.delete", text = "Delete Vertices", icon = "X").type = 'VERT'
         self.pie_menu.operator("mesh.merge", text = "Merge Last", icon = "TRACKING_FORWARDS_SINGLE").type = 'LAST' # TODO wrap
         self.pie_menu.operator("mesh.merge", text = "Merge First", icon = "TRACKING_BACKWARDS_SINGLE").type = 'FIRST' # TODO wrap
@@ -100,9 +100,9 @@ class BETOOLS_MT_EdgeMenu(BETOOLS_MT_PieMenu):
         self.pie_menu.operator("mesh.loopcut_slide", text = "Loop Cut", icon = "VIEW_ORTHO")
         self.pie_menu.operator("transform.edge_crease", text = "Crease", icon = "LINCURVE")
         self.pie_menu.operator("mesh.dissolve_edges", text = "Dissolve Edges", icon = "X")
-        self.pie_menu.operator("mesh.bridge_edge_loops", text = "Bridge", icon_value = _icon.getIcon("BRIDGE"))
+        self.pie_menu.operator("mesh.bridge_edge_loops", text = "Bridge", icon_value = _icon.get_icon("BRIDGE"))
         self.pie_menu.operator("mesh.be_bevel", text = "Bevel", icon = "MOD_BEVEL")
-        self.pie_menu.operator("mesh.extrude_edges_move", text = "Extrude", icon_value = _icon.getIcon("EDGE_EXT"))
+        self.pie_menu.operator("mesh.extrude_edges_move", text = "Extrude", icon_value = _icon.get_icon("EDGE_EXT"))
         self.pie_menu.operator("mesh.knife_tool", text = "Knife Tool", icon = "RESTRICT_SELECT_ON")
         self.pie_menu.operator("transform.edge_slide", text = "Edge Slide", icon = "MOD_SIMPLIFY")
 
@@ -147,10 +147,10 @@ class BETOOLS_MT_MirrorMenu(BETOOLS_MT_PieMenu):
         BETOOLS_MT_PieMenu.__init__(self, "Mirror")
 
     def draw(self, context):
-        self.pie_menu.operator("mesh.smart_mirror", text = "Mirror X", icon_value = _icon.getIcon("MIRROR_X")).direction = 'X'
-        self.pie_menu.operator("mesh.smart_mirror", text = "Mirror Y", icon_value = _icon.getIcon("MIRROR_Y")).direction = 'Y'
+        self.pie_menu.operator("mesh.smart_mirror", text = "Mirror X", icon_value = _icon.get_icon("MIRROR_X")).direction = 'X'
+        self.pie_menu.operator("mesh.smart_mirror", text = "Mirror Y", icon_value = _icon.get_icon("MIRROR_Y")).direction = 'Y'
         self.pie_menu.operator("wm.call_menu_pie", text = "Back", icon = "FILE_PARENT").name = "MeshMenu"
-        self.pie_menu.operator("mesh.smart_mirror", text = "Mirror Z", icon_value = _icon.getIcon("MIRROR_Z")).direction = 'Z'
+        self.pie_menu.operator("mesh.smart_mirror", text = "Mirror Z", icon_value = _icon.get_icon("MIRROR_Z")).direction = 'Z'
 
 
 class BETOOLS_OT_PieCall(bpy.types.Operator):
@@ -238,14 +238,14 @@ class UI_PT_BEToolsPanel(Panel):
             box = layout.box()
             col = box.column(align=True)
             row = col.row(align=True)
-            row.operator("mesh.smart_mirror", text = "X", icon_value = _icon.getIcon("MIRROR_X")).direction='X'
-            row.operator("mesh.smart_mirror", text = "Y", icon_value = _icon.getIcon("MIRROR_Y")).direction='Y'
-            row.operator("mesh.smart_mirror", text = "Z", icon_value = _icon.getIcon("MIRROR_Z")).direction='Z'
+            row.operator("mesh.smart_mirror", text = "X", icon_value = _icon.get_icon("MIRROR_X")).direction='X'
+            row.operator("mesh.smart_mirror", text = "Y", icon_value = _icon.get_icon("MIRROR_Y")).direction='Y'
+            row.operator("mesh.smart_mirror", text = "Z", icon_value = _icon.get_icon("MIRROR_Z")).direction='Z'
 
             row = col.row(align=True)
-            row.operator("mesh.lattice_2", text = "2x2", icon_value = _icon.getIcon("LATTICE_2"))
-            row.operator("mesh.lattice_3", text = "3x3", icon_value = _icon.getIcon("LATTICE_3"))
-            row.operator("mesh.lattice_4", text = "4x4", icon_value = _icon.getIcon("LATTICE_4"))
+            row.operator("mesh.lattice_2", text = "2x2", icon_value = _icon.get_icon("LATTICE_2"))
+            row.operator("mesh.lattice_3", text = "3x3", icon_value = _icon.get_icon("LATTICE_3"))
+            row.operator("mesh.lattice_4", text = "4x4", icon_value = _icon.get_icon("LATTICE_4"))
 
             row = col.row(align=True)
             row.operator("mesh.smart_extract", text = "Smart Extract") # TODO Icon
@@ -386,14 +386,14 @@ class UI_PT_UVImage(Panel):
         row.operator(
             'uv.be_assign_mat',
             text='Assign',
-            icon="TEXTURE_DATA"
+            icon='TEXTURE'
             ).size=int(settings.map_size_dropdown)
 
         row = col.row(align = True)
         row.operator(
             'uv.be_create_image',
             text='Create Blank Image',
-            icon="MESH_PLANE"
+            icon_value=_icon.get_icon("be_image")
             ).size=int(settings.map_size_dropdown)
 
         # TODO padding
@@ -420,16 +420,16 @@ class UI_PT_UVTransform(Panel):
         row = col.row(align=True)
         row.prop(settings, "translate_u")
         row.prop(settings, "translate_v")
-        row.operator('uv.be_translate', text='', icon="RADIOBUT_ON")
+        row.operator('uv.be_translate', text='', icon_value=_icon.get_icon("be_move"))
 
         row = col.row(align=True)
         row.prop(settings, "scale_u")
         row.prop(settings, "scale_v")
-        row.operator('uv.be_scale', text='', icon="RADIOBUT_ON")
+        row.operator('uv.be_scale', text='', icon_value=_icon.get_icon("be_scale"))
 
         row = col.row(align=True)
         row.prop(settings, "angle")
-        row.operator('uv.be_rotate', text='', icon="RADIOBUT_ON").angle = settings.angle
+        row.operator('uv.be_rotate', text='', icon_value=_icon.get_icon("be_rotate")).angle = settings.angle
 
     
 class UI_PT_UVLayout(Panel):
@@ -450,39 +450,39 @@ class UI_PT_UVLayout(Panel):
         col = box.column(align=True)
         
         row = col.row(align=True)
-        row.operator('uv.be_flip', text="Flip H", icon="RADIOBUT_ON").direction = 'HORIZONTAL'
-        row.operator('uv.be_flip', text="Flip V", icon="RADIOBUT_ON").direction = 'VERTICAL'
+        row.operator('uv.be_flip', text="Flip H", icon_value=_icon.get_icon("be_flip_hor")).direction = 'HORIZONTAL'
+        row.operator('uv.be_flip', text="Flip V", icon_value=_icon.get_icon("be_flip_vert")).direction = 'VERTICAL'
         row.separator()
-        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'LEFTTOP'
-        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'CENTERTOP'
-        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'RIGHTTOP'
+        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_tl")).direction = 'LEFTTOP'
+        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_tm")).direction = 'CENTERTOP'
+        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_tr")).direction = 'RIGHTTOP'
 
         row = col.row(align=True)
-        row.operator('uv.be_rotate', text='-90', icon="RADIOBUT_ON").angle=-90
-        row.operator('uv.be_rotate', text='90', icon="RADIOBUT_ON").angle=90
+        row.operator('uv.be_rotate', text='-90', icon_value=_icon.get_icon("be_rotate_neg_90")).angle=-90
+        row.operator('uv.be_rotate', text='90', icon_value=_icon.get_icon("be_rotate_90")).angle=90
         row.separator()
-        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'LEFTCENTER'
-        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'CENTER'
-        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'RIGHTCENTER'
+        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_ml")).direction = 'LEFTCENTER'
+        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_mm")).direction = 'CENTER'
+        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_mr")).direction = 'RIGHTCENTER'
 
         row = col.row(align=True)
-        row.operator('uv.be_fit', text="Fit", icon="RADIOBUT_ON")
-        row.operator('uv.be_fill', text='Fill', icon="RADIOBUT_ON")
+        row.operator('uv.be_fit', text="Fit", icon_value=_icon.get_icon("be_fit"))
+        row.operator('uv.be_fill', text='Fill', icon_value=_icon.get_icon("be_fill"))
         row.separator()
-        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'LEFTBOTTOM'
-        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'CENTERBOTTOM'
-        row.operator('uv.be_snap_island', text="", icon="RADIOBUT_ON").direction = 'RIGHTBOTTOM'
+        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_bl")).direction = 'LEFTBOTTOM'
+        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_bm")).direction = 'CENTERBOTTOM'
+        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_br")).direction = 'RIGHTBOTTOM'
 
         col = box.column(align=True)
-        col.operator('uv.be_orient_edge', text="Orient to Edge", icon="RADIOBUT_ON")
-        col.operator("uv.be_stack", text='Stack Islands', icon="RADIOBUT_ON")
-        col.operator("uv.be_uv_squares_by_shape", text="Rectify", icon="RADIOBUT_ON")
-        col.operator("uv.be_uv_squares", text = "Squarify", icon="RADIOBUT_ON")
-        col.operator("uv.be_uv_face_rip", text = "Rip Faces", icon="RADIOBUT_ON")
+        col.operator('uv.be_orient_edge', text="Orient to Edge", icon_value=_icon.get_icon("be_align"))
+        col.operator("uv.be_stack", text='Stack Islands', icon_value=_icon.get_icon("be_stack"))
+        col.operator("uv.be_uv_squares_by_shape", text="Rectify", icon_value=_icon.get_icon("be_lattice"))
+        col.operator("uv.be_uv_squares", text = "Squarify", icon_value=_icon.get_icon("be_grid"))
+        col.operator("uv.be_uv_face_rip", text = "Rip Faces", icon_value=_icon.get_icon("be_rip"))
 
         row = col.row(align=True)
-        row.operator("uv.pin", text="Pin UVs", icon="RADIOBUT_ON").clear=False
-        row.operator("uv.pin", text="Unpin UVs", icon="RADIOBUT_ON").clear=True
+        row.operator("uv.pin", text="Pin UVs", icon_value=_icon.get_icon("be_pin")).clear=False
+        row.operator("uv.pin", text="Unpin UVs", icon_value=_icon.get_icon("be_unpin")).clear=True
 
         col = box.column(align=True)
         row = col.row(align=True)
@@ -496,11 +496,11 @@ class UI_PT_UVLayout(Panel):
         row.label(text="Padding: ")
         row.prop(settings, "sort_padding", text = "")
         row = col.row(align=True)
-        row.operator("uv.be_island_sort", text="Sort H", icon="RADIOBUT_ON").axis = 'HORIZONTAL'
-        row.operator("uv.be_island_sort", text="Sort V", icon="RADIOBUT_ON").axis = 'VERTICAL'
+        row.operator("uv.be_island_sort", text="Sort H", icon_value=_icon.get_icon("be_sort_hor")).axis = 'HORIZONTAL'
+        row.operator("uv.be_island_sort", text="Sort V", icon_value=_icon.get_icon("be_sort_vert")).axis = 'VERTICAL'
 
         row = col.row(align=True)
-        row.operator("uv.pack_islands", text = "Pack Islands", icon="RADIOBUT_ON").margin = settings.pack_padding
+        row.operator("uv.pack_islands", text = "Pack Islands", icon_value=_icon.get_icon("be_pack")).margin = settings.sort_padding
 
 
 class UI_PT_UVTexel(Panel):
@@ -525,8 +525,8 @@ class UI_PT_UVTexel(Panel):
         row.label(text="Texel Density: ")
         row.prop(uv_props, "texel_density", text = "")
         row = col.row(align=True)
-        row.operator("uv.be_get_texel", text="Get", icon="RADIOBUT_ON")
-        row.operator("uv.be_set_texel", text="Set", icon="RADIOBUT_ON")
+        row.operator("uv.be_get_texel", text="Get")
+        row.operator("uv.be_set_texel", text="Set")
 
         col = box.column(align=True)
         row = col.row()
@@ -569,12 +569,12 @@ class UI_PT_UVColorID(Panel):
             row = col.row(align=True)
             row.label(text=getattr(settings, "color_id_{}_name".format(i)))
             row.prop(settings, "color_id_{}".format(i), text="")
-            row.operator("uv.be_enable_rename_color", text="", icon="GREASEPENCIL").index=i
-            row.operator("uv.be_assign_color", text="", icon="CHECKMARK").index=i
+            row.operator("uv.be_enable_rename_color", text="", icon_value=_icon.get_icon("be_edit")).index=i
+            row.operator("uv.be_assign_color", text="", icon_value=_icon.get_icon("be_accept")).index=i
             if getattr(settings, "color_id_{}_rename".format(i)):
                 row = col.row(align=True)
                 row.prop(settings, "rename_material", text="")
-                row.operator("uv.be_rename_color", text="", icon="CHECKMARK").index=i
+                row.operator("uv.be_rename_color", text="", icon_value=_icon.get_icon("be_accept")).index=i
 
         col = layout.column(align=True)
         row=col.row(align=True)
@@ -583,7 +583,7 @@ class UI_PT_UVColorID(Panel):
 
         col = layout.column(align=True)
         col.scale_y = 1.75
-        bake = col.operator("uv.be_bake_id", text="Bake ID Map", icon="RADIOBUT_ON")
+        bake = col.operator("uv.be_bake_id", text="Bake ID Map")
         bake.margin = settings.color_id_pixel_bleed
         bake.size = int(settings.map_size_dropdown)
 
@@ -611,13 +611,13 @@ class UI_PT_UVUtils(Panel):
         group = row.row(align=True)
         group.prop(settings, "uv_maps", text="")
         group = row.row(align=True)
-        group.operator('uv.be_modify_uv_channel', text="", icon = 'GREASEPENCIL')
+        group.operator('uv.be_modify_uv_channel', text="", icon_value=_icon.get_icon("be_edit"))
         group.operator('uv.be_add_uv_map', text="", icon = 'ADD')
         group.operator('uv.be_remove_uv_map', text="", icon = 'REMOVE')
         if _settings.uv_map_rename_mode:
             row = col.row(align = True)
             row.prop(settings, "uv_map_new_name", text="")
-            row.operator('uv.be_uv_rename', text = "", icon='CHECKMARK')
+            row.operator('uv.be_uv_rename', text = "", icon_value=_icon.get_icon("be_accept"))
 
         col = box.column(align=True)
         row = col.row()
@@ -627,7 +627,7 @@ class UI_PT_UVUtils(Panel):
 
         col = box.column(align=True)
         row = col.row(align=True)
-        row.operator("uv.export_layout", text="Export UV Layout", icon="RADIOBUT_ON")
+        row.operator("uv.export_layout", text="Export UV Layout", icon_value=_icon.get_icon("be_export"))
 
 
 bpy.types.Scene.snap_object = bpy.props.StringProperty()
