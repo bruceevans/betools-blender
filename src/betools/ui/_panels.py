@@ -27,31 +27,27 @@ class BEPreferencesPanel(bpy.types.AddonPreferences):
 
     bl_idname = 'betools'  # this needs to be the name of the main addon module
 
-    game_engine : bpy.props.EnumProperty(
-        items = [
-			('UE4', 'Unreal Engine 4', 'Unreal Engine presets'),
-			('Unity', 'Unity Engine', 'Unity engine presets')
-        ],
-		description="Standard presets for the selected game engine",
-		name = "Game Engine Presets",
-		default = 'UE4'
-    )
-
     def draw(self, context):
+        settings = context.scene.betools_settings
         layout = self.layout
+
+        # TODO SPLIT
 
         box = layout.box()
         col = box.column(align=True)
-        row = col.row(align = True)
-        row.label("Texel Density Units:")
-        # TODO drop down for meters, centimeters
-        col.prop(self, "game_engine", icon='RESTRICT_VIEW_OFF')
-        if self.game_engine == 'UE4':
-            col.label(text="Using Unreal Engine Presets: ")
-        elif self.game_engine == 'Unity':
-            col.label(text="Using Unity Engine Presets: ")
 
-        # TODO quick export path
+        row = col.row(align = True)
+        row.label(text="Project Units:")
+        row.prop(settings, "unit", text="")
+
+        row = col.row(align = True)
+        row.label(text="Game Engine Presets: ")
+        row.prop(settings, "game_engine", text="")
+
+        row = col.row(align = True)
+        row.label(text="Quick Export Path: ")
+        row.label(text=settings.quick_export_path)
+        row.operator("mesh.be_choose_export_folder", text="Choose Folder")
 
         box.separator()
         box = layout.box()
@@ -357,11 +353,21 @@ class UI_PT_ExportPanel(Panel):
 import bmesh
 
 
-class UI_PT_UVImage(Panel):
+class UI_PT_UVEditor(Panel):
     bl_label = "BE Tools"
     bl_category = "Be Tools"
     bl_space_type = "IMAGE_EDITOR"
     bl_region_type = "UI"
+
+    def draw(self, context):
+        pass
+
+class UI_PT_UVImage(Panel):
+    bl_label = "Image"
+    bl_category = "Be Tools"
+    bl_space_type = "IMAGE_EDITOR"
+    bl_region_type = "UI"
+    bl_parent_id = "UI_PT_UVEditor"
 
     def draw(self, context):
 
@@ -393,45 +399,6 @@ class UI_PT_UVImage(Panel):
         # TODO padding
 
 
-class UI_PT_UVUtils(Panel):
-    bl_category = "Be Tools"
-    bl_label = "Utilities"
-    bl_parent_id = "UI_PT_UVImage"
-    bl_region_type = "UI"
-    bl_space_type = "IMAGE_EDITOR"
-    bl_options = {'DEFAULT_CLOSED'}
-
-    def draw(self, context):
-        settings = context.scene.betools_settings
-        layout = self.layout
-        box = layout.box()
-
-        col = box.column(align=True)
-        row = col.row(align = True)
-        row.label(text="UV Channels:")
-        row = col.row(align = True)
-        group = row.row(align=True)
-        group.prop(settings, "uv_maps", text="")
-        group = row.row(align=True)
-        group.operator('uv.be_modify_uv_channel', text="", icon = 'GREASEPENCIL')
-        group.operator('uv.be_add_uv_map', text="", icon = 'ADD')
-        group.operator('uv.be_remove_uv_map', text="", icon = 'REMOVE')
-        if _settings.uv_map_rename_mode:
-            row = col.row(align = True)
-            row.prop(settings, "uv_map_new_name", text="")
-            row.operator('uv.be_uv_rename', text = "", icon='CHECKMARK')
-
-        col = box.column(align=True)
-        row = col.row()
-        row.label(text="UV Stretch:")
-        row.prop(settings, "show_uv_stretch", text="")
-        row.prop(settings, "uv_stretch_type", text = "")
-
-        col = box.column(align=True)
-        row = col.row(align=True)
-        row.operator("uv.export_layout", text="Export UV Layout", icon="RADIOBUT_ON")
-
-
 class UI_PT_UVTransform(Panel):
     """ Main panel for the UV image editor
     """
@@ -440,6 +407,7 @@ class UI_PT_UVTransform(Panel):
     bl_category = "Be Tools"
     bl_space_type = "IMAGE_EDITOR"
     bl_region_type = "UI"
+    bl_parent_id = "UI_PT_UVEditor"
 
     def draw(self, context):
 
@@ -472,6 +440,7 @@ class UI_PT_UVLayout(Panel):
     bl_category = "Be Tools"
     bl_space_type = "IMAGE_EDITOR"
     bl_region_type = "UI"
+    bl_parent_id = "UI_PT_UVEditor"
 
     def draw(self, context):
         settings = context.scene.betools_settings
@@ -543,6 +512,7 @@ class UI_PT_UVTexel(Panel):
     bl_space_type = "IMAGE_EDITOR"
     bl_region_type = "UI"
     bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "UI_PT_UVEditor"
 
     def draw(self, context):
 
@@ -577,6 +547,7 @@ class UI_PT_UVColorID(Panel):
     bl_space_type = "IMAGE_EDITOR"
     bl_region_type = "UI"
     bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "UI_PT_UVEditor"
 
     def draw(self, context):
         # Image creation and generation
@@ -618,6 +589,45 @@ class UI_PT_UVColorID(Panel):
 
         col = layout.column()
         col.operator("uv.be_clear_id_mats", text="Clear ID Materials")
+
+
+class UI_PT_UVUtils(Panel):
+    bl_category = "Be Tools"
+    bl_label = "Utilities"
+    bl_parent_id = "UI_PT_UVEditor"
+    bl_region_type = "UI"
+    bl_space_type = "IMAGE_EDITOR"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        settings = context.scene.betools_settings
+        layout = self.layout
+        box = layout.box()
+
+        col = box.column(align=True)
+        row = col.row(align = True)
+        row.label(text="UV Channels:")
+        row = col.row(align = True)
+        group = row.row(align=True)
+        group.prop(settings, "uv_maps", text="")
+        group = row.row(align=True)
+        group.operator('uv.be_modify_uv_channel', text="", icon = 'GREASEPENCIL')
+        group.operator('uv.be_add_uv_map', text="", icon = 'ADD')
+        group.operator('uv.be_remove_uv_map', text="", icon = 'REMOVE')
+        if _settings.uv_map_rename_mode:
+            row = col.row(align = True)
+            row.prop(settings, "uv_map_new_name", text="")
+            row.operator('uv.be_uv_rename', text = "", icon='CHECKMARK')
+
+        col = box.column(align=True)
+        row = col.row()
+        row.label(text="UV Stretch:")
+        row.prop(settings, "show_uv_stretch", text="")
+        row.prop(settings, "uv_stretch_type", text = "")
+
+        col = box.column(align=True)
+        row = col.row(align=True)
+        row.operator("uv.export_layout", text="Export UV Layout", icon="RADIOBUT_ON")
 
 
 bpy.types.Scene.snap_object = bpy.props.StringProperty()

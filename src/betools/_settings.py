@@ -13,17 +13,12 @@ uv_pivot_selection = ''
 uv_pivot_selection_position = (0, 0)
 
 selection_mode = (False, False, True)
-vert_selection = []     # indices
-face_selection = []      # indices
-
-game_engine = ''        # Unreal or Unity or Source?
+vert_selection = [] # indices
+face_selection = [] # indices
 
 uv_map_rename_mode = False
 
-name_template = {
-    "name": "name",
-    "color": "hex_color"
-}
+previous_unit = ''
 
 ##############################################################################
 ##############################################################################
@@ -91,12 +86,53 @@ def get_rename():
         default = False
     )
 
+def update_units(self, context):
+    print(previous_unit)
+    settings = context.scene.betools_settings
+    if settings.unit == 'METERS' or settings.unit == 'CENTIMETERS':
+        bpy.context.scene.unit_settings.system = 'METRIC'
+    else:
+        bpy.context.scene.unit_settings.system = 'IMPERIAL'
+    bpy.context.scene.unit_settings.length_unit = settings.unit
+
+    # Get scalar
+    # Get old units TODO
+    previous_unit = settings.unit
 
 ##############################################################################
 ##############################################################################
 
 
 class BETOOLSProperties(bpy.types.PropertyGroup):
+
+    # ADDON PREFERENCES
+
+    quick_export_path : bpy.props.StringProperty(
+        name='Quick OBJ Export',
+        default='CHOOSE PATH -->')
+
+    game_engine : bpy.props.EnumProperty(
+        items = [
+            ('UNREAL', 'Unreal Engine 4', 'Presets for Unreal Engine 4'),
+            ('UNITY', 'Unity', 'Presets for Unity'),
+            ('SOURCE', 'Source', 'Presets for the Source SDK'),
+            ('GODOT', 'Godot', 'Presets for Godot')
+        ],
+        name = "Game Engine Presets"
+    )
+
+    unit : bpy.props.EnumProperty(
+        items = [
+            ('CENTIMETERS', 'Centimeters', 'Centimeters for unit measurement'),
+            ('METERS', 'Meters', 'Meters for unit measurement'),
+            ('INCHES', 'Inches', 'Inches for unit measurement'),
+            ('FEET', 'Feet', 'Feet for unit measurement')
+        ],
+        name = "Units",
+        update=update_units
+    )
+
+    # TOOL PROPERTIES
 
     snapping : bpy.props.BoolProperty(
         name='Snapping',
@@ -132,8 +168,16 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
 
     material_name : bpy.props.StringProperty(name='New Color', default='New Color')
     rename_material : bpy.props.StringProperty(name='Rename Color', default='New Color')
-    color_id_count : bpy.props.IntProperty(name="Color ID Count", default = 0)
-    color_id_pixel_bleed : bpy.props.IntProperty(name="Bleed", default = 8)
+
+    color_id_count : bpy.props.IntProperty(
+        name="Color ID Count",
+        default = 0,
+        min=0,
+        max=15)
+
+    color_id_pixel_bleed : bpy.props.IntProperty(
+        name="Bleed",
+        default = 8)
 
     color_id_0 : get_color()
     color_id_0_name : get_name()

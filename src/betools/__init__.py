@@ -81,6 +81,7 @@ classes = (
     _panels.UI_PT_BEToolsPanel,
     _panels.UI_PT_CollisionPanel,
     _panels.UI_PT_ExportPanel,
+    _panels.UI_PT_UVEditor,
     _panels.UI_PT_UVImage,
     _panels.UI_PT_UVTransform,
     _panels.UI_PT_UVLayout,
@@ -96,6 +97,8 @@ def register():
     for cls in classes:
         bpy.utils.register_class(cls)
     bpy.types.Scene.betools_settings = bpy.props.PointerProperty(type=_settings.BETOOLSProperties)
+
+    # TODO initialize any settings / startup funcs here
 
     # handle keymaps
     kc = bpy.context.window_manager.keyconfigs.addon

@@ -6,17 +6,15 @@
 import os
 import sys
 
-SELECTION_MODES = {
-    (True, False, False)    : "VERTEX",
-    (False, True, False)    : "EDGE",
-    (False, False, True)    : "FACE"
-}
+BASE_FOLDER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MDL_FOLDER = os.path.join(BASE_FOLDER, "resources\mdl")
+IMG_FOLDER = os.path.join(BASE_FOLDER, "resources\img")
 
-MIRROR_MODES = {
-    "X" : (True, False, False),
-    "Y" : (False, True, False),
-    "Z" : (False, False, True)
-}
+CHECKER_MAPS = [
+	('CHECKER', 'Checker', 'Standard checker map'),
+	('GRAVITY', 'Gravity', 'Gravity map'),
+	('SIMPLE', 'Simple Checker', 'Simple checker map')
+]
 
 MAP_SIZES = [
 		('512', '512', ''), 
@@ -34,12 +32,26 @@ MATERIAL_SIZES = {
 	"8192": "8K",
 }
 
-CHECKER_MAPS = [
-	('CHECKER', 'Checker', 'Standard checker map'),
-	('GRAVITY', 'Gravity', 'Gravity map'),
-	('SIMPLE', 'Simple Checker', 'Simple checker map')
-]
+MIRROR_MODES = {
+    "X" : (True, False, False),
+    "Y" : (False, True, False),
+    "Z" : (False, False, True)
+}
 
-BASE_FOLDER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MDL_FOLDER = os.path.join(BASE_FOLDER, "resources\mdl")
-IMG_FOLDER = os.path.join(BASE_FOLDER, "resources\img")
+SELECTION_MODES = {
+    (True, False, False)    : "VERTEX",
+    (False, True, False)    : "EDGE",
+    (False, False, True)    : "FACE"
+}
+
+# scale factors
+UNITS = {
+    "Centimeters" : 0.01,
+    "Meters" : 1.00,
+	"Inches" : 0.0254,
+    "Feet" : 0.3048
+}
+
+# for scaling, get the target unit and current unit
+# target unit / current unit to get scalar
+# for each object in scene, scale by scalar

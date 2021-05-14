@@ -33,9 +33,21 @@ class ExportScene(bpy.types.Operator):
         bpy.ops.export_scene.fbx('INVOKE_DEFAULT')
         return {'FINISHED'}
 
+
+class BETOOLS_OT_ChooseExport(bpy.types.Operator):
+    bl_idname = "mesh.be_choose_export_folder"
+    bl_label = "Choose Quick Export Path"
+    bl_desctiprion = "Open a file dialog and choose the quick OBJ export path."
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        # TODO
+        return {'FINISHED'}
+
 # TODO Quick sculpt export
 # TODO UE4 Export
 # TODO Unity Export
 
 bpy.utils.register_class(ExportSelection)
 bpy.utils.register_class(ExportScene)
+bpy.utils.register_class(BETOOLS_OT_ChooseExport)
