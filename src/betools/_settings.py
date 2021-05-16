@@ -109,7 +109,7 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
 
     quick_export_path : bpy.props.StringProperty(
         name='Quick OBJ Export',
-        default='CHOOSE PATH -->')
+        default='CHOOSE PATH A PATH')
 
     game_engine : bpy.props.EnumProperty(
         items = [
@@ -118,7 +118,8 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
             ('SOURCE', 'Source', 'Presets for the Source SDK'),
             ('GODOT', 'Godot', 'Presets for Godot')
         ],
-        name = "Game Engine Presets"
+        name = "Game Engine Presets",
+        description='Choose your game engine. Best to pick this at the start of a project.'
     )
 
     unit : bpy.props.EnumProperty(

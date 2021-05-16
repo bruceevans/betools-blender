@@ -6,6 +6,7 @@
 
 import bpy
 from bpy.props import EnumProperty
+from .. import _settings
 
 from ..utils import _constants
 
@@ -55,8 +56,13 @@ class SmartMirror(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        if context.object is not None:
-            return True
+        if _settings.edit_pivot_mode:
+            return False
+        if context.object.type != 'MESH':
+            return False
+        if context.object is None:
+            return False
+        return True
 
 
 bpy.utils.register_class(SmartMirror)

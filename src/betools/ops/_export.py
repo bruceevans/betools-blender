@@ -6,6 +6,8 @@
 
 import bpy
 
+from .. import _settings
+
 
 class ExportSelection(bpy.types.Operator):
     bl_idname = "mesh.be_export_selected_fbx"
@@ -19,8 +21,13 @@ class ExportSelection(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        if context.object is not None and bpy.context.active_object.mode == "OBJECT":
-            return True
+        if context.object is None:
+            return False
+        if bpy.context.active_object.mode != "OBJECT":
+            return False
+        if _settings.edit_pivot_mode:
+            return False
+        return True
 
 
 class ExportScene(bpy.types.Operator):
@@ -32,6 +39,14 @@ class ExportScene(bpy.types.Operator):
     def execute(self, context):
         bpy.ops.export_scene.fbx('INVOKE_DEFAULT')
         return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        if bpy.context.active_object.mode != "OBJECT":
+            return False
+        if _settings.edit_pivot_mode:
+            return False
+        return True
 
 
 class BETOOLS_OT_ChooseExport(bpy.types.Operator):

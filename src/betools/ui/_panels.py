@@ -39,22 +39,38 @@ class BEPreferencesPanel(bpy.types.AddonPreferences):
 
         row = col.row(align = True)
         row.label(text="Project Units:")
+        row = col.row(align = True)
         row.prop(settings, "unit", text="")
+        row.operator('mesh.be_resize', text='Apply Unit to Objects', icon_value = _icon.get_icon("be_unit")) # TODO
 
         row = col.row(align = True)
         row.label(text="Game Engine Presets: ")
+        row = col.row(align = True)
         row.prop(settings, "game_engine", text="")
 
         row = col.row(align = True)
         row.label(text="Quick Export Path: ")
         row.label(text=settings.quick_export_path)
-        row.operator("mesh.be_choose_export_folder", text="Choose Folder")
+        row = col.row(align = True)
+        row.operator("mesh.be_choose_export_folder", text="Choose Quick Export Path")
 
-        box.separator()
         box = layout.box()
-        box.label(text = "More Info and Other Junk: ")
-        row = box.row(align=True)
-        # TODO docs
+        col = box.column(align=True)
+        col.label(text = "More Info and Other Junk: ")
+
+        row = col.row(align=True)
+        row.label(text="Report an issue: ")
+        row = col.row(align = True)
+        row.operator('wm.url_open', text='Eek a bug!', icon_value = _icon.get_icon("be_bug")).url = 'https://github.com/bruceevans/betools-blender/issues' 
+
+        col.separator()
+        
+        row = col.row(align = True)
+        row.operator('wm.url_open', text='Docs', icon='HELP').url = 'https://gumroad.com/l/KFvsF' # TODO docs
+
+        col.separator()
+
+        row = col.row(align = True)
         row.operator('wm.url_open', text='Donate', icon='HELP').url = 'https://gumroad.com/l/KFvsF'
         row.operator('wm.url_open', text='GitHub Code', icon='WORDWRAP_ON').url = 'https://github.com/bruceevans/betools-blender'
         row.operator('wm.url_open', text='My Stuff', icon='HELP').url = 'https://www.brucein3d.com'
@@ -182,7 +198,6 @@ class BETOOLS_OT_PieCall(bpy.types.Operator):
 
 ## 3D VIEW MENUS
 
-
 class UI_PT_BEToolsPanel(Panel):
     """ Main side panel in the 3D View
     """
@@ -191,6 +206,20 @@ class UI_PT_BEToolsPanel(Panel):
     bl_category = "Be Tools"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
+
+    def draw(self, context):
+        pass
+
+
+class UI_PT_BEMeshPanel(Panel):
+    """ Main side panel in the 3D View
+    """
+
+    bl_label = "Modeling Tools"
+    bl_category = "Be Tools"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_parent_id = "UI_PT_BEToolsPanel"
 
     def draw(self, context):
 
@@ -212,7 +241,8 @@ class UI_PT_BEToolsPanel(Panel):
 
         col = box.column(align=True)
         row = col.row(align=True)
-        row.prop(tool_settings, "use_snap", text="Snapping")
+        snapping_text = "Enable Snapping" if not tool_settings.use_snap else "Disable Snapping"
+        row.prop(tool_settings, "use_snap", text=snapping_text)
         row = col.row(align=True)
         row.operator("mesh.be_vert_snap", text = "Vertex", icon = "SNAP_VERTEX")
         row.operator("mesh.be_closest_vert_snap", text = "Close Vert", icon = "SNAP_GRID")
@@ -229,10 +259,10 @@ class UI_PT_BEToolsPanel(Panel):
             col = box.column(align=True)
             row=col.row(align=True)
             row.alert = True if _settings.edit_pivot_mode else False
-            row.operator("mesh.be_editpivot", text = "Edit Pivot" if not _settings.edit_pivot_mode else "Set Pivot", icon = "OBJECT_ORIGIN")
-            col.operator("mesh.be_center_pivot", text = "Center Pivot", icon = "OBJECT_ORIGIN")
-            col.operator("mesh.be_pivot2cursor", text = "Pivot to Cursor", icon = "EMPTY_ARROWS")
-            col.operator("view3d.snap_cursor_to_center", text = "Cursor to Origin")  # TODO ICON
+            row.operator("mesh.be_editpivot", text = "Edit Pivot" if not _settings.edit_pivot_mode else "Set Pivot", icon_value = _icon.get_icon("be_pivot"))
+            col.operator("mesh.be_center_pivot", text = "Center Pivot", icon_value = _icon.get_icon("be_cursor"))
+            col.operator("mesh.be_pivot2cursor", text = "Pivot to Cursor", icon_value = _icon.get_icon("be_origin2cursor"))
+            col.operator("mesh.be_cursor2origin", text="Cursor to World Origin", icon_value = _icon.get_icon("be_cursor2origin"))
 
             layout.label(text="Mesh Tools: ")
 
@@ -260,6 +290,7 @@ class UI_PT_BEToolsPanel(Panel):
             row.operator("mesh.be_snap_to_face", text = "Snap Obj to Sel Face") # TODO icon
 
             mesh = bpy.context.object.data
+            is_mesh = bpy.context.object.type == 'MESH'
 
             layout.label(text="Shading: ")
             box = layout.box()
@@ -267,7 +298,7 @@ class UI_PT_BEToolsPanel(Panel):
             col = box.column(align=False)
             col.use_property_decorate = False
 
-            if mesh:
+            if mesh and is_mesh:
                 row = col.row(align=True)
                 row.prop(mesh, "use_auto_smooth", text=" Auto Smooth")
                 row.active = mesh.use_auto_smooth and not mesh.has_custom_normals
@@ -280,7 +311,9 @@ class UI_PT_BEToolsPanel(Panel):
             col.operator("object.shade_smooth", text = "Shade Smooth", icon = "SPHERECURVE")
             col.operator("object.shade_flat", text = "Shade Flat", icon = "LINCURVE")
             col.operator("mesh.be_recalc_normals", text = "Recalculate Normals", icon = "NORMALS_FACE")
-            col.operator("mesh.be_toggle_fo", text = "Show Face Orientation", icon = "ORIENTATION_NORMAL")
+            orientation_text = "Show Face Orientation" if not context.space_data.overlay.show_face_orientation else "Hide Face Orientation"
+            col.operator("mesh.be_toggle_fo", text = orientation_text, icon = "ORIENTATION_NORMAL")
+            col.operator("mesh.flip_normals", text = "Flip Normals", icon = "UV_SYNC_SELECT")
 
             layout.label(text="UVs: ")
             box = layout.box()
@@ -304,6 +337,7 @@ class UI_PT_CollisionPanel(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "UI_PT_BEToolsPanel"
 
     def draw(self, context):
         # TODO Add ops based on prefs
@@ -335,14 +369,15 @@ class UI_PT_ExportPanel(Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = "UI_PT_BEToolsPanel"
 
     def draw(self, context):
         layout = self.layout
         layout.label(text="Export: ")
         box = layout.box()
         col = box.column(align=True)
-        col.operator('mesh.be_export_selected_fbx', text = 'Export Sel as FBX')
-        col.operator('mesh.be_export_scene_fbx', text = 'Export FBX')
+        col.operator('mesh.be_export_selected_fbx', text = 'Export Sel as FBX', icon_value=_icon.get_icon("be_export"))
+        col.operator('mesh.be_export_scene_fbx', text = 'Export FBX', icon_value=_icon.get_icon("be_export"))
         # TODO simple obj export to temp area
 
 

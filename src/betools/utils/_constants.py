@@ -66,7 +66,3 @@ UNITS = {
 	"Inches" : 0.0254,
     "Feet" : 0.3048
 }
-
-# for scaling, get the target unit and current unit
-# target unit / current unit to get scalar
-# for each object in scene, scale by scalar

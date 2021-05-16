@@ -6,10 +6,10 @@
 
 import bpy
 import bmesh
-
 import math
 import mathutils
 
+from .. import _settings
 
 class BETOOLS_OT_RecalcNormals(bpy.types.Operator):
     bl_idname = "mesh.be_recalc_normals"
@@ -35,6 +35,10 @@ class BETOOLS_OT_RecalcNormals(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         if context.object is None:
+            return False
+        if context.object.type != 'MESH':
+            return False
+        if _settings.edit_pivot_mode:
             return False
         return True
 
@@ -75,9 +79,27 @@ class BETOOLS_OT_SnapToFace(bpy.types.Operator):
     def poll(cls, context):
         if context.object is None:
             return False
+        if _settings.edit_pivot_mode:
+            return False
         if not bpy.types.Scene.snap_object:
             return False
+        if context.object.type != 'MESH':
+            return False
         return True
+
+
+class BETOOLS_OT_ResizeObjects(bpy.types.Operator):
+    bl_idname = "mesh.be_resize"
+    bl_label = "Resize Objects"
+    bl_description = "Resize objects to unit scale"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        # TODO
+        # for scaling, get the target unit and current unit
+        # target unit / current unit to get scalar
+        # for each object in scene, scale by scalar
+        return {'FINISHED'}
 
 
 ################################################
@@ -95,7 +117,7 @@ def getFaceCenter():
             normal (Vec3)
     """
 
-    bm = getMesh()
+    bm = get_mesh()
     if not bm:
         return (None, None)
     faces = [face for face in bm.faces if face.select]
@@ -103,7 +125,7 @@ def getFaceCenter():
         return (None, None)
     return faces[0].calc_center_median_weighted(), faces[0].normal
 
-def getMesh():
+def get_mesh():
     """ Small helper to get the current bmesh in edit mode
     """
     
@@ -116,17 +138,17 @@ def getMesh():
     return bmesh.from_edit_mesh(ob.data)
 
 def getSelectedVerts():
-    bm = getMesh()
+    bm = get_mesh()
     return [vert for vert in bm.verts if vert.select]
 
 def getSelectedEdges():
-    bm = getMesh()
+    bm = get_mesh()
     return [edge for edge in bm.edges if edge.select]
 
 def getSelectedFaces():
     """ The data gets destroyed, try global?
     """
-    bm = getMesh()
+    bm = get_mesh()
     return [face for face in bm.faces if face.select]
 
 def getMeshBoundingBox(mesh):
@@ -154,3 +176,4 @@ def translateToCoordinates(objectLocation, targetLocation):
 
 bpy.utils.register_class(BETOOLS_OT_RecalcNormals)
 bpy.utils.register_class(BETOOLS_OT_SnapToFace)
+bpy.utils.register_class(BETOOLS_OT_ResizeObjects)

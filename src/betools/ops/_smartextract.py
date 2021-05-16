@@ -5,6 +5,7 @@
 #################################################################
 
 import bpy
+from .. import _settings
 
 
 class BETOOLS_OT_SmartExtract(bpy.types.Operator):
@@ -36,6 +37,10 @@ class BETOOLS_OT_SmartExtract(bpy.types.Operator):
         if context.object is None:
             return False
         if not sm[2]:
+            return False
+        if _settings.edit_pivot_mode:
+            return False
+        if context.object.type != 'MESH':
             return False
         return True
 

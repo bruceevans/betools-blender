@@ -5,6 +5,8 @@
 
 import bpy
 
+from .. import _settings
+
 
 class BETOOLS_OT_ToggleWireFrame(bpy.types.Operator):
     bl_idname = "mesh.be_toggle_wireframe"
@@ -49,6 +51,12 @@ class BETOOLS_OT_ToggleFaceOrientation(bpy.types.Operator):
         else:
             bpy.context.space_data.overlay.show_face_orientation = True
         return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        if _settings.edit_pivot_mode:
+            return False
+        return True
 
 
 bpy.utils.register_class(BETOOLS_OT_ToggleWireFrame)

@@ -6,6 +6,7 @@
 
 import bpy
 from mathutils import Vector
+from .. import _settings
 
 
 class DivideLattice(bpy.types.Operator):
@@ -45,19 +46,26 @@ class DivideLattice(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
+        if _settings.edit_pivot_mode:
+            return False
         if context.object is None:
             return False
+        if context.object.type != 'MESH':
+            return False
         return True
+        
 
 class Lattice_2(DivideLattice):
     bl_idname = "mesh.lattice_2"
     def __init__(self):
         DivideLattice.__init__(self, 2)
 
+
 class Lattice_3(DivideLattice):
     bl_idname = "mesh.lattice_3"
     def __init__(self):
         DivideLattice.__init__(self, 3)
+
 
 class Lattice_4(DivideLattice):
     bl_idname = "mesh.lattice_4"

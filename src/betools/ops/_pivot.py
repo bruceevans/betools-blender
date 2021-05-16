@@ -15,6 +15,7 @@ class CenterPivot(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
+        bpy.ops.object.mode_set(mode='OBJECT')
         bpy.ops.object.origin_set(type='ORIGIN_CENTER_OF_MASS', center='MEDIAN')
         return {'FINISHED'}
 
@@ -34,6 +35,7 @@ class Pivot2Cursor(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
+        bpy.ops.object.mode_set(mode='OBJECT')
         bpy.ops.object.origin_set(type='ORIGIN_CURSOR', center='MEDIAN')
         return {'FINISHED'}
 
@@ -46,7 +48,6 @@ class Pivot2Cursor(bpy.types.Operator):
         return True
 
 
-# TODO Double check this, maybe use a toggle button and log to show you're in edit pivot mode
 class EditPivot(bpy.types.Operator):
     bl_label = "Edit Pivot"
     bl_description = "Edit the object's pivot"
@@ -91,6 +92,9 @@ class EditPivot(bpy.types.Operator):
         _settings.edit_pivot_mode = False
         
     def execute(self, context):
+
+        bpy.ops.object.mode_set(mode='OBJECT')
+
         obj = bpy.context.active_object
         if  obj.name.endswith(".PivotHelper"):
             self.applyPivot(context, obj)
@@ -100,7 +104,33 @@ class EditPivot(bpy.types.Operator):
             self.createPivot(context,obj)
         return{'FINISHED'}
 
+    @classmethod
+    def poll(cls, context):
+        if context.object is None:
+            return False
+        return True
+
+
+class Cursor2Origin(bpy.types.Operator):
+    bl_label = "3D Cursor to Origin"
+    bl_description = "Move the cursor to the world origin"
+    bl_idname = "mesh.be_cursor2origin"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        bpy.ops.view3d.snap_cursor_to_center()
+        return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        if context.object is None:
+            return False
+        if _settings.edit_pivot_mode:
+            return False
+        return True
+
 
 bpy.utils.register_class(CenterPivot)
 bpy.utils.register_class(Pivot2Cursor)
 bpy.utils.register_class(EditPivot)
+bpy.utils.register_class(Cursor2Origin)

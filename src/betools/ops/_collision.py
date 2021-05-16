@@ -8,6 +8,8 @@ import bpy
 import math
 from mathutils import Vector
 
+from .. import _settings
+
 
 class UE4CollisionGenerator(bpy.types.Operator):
     # Parent class for collision mesh generation
@@ -130,8 +132,15 @@ class UE4CollisionGenerator(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        if context.object is not None and bpy.context.active_object.mode == "OBJECT":
-            return True
+        if _settings.edit_pivot_mode:
+            return False
+        if context.object.type != 'MESH':
+            return False
+        if context.object is None:
+            return False
+        if bpy.context.active_object.mode != "OBJECT":
+            return False
+        return True
 
 
 class UBXCollisionGenerator(UE4CollisionGenerator):
