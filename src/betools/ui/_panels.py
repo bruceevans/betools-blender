@@ -115,7 +115,7 @@ class BETOOLS_MT_FaceMenu(BETOOLS_MT_PieMenu):
         self.pie_menu.operator("mesh.extrude_region_shrink_fatten", text = "Extrude by Normals", icon = "NORMALS_FACE")
         self.pie_menu.operator("mesh.faces_shade_smooth", text = "Shade Smooth", icon = "SPHERECURVE")
         self.pie_menu.operator("mesh.delete", text = "Delete Faces", icon = "X").type = 'FACE'
-        self.pie_menu.operator("mesh.smart_extract", text = "Smart Extract", icon = "PIVOT_CURSOR")
+        self.pie_menu.operator("mesh.smart_extract", text = "Extract Faces", icon_value = _icon.get_icon("be_extract"))
         self.pie_menu.operator("mesh.inset", text = "Inset Faces", icon = "OBJECT_DATA")
         self.pie_menu.operator("mesh.flip_normals", text = "Flip Normals", icon = "UV_SYNC_SELECT")
         self.pie_menu.operator("mesh.knife_tool", text = "Knife Tool",  icon = "RESTRICT_SELECT_ON")
@@ -147,10 +147,10 @@ class BETOOLS_MT_MirrorMenu(BETOOLS_MT_PieMenu):
         BETOOLS_MT_PieMenu.__init__(self, "Mirror")
 
     def draw(self, context):
-        self.pie_menu.operator("mesh.smart_mirror", text = "Mirror X", icon_value = _icon.get_icon("MIRROR_X")).direction = 'X'
-        self.pie_menu.operator("mesh.smart_mirror", text = "Mirror Y", icon_value = _icon.get_icon("MIRROR_Y")).direction = 'Y'
+        self.pie_menu.operator("mesh.smart_mirror", text = "Mirror X", icon_value = _icon.get_icon("be_flip_hor")).direction = 'X'
+        self.pie_menu.operator("mesh.smart_mirror", text = "Mirror Y", icon_value = _icon.get_icon("be_flip_hor")).direction = 'Y'
         self.pie_menu.operator("wm.call_menu_pie", text = "Back", icon = "FILE_PARENT").name = "MeshMenu"
-        self.pie_menu.operator("mesh.smart_mirror", text = "Mirror Z", icon_value = _icon.get_icon("MIRROR_Z")).direction = 'Z'
+        self.pie_menu.operator("mesh.smart_mirror", text = "Mirror Z", icon_value = _icon.get_icon("be_flip_hor")).direction = 'Z'
 
 
 class BETOOLS_OT_PieCall(bpy.types.Operator):
@@ -238,17 +238,17 @@ class UI_PT_BEToolsPanel(Panel):
             box = layout.box()
             col = box.column(align=True)
             row = col.row(align=True)
-            row.operator("mesh.smart_mirror", text = "X", icon_value = _icon.get_icon("MIRROR_X")).direction='X'
-            row.operator("mesh.smart_mirror", text = "Y", icon_value = _icon.get_icon("MIRROR_Y")).direction='Y'
-            row.operator("mesh.smart_mirror", text = "Z", icon_value = _icon.get_icon("MIRROR_Z")).direction='Z'
+            row.operator("mesh.smart_mirror", text = "X", icon_value = _icon.get_icon("be_flip_hor")).direction='X'
+            row.operator("mesh.smart_mirror", text = "Y", icon_value = _icon.get_icon("be_flip_hor")).direction='Y'
+            row.operator("mesh.smart_mirror", text = "Z", icon_value = _icon.get_icon("be_flip_hor")).direction='Z'
 
             row = col.row(align=True)
-            row.operator("mesh.lattice_2", text = "2x2", icon_value = _icon.get_icon("LATTICE_2"))
-            row.operator("mesh.lattice_3", text = "3x3", icon_value = _icon.get_icon("LATTICE_3"))
-            row.operator("mesh.lattice_4", text = "4x4", icon_value = _icon.get_icon("LATTICE_4"))
+            row.operator("mesh.lattice_2", text = "2x2", icon_value = _icon.get_icon("be_lattice"))
+            row.operator("mesh.lattice_3", text = "3x3", icon_value = _icon.get_icon("be_lattice"))
+            row.operator("mesh.lattice_4", text = "4x4", icon_value = _icon.get_icon("be_lattice"))
 
             row = col.row(align=True)
-            row.operator("mesh.smart_extract", text = "Smart Extract") # TODO Icon
+            row.operator("mesh.smart_extract", text = "Extract Faces", icon_value = _icon.get_icon("be_extract"))
 
             col = box.column(align=True)
             scene = context.scene
@@ -476,7 +476,7 @@ class UI_PT_UVLayout(Panel):
         col = box.column(align=True)
         col.operator('uv.be_orient_edge', text="Orient to Edge", icon_value=_icon.get_icon("be_align"))
         col.operator("uv.be_stack", text='Stack Islands', icon_value=_icon.get_icon("be_stack"))
-        col.operator("uv.be_uv_squares_by_shape", text="Rectify", icon_value=_icon.get_icon("be_lattice"))
+        col.operator("uv.be_uv_squares_by_shape", text="Rectify", icon_value=_icon.get_icon("be_rectify"))
         col.operator("uv.be_uv_squares", text = "Squarify", icon_value=_icon.get_icon("be_grid"))
         col.operator("uv.be_uv_face_rip", text = "Rip Faces", icon_value=_icon.get_icon("be_rip"))
 
@@ -574,7 +574,7 @@ class UI_PT_UVColorID(Panel):
             if getattr(settings, "color_id_{}_rename".format(i)):
                 row = col.row(align=True)
                 row.prop(settings, "rename_material", text="")
-                row.operator("uv.be_rename_color", text="", icon_value=_icon.get_icon("be_accept")).index=i
+                row.operator("uv.be_rename_color", text="", icon_value=_icon.get_icon("be_rename")).index=i
 
         col = layout.column(align=True)
         row=col.row(align=True)
@@ -617,7 +617,7 @@ class UI_PT_UVUtils(Panel):
         if _settings.uv_map_rename_mode:
             row = col.row(align = True)
             row.prop(settings, "uv_map_new_name", text="")
-            row.operator('uv.be_uv_rename', text = "", icon_value=_icon.get_icon("be_accept"))
+            row.operator('uv.be_uv_rename', text = "", icon_value=_icon.get_icon("be_rename"))
 
         col = box.column(align=True)
         row = col.row()

@@ -23,6 +23,8 @@ _ICONS = [
     "be_move.png",
     "be_not_visible.png",
     "be_pack.png",
+    "be_rectify.png",
+    "be_rename.png",
     "be_pin.png",
     "be_rip.png",
     "be_rotate.png",
