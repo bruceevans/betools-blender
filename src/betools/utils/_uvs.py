@@ -479,6 +479,9 @@ def rotate_uvs(bmesh, uv_layer, uvs, angle):
             uv.uv[0] = duR + pivot.x
             uv.uv[1] = dvR + pivot.y
 
+def get_padding():
+	return bpy.context.scene.betools_settings.padding / int(bpy.context.scene.betools_settings.map_size_dropdown)
+
 # TODO trim tools
 
 #######################################

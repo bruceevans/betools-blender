@@ -6,6 +6,9 @@
 import os
 import sys
 
+from mathutils import Vector
+
+
 BASE_FOLDER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MDL_FOLDER = os.path.join(BASE_FOLDER, "resources\mdl")
 IMG_FOLDER = os.path.join(BASE_FOLDER, "resources\img")
@@ -36,6 +39,18 @@ MIRROR_MODES = {
     "X" : (True, False, False),
     "Y" : (False, True, False),
     "Z" : (False, False, True)
+}
+
+PADDING_MULTIPLIERS = {
+	'LEFTTOP': Vector((1, -1)),
+    'CENTERTOP': Vector((0, -1)),
+    'RIGHTTOP': Vector((-1, -1)),
+    'LEFTCENTER': Vector((1, 0)),
+    'CENTER': Vector((0, 0)),
+    'RIGHTCENTER': Vector((-1, 0)),
+    'LEFTBOTTOM': Vector((1, 1)),
+    'CENTERBOTTOM': Vector((0, 1)),
+    'RIGHTBOTTOM': Vector((-1, 1))
 }
 
 SELECTION_MODES = {

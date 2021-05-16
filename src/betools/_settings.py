@@ -152,7 +152,12 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
     random_rotate : bpy.props.FloatProperty(name='rand_rotate')
 
     sort_padding : bpy.props.FloatProperty(name='Pad', default=0.01)
-    pack_padding : bpy.props.FloatProperty(name='Pad', default=0.01)
+    padding : bpy.props.IntProperty(
+        name='Padding',
+        description='UV pixel padding',
+        default=8,
+        min=0,
+        max=64)
 
     relax_iterations : bpy.props.IntProperty(
         name="Relaxe Iterations (hundreds)",
@@ -164,10 +169,27 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
     texel_density : bpy.props.FloatProperty(name='Texel Density', default=256.0)
     
     texel_density_units : bpy.props.StringProperty(name='Texel Density Units', default="Centimeters")
-    image_size : bpy.props.IntProperty(name='Image Size')
+    image_size : bpy.props.IntProperty(
+        name='Image Size',
+        description='UV Texture Size',
+        default=1024,
+        min=0,
+        max=8192)
 
     material_name : bpy.props.StringProperty(name='New Color', default='New Color')
     rename_material : bpy.props.StringProperty(name='Rename Color', default='New Color')
+
+    map_size_dropdown : bpy.props.EnumProperty(
+        items = _constants.MAP_SIZES,
+		name = "Texture Map Size",
+        default = '1024'
+	)
+
+    checker_map_dropdown : bpy.props.EnumProperty(
+        items = _constants.CHECKER_MAPS,
+		name = "Checker Maps",
+        default = 'CHECKER'
+	)
 
     color_id_count : bpy.props.IntProperty(
         name="Color ID Count",
@@ -257,18 +279,6 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
         name = "UV Stretch Type",
         update = uv_stretch_type
     )
-
-    map_size_dropdown : bpy.props.EnumProperty(
-        items = _constants.MAP_SIZES,
-		name = "Texture Map Size",
-        default = '1024'
-	)
-
-    checker_map_dropdown : bpy.props.EnumProperty(
-        items = _constants.CHECKER_MAPS,
-		name = "Checker Maps",
-        default = 'CHECKER'
-	)
 
     uv_maps : bpy.props.EnumProperty(
         items = get_uv_maps,

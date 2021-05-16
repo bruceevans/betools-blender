@@ -4,6 +4,7 @@ import bpy
 
 _ICONS = [
     "be_accept.png",
+    "be_assign.png",
     "be_add_image.png",
     "be_align.png",
     "be_bug.png",

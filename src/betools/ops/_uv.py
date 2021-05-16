@@ -13,16 +13,19 @@ from .. import _settings
 
 
 _SNAP_POINTS = {
-    'LEFTTOP': ['min', 'max', Vector((0, 1))],
-    'CENTERTOP': ['center', 'max', Vector((.5, 1))],
-    'RIGHTTOP': ['max', 'max', Vector((1, 1))],
-    'LEFTCENTER': ['min', 'center', Vector((0, .5))],
-    'CENTER': ['center', 'center', Vector((.5, .5))],
-    'RIGHTCENTER': ['max', 'center', Vector((1, .5))],
-    'LEFTBOTTOM': ['min', 'min', Vector((0, 0))],
-    'CENTERBOTTOM': ['center', 'min', Vector((.5, 0))],
-    'RIGHTBOTTOM': ['max', 'min', Vector((1, 0))]
+    # x bound, y bound, uv coords, padding multiplier
+    'LEFTTOP': ['min', 'max', Vector((0, 1)), Vector((1, -1))],
+    'CENTERTOP': ['center', 'max', Vector((.5, 1)), Vector((0, -1))],
+    'RIGHTTOP': ['max', 'max', Vector((1, 1)), Vector((-1, -1))],
+    'LEFTCENTER': ['min', 'center', Vector((0, .5)), Vector((1, 0))],
+    'CENTER': ['center', 'center', Vector((.5, .5)), Vector((0, 0))],
+    'RIGHTCENTER': ['max', 'center', Vector((1, .5)), Vector((-1, 0))],
+    'LEFTBOTTOM': ['min', 'min', Vector((0, 0)), Vector((1, 1))],
+    'CENTERBOTTOM': ['center', 'min', Vector((.5, 0)), Vector((0, 1))],
+    'RIGHTBOTTOM': ['max', 'min', Vector((1, 0)), Vector((-1, 1))]
 }
+
+# padding will either be -1, 0, 1
 
 _PROJECTION_SWIZZLE = {
     'X': 'yz',
@@ -449,6 +452,7 @@ class BETOOLS_OT_IslandSnap(bpy.types.Operator):
         return True
 
     def execute(self, context):
+        settings = context.scene.betools_settings
         obj = bpy.context.active_object
         me = obj.data
         bm = bmesh.from_edit_mesh(me)
@@ -462,9 +466,12 @@ class BETOOLS_OT_IslandSnap(bpy.types.Operator):
         x = _SNAP_POINTS.get(self.direction)[0]
         y = _SNAP_POINTS.get(self.direction)[1]
         target = _SNAP_POINTS.get(self.direction)[2]
+        padding = _uvs.get_padding()
+        padding_x = _SNAP_POINTS.get(self.direction)[3].x * padding
+        padding_y = _SNAP_POINTS.get(self.direction)[3].y * padding
 
-        xDelta = target.x-bounds.get(x).x
-        yDelta = target.y-bounds.get(y).y
+        xDelta = target.x-bounds.get(x).x + padding_x
+        yDelta = target.y-bounds.get(y).y + padding_y
 
         _uvs.translate_uvs(bm, uv_layer, uvs, xDelta, yDelta)
 
@@ -555,7 +562,7 @@ class BETOOLS_OT_IslandSort(bpy.types.Operator):
             self.report({'INFO'}, 'Select UV islands')
             return {'FINISHED'}
 
-        padding = context.scene.betools_settings.sort_padding
+        padding = _uvs.get_padding()
         translation = padding
 
         if self.axis == 'VERTICAL':

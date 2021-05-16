@@ -15,6 +15,7 @@ from bpy.types import Panel
 from .. ops import *
 from .. utils import _icon
 from .. utils import _constants
+from .. utils import _uvs
 from .. _settings import BETOOLSProperties
 from .. import _settings
 
@@ -452,26 +453,26 @@ class UI_PT_UVLayout(Panel):
         row = col.row(align=True)
         row.operator('uv.be_flip', text="Flip H", icon_value=_icon.get_icon("be_flip_hor")).direction = 'HORIZONTAL'
         row.operator('uv.be_flip', text="Flip V", icon_value=_icon.get_icon("be_flip_vert")).direction = 'VERTICAL'
-        row.separator()
-        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_tl")).direction = 'LEFTTOP'
-        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_tm")).direction = 'CENTERTOP'
-        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_tr")).direction = 'RIGHTTOP'
+        # row.separator()
+        # row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_tl")).direction = 'LEFTTOP'
+        # row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_tm")).direction = 'CENTERTOP'
+        # row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_tr")).direction = 'RIGHTTOP'
 
         row = col.row(align=True)
         row.operator('uv.be_rotate', text='-90', icon_value=_icon.get_icon("be_rotate_neg_90")).angle=-90
         row.operator('uv.be_rotate', text='90', icon_value=_icon.get_icon("be_rotate_90")).angle=90
-        row.separator()
-        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_ml")).direction = 'LEFTCENTER'
-        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_mm")).direction = 'CENTER'
-        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_mr")).direction = 'RIGHTCENTER'
+        # row.separator()
+        # row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_ml")).direction = 'LEFTCENTER'
+        # row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_mm")).direction = 'CENTER'
+        # row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_mr")).direction = 'RIGHTCENTER'
 
         row = col.row(align=True)
         row.operator('uv.be_fit', text="Fit", icon_value=_icon.get_icon("be_fit"))
         row.operator('uv.be_fill', text='Fill', icon_value=_icon.get_icon("be_fill"))
-        row.separator()
-        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_bl")).direction = 'LEFTBOTTOM'
-        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_bm")).direction = 'CENTERBOTTOM'
-        row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_br")).direction = 'RIGHTBOTTOM'
+        # row.separator()
+        # row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_bl")).direction = 'LEFTBOTTOM'
+        # row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_bm")).direction = 'CENTERBOTTOM'
+        # row.operator('uv.be_snap_island', text="", icon_value=_icon.get_icon("be_snap_br")).direction = 'RIGHTBOTTOM'
 
         col = box.column(align=True)
         col.operator('uv.be_orient_edge', text="Orient to Edge", icon_value=_icon.get_icon("be_align"))
@@ -484,23 +485,55 @@ class UI_PT_UVLayout(Panel):
         row.operator("uv.pin", text="Pin UVs", icon_value=_icon.get_icon("be_pin")).clear=False
         row.operator("uv.pin", text="Unpin UVs", icon_value=_icon.get_icon("be_unpin")).clear=True
 
+        """
         col = box.column(align=True)
         row = col.row(align=True)
-        row.label(text = "Relax Strength: ")
+        row.operator('uv.be_snap_island', text="↖", icon_value=_icon.get_icon("be_snap_tl")).direction = 'LEFTTOP'
+        row.operator('uv.be_snap_island', text="↑", icon_value=_icon.get_icon("be_snap_tm")).direction = 'CENTERTOP'
+        row.operator('uv.be_snap_island', text="↗", icon_value=_icon.get_icon("be_snap_tr")).direction = 'RIGHTTOP'
+        row = col.row(align=True)
+        row.operator('uv.be_snap_island', text="←", icon_value=_icon.get_icon("be_snap_ml")).direction = 'LEFTCENTER'
+        row.operator('uv.be_snap_island', text="·", icon_value=_icon.get_icon("be_snap_mm")).direction = 'CENTER'
+        row.operator('uv.be_snap_island', text="→", icon_value=_icon.get_icon("be_snap_mr")).direction = 'RIGHTCENTER'
+        row = col.row(align=True)
+        row.operator('uv.be_snap_island', text="↙", icon_value=_icon.get_icon("be_snap_bl")).direction = 'LEFTBOTTOM'
+        row.operator('uv.be_snap_island', text="↓", icon_value=_icon.get_icon("be_snap_bm")).direction = 'CENTERBOTTOM'
+        row.operator('uv.be_snap_island', text="↘", icon_value=_icon.get_icon("be_snap_br")).direction = 'RIGHTBOTTOM'
+        """
+
+        col = box.column(align=True)
+        row = col.row(align=True)
+        row.label(text = "Strength: ")
         row.prop(settings, "relax_iterations", text="")
         row = col.row(align=True)
-        row.operator("uv.minimize_stretch", text="Relax UV Angles").iterations=settings.relax_iterations * 100
+        row.operator("uv.minimize_stretch", text="Minimize Stretch").iterations=settings.relax_iterations * 100
+
+        # TODO a true relax, make each edge closer in size
 
         col = box.column(align=True)
         row = col.row(align=True)
         row.label(text="Padding: ")
-        row.prop(settings, "sort_padding", text = "")
+        row.prop(settings, "padding", text="")
+
+        row = col.row(align=True)
+        row.operator('uv.be_snap_island', text="↖", icon_value=_icon.get_icon("be_snap_tl")).direction = 'LEFTTOP'
+        row.operator('uv.be_snap_island', text="↑", icon_value=_icon.get_icon("be_snap_tm")).direction = 'CENTERTOP'
+        row.operator('uv.be_snap_island', text="↗", icon_value=_icon.get_icon("be_snap_tr")).direction = 'RIGHTTOP'
+        row = col.row(align=True)
+        row.operator('uv.be_snap_island', text="←", icon_value=_icon.get_icon("be_snap_ml")).direction = 'LEFTCENTER'
+        row.operator('uv.be_snap_island', text="·", icon_value=_icon.get_icon("be_snap_mm")).direction = 'CENTER'
+        row.operator('uv.be_snap_island', text="→", icon_value=_icon.get_icon("be_snap_mr")).direction = 'RIGHTCENTER'
+        row = col.row(align=True)
+        row.operator('uv.be_snap_island', text="↙", icon_value=_icon.get_icon("be_snap_bl")).direction = 'LEFTBOTTOM'
+        row.operator('uv.be_snap_island', text="↓", icon_value=_icon.get_icon("be_snap_bm")).direction = 'CENTERBOTTOM'
+        row.operator('uv.be_snap_island', text="↘", icon_value=_icon.get_icon("be_snap_br")).direction = 'RIGHTBOTTOM'
+
         row = col.row(align=True)
         row.operator("uv.be_island_sort", text="Sort H", icon_value=_icon.get_icon("be_sort_hor")).axis = 'HORIZONTAL'
         row.operator("uv.be_island_sort", text="Sort V", icon_value=_icon.get_icon("be_sort_vert")).axis = 'VERTICAL'
 
         row = col.row(align=True)
-        row.operator("uv.pack_islands", text = "Pack Islands", icon_value=_icon.get_icon("be_pack")).margin = settings.sort_padding
+        row.operator("uv.pack_islands", text = "Pack Islands", icon_value=_icon.get_icon("be_pack")).margin = _uvs.get_padding()
 
 
 class UI_PT_UVTexel(Panel):
@@ -570,7 +603,7 @@ class UI_PT_UVColorID(Panel):
             row.label(text=getattr(settings, "color_id_{}_name".format(i)))
             row.prop(settings, "color_id_{}".format(i), text="")
             row.operator("uv.be_enable_rename_color", text="", icon_value=_icon.get_icon("be_edit")).index=i
-            row.operator("uv.be_assign_color", text="", icon_value=_icon.get_icon("be_accept")).index=i
+            row.operator("uv.be_assign_color", text="", icon_value=_icon.get_icon("be_assign")).index=i
             if getattr(settings, "color_id_{}_rename".format(i)):
                 row = col.row(align=True)
                 row.prop(settings, "rename_material", text="")
