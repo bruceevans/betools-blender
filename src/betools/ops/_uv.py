@@ -319,7 +319,7 @@ class BETOOLS_OT_OrientEdge(bpy.types.Operator):
                 angle = math.degrees(_uvs.get_uv_edge_angle(edge[0].uv, edge[1].uv))
                 angle_sum += angle
                 angle_count += 1
-            average_angle = angle_sum / angle_count
+            average_angle = (angle_sum / angle_count) % 90
             _uvs.rotate_island(me, [island], uv_layer, average_angle)
 
         _uvs.restore_selection(bm, uv_layer)
