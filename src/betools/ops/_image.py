@@ -133,8 +133,6 @@ class BETOOLS_OT_CubeHelper(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        if not bpy.context.object:
-            return False
         if bpy.context.object.mode != 'OBJECT':
             return False
         return True

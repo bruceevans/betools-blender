@@ -75,6 +75,9 @@ class BEPreferencesPanel(bpy.types.AddonPreferences):
         row.operator('wm.url_open', text='GitHub Code', icon='WORDWRAP_ON').url = 'https://github.com/bruceevans/betools-blender'
         row.operator('wm.url_open', text='My Stuff', icon='HELP').url = 'https://www.brucein3d.com'
 
+        # TODO recommended add ons
+        # - Source sdk
+
 
 ## PIE MENUS
 
@@ -146,17 +149,17 @@ class BETOOLS_MT_MeshMenu(BETOOLS_MT_PieMenu):
     def draw(self, context):
         self.pie_menu.operator("mesh.separate", text = "Split by Loose Parts", icon = "MOD_EXPLODE").type = 'LOOSE'
         self.pie_menu.operator("object.shade_flat", text = "Flat Shade", icon = "LINCURVE")
-        self.pie_menu.operator("mesh.be_pivot2cursor", text = "Pivot to Cursor", icon = "EMPTY_ARROWS")
+        self.pie_menu.operator("mesh.be_pivot2cursor", text = "Pivot to Cursor", icon_value = _icon.get_icon("be_cursor2origin"))
 
         freeze_transforms = self.pie_menu.operator("object.transform_apply", text = "Apply All Transforms", icon = "EMPTY_AXIS")
         freeze_transforms.location = True
         freeze_transforms.rotation = True
-        freeze_transforms.scale = True
+        freeze_transforms.scale = True   
 
         self.pie_menu.operator("object.transforms_to_deltas", text = "Apply Delta Transforms", icon = "ORIENTATION_GLOBAL").mode = 'ALL'
         self.pie_menu.operator("object.shade_smooth", text = "Smooth Shade", icon = "SPHERECURVE")
         self.pie_menu.operator("wm.call_menu_pie", text = "Mirror Object", icon = "RIGHTARROW_THIN").name = "BETOOLS_MT_MirrorMenu"
-        self.pie_menu.operator("mesh.be_center_pivot", text = "Center Pivot", icon = "OBJECT_ORIGIN")
+        self.pie_menu.operator("mesh.be_center_pivot", text = "Center Pivot", icon_value = _icon.get_icon("be_cursor"))
 
 
 class BETOOLS_MT_MirrorMenu(BETOOLS_MT_PieMenu):
@@ -183,17 +186,16 @@ class BETOOLS_OT_PieCall(bpy.types.Operator):
         return {'FINISHED'}
 
     def get_menu_context(self):
-        context_mode = bpy.context.object.mode
+        try:
+            context_mode = bpy.context.object.mode
+        except AttributeError:
+            return
         selectionMode = tuple(bpy.context.scene.tool_settings.mesh_select_mode)
 
         if context_mode == "OBJECT":
             bpy.ops.wm.call_menu_pie(name="BETOOLS_MT_MeshMenu")
             return
-        try:
-            bpy.ops.wm.call_menu_pie(name="BETOOLS_MT_{}Menu".format(_constants.SELECTION_MODES[selectionMode].capitalize()))
-        except AttributeError:
-            print("No objects currently in the scene")
-            pass
+        bpy.ops.wm.call_menu_pie(name="BETOOLS_MT_{}Menu".format(_constants.SELECTION_MODES[selectionMode].capitalize()))
 
 
 ## 3D VIEW MENUS
@@ -310,7 +312,7 @@ class UI_PT_BEMeshPanel(Panel):
             col = box.column(align=True)
             col.operator("object.shade_smooth", text = "Shade Smooth", icon = "SPHERECURVE")
             col.operator("object.shade_flat", text = "Shade Flat", icon = "LINCURVE")
-            col.operator("mesh.be_recalc_normals", text = "Recalculate Normals", icon = "NORMALS_FACE")
+            col.operator("mesh.be_recalc_normals", text = "Recalculate Normals", icon_value = _icon.get_icon("be_normals"))
             orientation_text = "Show Face Orientation" if not context.space_data.overlay.show_face_orientation else "Hide Face Orientation"
             col.operator("mesh.be_toggle_fo", text = orientation_text, icon = "ORIENTATION_NORMAL")
             col.operator("mesh.flip_normals", text = "Flip Normals", icon = "UV_SYNC_SELECT")
@@ -318,6 +320,9 @@ class UI_PT_BEMeshPanel(Panel):
             layout.label(text="UVs: ")
             box = layout.box()
             col = box.column(align=True)
+
+            
+
             col.operator("mesh.seams_from_hard_edge", text = "Hard Edges To Seams", icon = "MOD_EDGESPLIT")
             col.operator("uv.unwrap", text = "Unwrap Faces", icon = "FACESEL")
             col.operator('uv.project_from_view', text = 'Cam Project', icon = 'CON_CAMERASOLVER')
@@ -326,6 +331,9 @@ class UI_PT_BEMeshPanel(Panel):
             row.operator('uv.be_axis_project', text = "X Proj").axis='X'
             row.operator('uv.be_axis_project', text = "Y Proj").axis='Y'
             row.operator('uv.be_axis_project', text = "Z Proj").axis='Z'
+            col.separator()
+            col.prop(context.scene.tool_settings, "use_transform_correct_face_attributes", text=" Preserve UVs")
+
 
 
 class UI_PT_CollisionPanel(Panel):
@@ -342,13 +350,15 @@ class UI_PT_CollisionPanel(Panel):
     def draw(self, context):
         # TODO Add ops based on prefs
         # TODO Context Sensitive
+        settings = context.scene.betools_settings
         layout = self.layout
         col = layout.column(align=True)
         object = context.active_object
         if object is None or len(bpy.context.selected_objects) == 0:
             col.label(text='Select a Mesh!')
         else:
-            layout.label(text='UE4 Collision: ')
+            engine = settings.game_engine.capitalize()
+            layout.label(text='{} Collision: '.format(engine))
             box = layout.box()
             col = box.column()
             row = col.row(align=True)
@@ -372,12 +382,26 @@ class UI_PT_ExportPanel(Panel):
     bl_parent_id = "UI_PT_BEToolsPanel"
 
     def draw(self, context):
+        settings = context.scene.betools_settings
         layout = self.layout
         layout.label(text="Export: ")
         box = layout.box()
         col = box.column(align=True)
+        engine = settings.game_engine.capitalize()
+        if engine != 'Source':
+            col.operator(
+                'mesh.be_export_game_mesh',
+                text = 'Export Mesh for {}'.format(engine),
+                icon_value=_icon.get_icon("be_{}".format(settings.game_engine).lower()))
+            col.operator(
+                'mesh.be_export_game_anim',
+                text = 'Export Anim for {}'.format(engine),
+                icon_value=_icon.get_icon("be_{}".format(settings.game_engine).lower()))
+            col.separator()
+        col.operator('mesh.be_quick_export', text='Quick OBJ Export', icon_value=_icon.get_icon("be_export"))
         col.operator('mesh.be_export_selected_fbx', text = 'Export Sel as FBX', icon_value=_icon.get_icon("be_export"))
         col.operator('mesh.be_export_scene_fbx', text = 'Export FBX', icon_value=_icon.get_icon("be_export"))
+
         # TODO simple obj export to temp area
 
 
