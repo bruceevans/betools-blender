@@ -87,7 +87,6 @@ def get_rename():
     )
 
 def update_units(self, context):
-    print(previous_unit)
     settings = context.scene.betools_settings
     if settings.unit == 'METERS' or settings.unit == 'CENTIMETERS':
         bpy.context.scene.unit_settings.system = 'METRIC'
@@ -95,9 +94,6 @@ def update_units(self, context):
         bpy.context.scene.unit_settings.system = 'IMPERIAL'
     bpy.context.scene.unit_settings.length_unit = settings.unit
 
-    # Get scalar
-    # Get old units TODO
-    previous_unit = settings.unit
 
 ##############################################################################
 ##############################################################################
@@ -109,7 +105,10 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
 
     quick_export_path : bpy.props.StringProperty(
         name='Quick OBJ Export',
-        default='CHOOSE PATH A PATH')
+        description='Choose a directory:',
+        default='',
+        maxlen=1024,
+        subtype='DIR_PATH')
 
     game_engine : bpy.props.EnumProperty(
         items = [
@@ -129,8 +128,8 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
             ('INCHES', 'Inches', 'Inches for unit measurement'),
             ('FEET', 'Feet', 'Feet for unit measurement')
         ],
-        name = "Units",
-        update=update_units
+        name = "Units"
+        # update=update_units
     )
 
     # TOOL PROPERTIES

@@ -31,6 +31,7 @@ if "bpy" in locals():
     imp.reload(ops._lattice)
     imp.reload(ops._mesh)
     imp.reload(ops._mirror)
+    imp.reload(ops._object)
     imp.reload(ops._pivot)
     imp.reload(ops._smartextract)
     imp.reload(ops._uv)
@@ -57,6 +58,7 @@ else:
     from .ops import _lattice
     from .ops import _mesh
     from .ops import _mirror
+    from .ops import _object
     from .ops import _pivot
     from .ops import _smartextract
     from .ops import _uv

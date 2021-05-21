@@ -4,6 +4,7 @@
 # brucein3d@gmail.com                                           #
 #################################################################
 
+import os
 import bpy
 
 from .. import _settings
@@ -50,17 +51,6 @@ class ExportScene(bpy.types.Operator):
         return True
 
 
-class BETOOLS_OT_ChooseExport(bpy.types.Operator):
-    bl_idname = "mesh.be_choose_export_folder"
-    bl_label = "Choose Quick Export Path"
-    bl_desctiprion = "Open a file dialog and choose the quick OBJ export path."
-    bl_options = {'REGISTER', 'UNDO'}
-
-    def execute(self, context):
-        # TODO
-        return {'FINISHED'}
-
-
 class BETOOLS_OT_QuickExport(bpy.types.Operator):
     bl_idname = "mesh.be_quick_export"
     bl_label = "Quick Export"
@@ -74,7 +64,13 @@ class BETOOLS_OT_QuickExport(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        
+        settings = context.scene.betools_settings
+        full_path = bpy.path.abspath(settings.quick_export_path)
+        if not os.path.isdir(full_path):
+            self.report({'ERROR_INVALID_INPUT'}, "Set the quick export path in\nthe Be Tools addon preferences!")
+            return {'FINISHED'}
+        filepath = os.path.join(full_path, "bt_temp.obj")
+        bpy.ops.export_scene.obj('EXEC_DEFAULT', filepath=filepath, use_selection=True)
         return {"FINISHED"}
 
 
@@ -88,7 +84,6 @@ class BETOOLS_OT_ExportGameMesh(bpy.types.Operator):
         settings = context.scene.betools_settings
         engine = getattr(_engine, "{}".format(settings.game_engine))
         engine_mesh_export_args = engine.get('MESH_EXPORT')
-
         bpy.ops.export_scene.fbx('INVOKE_DEFAULT', **engine_mesh_export_args)
         return {'FINISHED'}
 
@@ -109,13 +104,10 @@ class BETOOLS_OT_ExportGameAnim(bpy.types.Operator):
 
 
 # TODO Quick sculpt export
-# TODO UE4 Export
-# TODO Unity Export
 
 
 bpy.utils.register_class(ExportSelection)
 bpy.utils.register_class(ExportScene)
-bpy.utils.register_class(BETOOLS_OT_ChooseExport)
 bpy.utils.register_class(BETOOLS_OT_QuickExport)
 bpy.utils.register_class(BETOOLS_OT_ExportGameMesh)
 bpy.utils.register_class(BETOOLS_OT_ExportGameAnim)

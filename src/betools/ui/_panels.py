@@ -41,18 +41,32 @@ class BEPreferencesPanel(bpy.types.AddonPreferences):
         row.label(text="Project Units:")
         row = col.row(align = True)
         row.prop(settings, "unit", text="")
-        row.operator('mesh.be_resize', text='Apply Unit to Objects', icon_value = _icon.get_icon("be_unit")) # TODO
+
+        row.operator(
+            'mesh.be_change_units',
+            text='Change Units'
+        )
+
+        row.operator(
+            'mesh.be_resize_objects',
+            text='Apply Unit to Objects',
+            icon_value = _icon.get_icon("be_unit")
+            )
+
+        col.separator()
 
         row = col.row(align = True)
         row.label(text="Game Engine Presets: ")
         row = col.row(align = True)
         row.prop(settings, "game_engine", text="")
 
+        col.separator()
+
         row = col.row(align = True)
-        row.label(text="Quick Export Path: ")
-        row.label(text=settings.quick_export_path)
-        row = col.row(align = True)
-        row.operator("mesh.be_choose_export_folder", text="Choose Quick Export Path")
+        # row.label(text="Quick Export Path: ")
+        row.prop(settings, "quick_export_path")
+        # row = col.row(align = True)
+        # row.operator("mesh.be_choose_export_folder", text="Choose Quick Export Path")
 
         box = layout.box()
         col = box.column(align=True)
