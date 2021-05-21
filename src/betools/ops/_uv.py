@@ -466,7 +466,7 @@ class BETOOLS_OT_IslandSnap(bpy.types.Operator):
         x = _SNAP_POINTS.get(self.direction)[0]
         y = _SNAP_POINTS.get(self.direction)[1]
         target = _SNAP_POINTS.get(self.direction)[2]
-        padding = _uvs.get_padding() / 4.0
+        padding = _uvs.get_padding()
         padding_x = _SNAP_POINTS.get(self.direction)[3].x * padding
         padding_y = _SNAP_POINTS.get(self.direction)[3].y * padding
 
@@ -562,7 +562,7 @@ class BETOOLS_OT_IslandSort(bpy.types.Operator):
             self.report({'INFO'}, 'Select UV islands')
             return {'FINISHED'}
 
-        padding = _uvs.get_padding() / 4.0
+        padding = _uvs.get_padding()
         translation = padding
 
         if self.axis == 'VERTICAL':

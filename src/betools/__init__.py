@@ -82,7 +82,7 @@ classes = (
     _panels.BETOOLS_OT_PieCall,
     _panels.UI_PT_BEToolsPanel,
     _panels.UI_PT_BEMeshPanel,
-    _panels.UI_PT_CollisionPanel,
+    # _panels.UI_PT_CollisionPanel,
     _panels.UI_PT_ExportPanel,
     _panels.UI_PT_UVEditor,
     _panels.UI_PT_UVImage,
