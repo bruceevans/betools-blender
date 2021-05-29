@@ -6,7 +6,7 @@
 bl_info = {
     "name": "BE Tools",
     "author": "Bruce Evans",
-    "version": (1, 1, 0),
+    "version": (1, 0, 9),
     "description": "Context sensitive pie menus for various modeling tasks, mimics Maya's shift + RMB functionality and a shelf like menu for easy access modeling functions",
     "blender": (2, 90, 0),
     "category": "User Interface"

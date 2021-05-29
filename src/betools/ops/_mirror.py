@@ -36,14 +36,14 @@ class SmartMirror(bpy.types.Operator):
     def execute(self, context):
         bpy.ops.object.mode_set(mode = 'OBJECT')
         bpy.ops.object.duplicate()
+        # bpy.ops.transform.mirror(orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(False, False, True))
+
         bpy.ops.transform.mirror(
             orient_type='GLOBAL',
             constraint_axis=(_AXIS.get(self.direction)),
-            use_proportional_edit=False,
-            proportional_edit_falloff='SMOOTH',
-            proportional_size=1,
-            use_proportional_connected=False,
-            use_proportional_projected=False
+            # proportional_size=1,
+            # use_proportional_connected=False,
+            # use_proportional_projected=False
             )
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 

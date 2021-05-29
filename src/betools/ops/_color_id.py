@@ -167,9 +167,11 @@ class BETOOLS_OT_BakeID(bpy.types.Operator):
             node = nodes.new('ShaderNodeTexImage')
             node.image = image
 
-        renderer = context.scene.render.engine
+        renderer = bpy.context.scene.render.engine
         if renderer != 'CYCLES':
-            context.scene.render.engine = 'CYCLES'
+            # bpy.context.scene.render.engine = 'CYCLES'
+            bpy.ops.uv.be_switch_renderer().renderer='CYCLES'
+
         # diffuse bake mode - color only
         context.scene.cycles.bake_type = 'DIFFUSE'
         bpy.context.scene.render.bake.use_pass_direct = False
@@ -181,8 +183,9 @@ class BETOOLS_OT_BakeID(bpy.types.Operator):
         bpy.ops.object.mode_set(mode='OBJECT')
         # run bake
         bpy.ops.object.bake('INVOKE_DEFAULT', type='DIFFUSE')
+
         # reset
-        context.scene.render.engine = renderer
+        bpy.context.scene.render.engine = renderer
         bpy.ops.object.mode_set(mode=previous_mode)
 
         return {'FINISHED'}
@@ -192,6 +195,22 @@ class BETOOLS_OT_BakeID(bpy.types.Operator):
         if not bpy.context.active_object:
             return False
         return True
+
+
+class BETOOLS_OT_SwitchRenderer(bpy.types.Operator):
+    bl_idname = "uv.be_switch_renderer"
+    bl_label = "Switch from eevee to cycles"
+    bl_description = "Switch renderers for baking"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    renderer : bpy.props.StringProperty(
+        name='Renderer',
+        default='BLENDER_EEVEE'
+    )
+
+    def exectute(self, context):
+        bpy.context.scene.render.engine = self.renderer
+        return {'FINISHED'}
 
 
 class BETOOLS_OT_ClearIDMats(bpy.types.Operator):
@@ -223,3 +242,4 @@ bpy.utils.register_class(BETOOLS_OT_RenameID)
 bpy.utils.register_class(BETOOLS_OT_AssignColor)
 bpy.utils.register_class(BETOOLS_OT_BakeID)
 bpy.utils.register_class(BETOOLS_OT_ClearIDMats)
+bpy.utils.register_class(BETOOLS_OT_SwitchRenderer)
