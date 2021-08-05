@@ -119,8 +119,17 @@ class BETOOLS_MT_VertexMenu(BETOOLS_MT_PieMenu):
         self.pie_menu.operator("mesh.merge", text = "Merge Center", icon = "STICKY_UVS_VERT").type = 'CENTER' # TODO wrap
         self.pie_menu.operator("mesh.be_bevel", text = "Chamfer Vertices", icon_value = _icon.get_icon("CHAMFER"))
         self.pie_menu.operator("mesh.delete", text = "Delete Vertices", icon = "X").type = 'VERT'
-        self.pie_menu.operator("mesh.merge", text = "Merge Last", icon = "TRACKING_FORWARDS_SINGLE").type = 'LAST' # TODO wrap
-        self.pie_menu.operator("mesh.merge", text = "Merge First", icon = "TRACKING_BACKWARDS_SINGLE").type = 'FIRST' # TODO wrap
+
+        try:
+            self.pie_menu.operator("mesh.merge", text = "Merge Last", icon = "TRACKING_FORWARDS_SINGLE").type = 'LAST' # TODO wrap
+        except TypeError:
+            pass
+
+        try:
+            self.pie_menu.operator("mesh.merge", text = "Merge First", icon = "TRACKING_BACKWARDS_SINGLE").type = 'FIRST' # TODO wrap
+        except TypeError:
+            pass
+        
         self.pie_menu.operator("mesh.remove_doubles", text = "Merge Distance", icon = "AUTOMERGE_OFF")
         self.pie_menu.operator("mesh.knife_tool", text = "Knife Tool", icon = "RESTRICT_SELECT_ON")
         self.pie_menu.operator("mesh.vertices_smooth", text = "Smooth Vertices", icon = "SPHERECURVE")
