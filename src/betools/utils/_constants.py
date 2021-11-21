@@ -10,8 +10,8 @@ from mathutils import Vector
 
 
 BASE_FOLDER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MDL_FOLDER = os.path.join(BASE_FOLDER, "resources\mdl")
-IMG_FOLDER = os.path.join(BASE_FOLDER, "resources\img")
+MDL_FOLDER = os.path.join(BASE_FOLDER, "resources/mdl")
+IMG_FOLDER = os.path.join(BASE_FOLDER, "resources/img")
 
 CHECKER_MAPS = [
 	('CHECKER', 'Checker', 'Standard checker map'),
@@ -20,9 +20,9 @@ CHECKER_MAPS = [
 ]
 
 MAP_SIZES = [
-		('512', '512', ''), 
-		('1024', '1024', ''), 
-		('2048', '2048', ''), 
+		('512', '512', ''),
+		('1024', '1024', ''),
+		('2048', '2048', ''),
 		('4096', '4096', ''),
 		('8192', '8192', '')
 	]
