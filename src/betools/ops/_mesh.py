@@ -6,7 +6,7 @@
 import bpy
 import bmesh
 import math
-import mathutils
+from mathutils import Vector
 
 from .. import _settings
 
@@ -150,9 +150,19 @@ def getSelectedFaces():
     bm = get_mesh()
     return [face for face in bm.faces if face.select]
 
-def getMeshBoundingBox(mesh):
+def get_mesh_bounding_box(bmesh):
     """ Return the min, max, and span of the bounding box
     """
+
+    bounding_box = {}
+    boundsMin = Vector((-99999999.0, -99999999.0, -99999999.0))
+    boundsMax = Vector((99999999.0, 99999999.0, 99999999.0))
+    boundsCenter = Vector((0.0, 0.0, 0.0))
+    selection = False
+
+    for face in bmesh.faces:
+        for vert in face.verts:
+            print(vert)
 
 def rotateToCoordinates(obj, direction):
 

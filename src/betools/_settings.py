@@ -1,9 +1,9 @@
-# TODO choose game engine (ue4, unity, hide)
+#################################################################
+# Be Tools by Bruce Evans                                       #
+# brucein3d@gmail.com                                           #
+#################################################################
 
 import bpy
-import bmesh
-import operator
-
 from . utils import _constants
 
 edit_pivot_mode = False
@@ -19,6 +19,9 @@ face_selection = [] # indices
 uv_map_rename_mode = False
 
 previous_unit = ''
+
+# columns and rows of mesh faces that can uv shells can be mapped to
+trim_slots = []
 
 ##############################################################################
 ##############################################################################
@@ -64,7 +67,6 @@ def uv_stretch_type(self, context):
     bpy.context.space_data.uv_editor.display_stretch_type = context.scene.betools_settings.uv_stretch_type
 
 def get_color():
-
     return bpy.props.FloatVectorProperty(
         name="Color",
         description="Set Color for ID",
@@ -286,4 +288,13 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
         update = on_uv_map_dropdown
 	)
 
-    uv_map_new_name : bpy.props.StringProperty(name='Rename UV Map', default = 'New UV Map')
+    uv_map_new_name : bpy.props.StringProperty(name='Rename UV Map', default='New UV Map')
+
+    # Trim Settings
+    # trim_mesh : bpy.props.StringProperty(name='Trim Template', default='')
+
+    trim_fit_dropdown : bpy.props.EnumProperty(
+        items = _constants.TRIM_FIT_MODES,
+		name = "Fit Mode",
+        default = 'VERTICAL'
+	)
