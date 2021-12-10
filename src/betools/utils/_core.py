@@ -28,3 +28,5 @@ def object_mode(func):
         bpy.ops.object.mode_set(mode=previous_mode)
         return result
     return wrapper
+
+# TODO decorator for each mode vertex, edge, face

@@ -291,7 +291,7 @@ class BETOOLSProperties(bpy.types.PropertyGroup):
     uv_map_new_name : bpy.props.StringProperty(name='Rename UV Map', default='New UV Map')
 
     # Trim Settings
-    # trim_mesh : bpy.props.StringProperty(name='Trim Template', default='')
+    trim_mesh : bpy.props.StringProperty(name='Trim Template', default="")
 
     trim_fit_dropdown : bpy.props.EnumProperty(
         items = _constants.TRIM_FIT_MODES,

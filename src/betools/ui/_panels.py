@@ -671,6 +671,10 @@ class UI_PT_UVTrim(Panel):
         row = col.row(align=True)
         row.operator('uv.be_trim_template', text="Assign Trim Template", icon='NODE_TEXTURE')
 
+        row = col.row(align=True)
+        trim_template_label = "None!" if settings.trim_mesh == "" else settings.trim_mesh
+        row.label(text="Trim Template: {}".format(trim_template_label))
+        
         col = box.column(align=True)
         row = col.row(align=True)
         row.label(text="Fit: ")
@@ -684,12 +688,21 @@ class UI_PT_UVTrim(Panel):
         row.label(text="Shift Trim Shell", icon_value=_icon.get_icon("be_move"))
 
         row = col.row(align=True)
-        row.operator('uv.be_trim_shift', text="Shift Up", icon='TRIA_UP')
-        row.operator('uv.be_trim_shift', text="Shift Down", icon='TRIA_DOWN')
+        row.operator('uv.be_trim_shift', text="Shift Up", icon='TRIA_UP').direction = "UP"
 
         row = col.row(align=True)
-        row.operator('uv.be_trim_shift', text="Shift Left", icon='TRIA_LEFT')
-        row.operator('uv.be_trim_shift', text="Shift Right", icon='TRIA_RIGHT')
+        row.operator('uv.be_trim_shift', text="Shift Down", icon='TRIA_DOWN').direction = "DOWN"
+
+        col = box.column(align=True)
+        row = col.row(align=True)
+        row.label(text="Align Shell in Trim: ")
+
+        row = col.row(align=True)
+        row.operator('uv.be_trim_align', text="Left").mode='LEFT'
+        row.operator('uv.be_trim_align', text="Center").mode="CENTER"
+        row.operator('uv.be_trim_align', text="Right").mode="RIGHT"
+
+        # add random horizontal offset?
 
 
 class UI_PT_UVColorID(Panel):
