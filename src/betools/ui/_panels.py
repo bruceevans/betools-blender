@@ -673,14 +673,12 @@ class UI_PT_UVTrim(Panel):
         
         col = box.column(align=True)
         row = col.row(align=True)
-        # trim_template_label = "None!" if settings.trim_mesh == "" else settings.trim_mesh
-        # row.label(text="Trim Template: {}".format(trim_template_label))
         row.label(text="Template Mesh: ")
+        
         row = col.row(align=True)
         row.prop(settings, "trim_mesh", emboss=False, text="")
         row.enabled = False
         
-        # col = box.column(align=True)
         col.scale_y = 1
         row = col.row(align=True)
         row.label(text="Fit Mode: ")
