@@ -453,14 +453,13 @@ class UI_PT_UVImage(Panel):
     bl_parent_id = "UI_PT_UVEditor"
 
     def draw(self, context):
-
         settings = context.scene.betools_settings
 
         layout = self.layout
         box = layout.box()
         col = box.column(align=True)
 
-        row = col.row(align = True)
+        row = col.row(align=True)
         row.label(text="Map Size: ")
         row.prop(settings, "map_size_dropdown", text="")
 
@@ -512,7 +511,7 @@ class UI_PT_UVTransform(Panel):
 
         row = col.row(align=True)
         row.prop(settings, "angle")
-        row.operator('uv.be_rotate', text='', icon_value=_icon.get_icon("be_rotate")).angle = settings.angle
+        row.operator('uv.be_rotate', text='', icon_value=_icon.get_icon("be_rotate")).angle=settings.angle
 
     
 class UI_PT_UVLayout(Panel):
@@ -598,21 +597,21 @@ class UI_PT_UVLayout(Panel):
         row.prop(settings, "padding", text="")
 
         row = col.row(align=True)
-        row.operator('uv.be_snap_island', text="↖", icon_value=_icon.get_icon("be_snap_tl")).direction = 'LEFTTOP'
-        row.operator('uv.be_snap_island', text="↑", icon_value=_icon.get_icon("be_snap_tm")).direction = 'CENTERTOP'
-        row.operator('uv.be_snap_island', text="↗", icon_value=_icon.get_icon("be_snap_tr")).direction = 'RIGHTTOP'
+        row.operator('uv.be_snap_island', text="↖", icon_value=_icon.get_icon("be_snap_tl")).direction='LEFTTOP'
+        row.operator('uv.be_snap_island', text="↑", icon_value=_icon.get_icon("be_snap_tm")).direction='CENTERTOP'
+        row.operator('uv.be_snap_island', text="↗", icon_value=_icon.get_icon("be_snap_tr")).direction='RIGHTTOP'
         row = col.row(align=True)
-        row.operator('uv.be_snap_island', text="←", icon_value=_icon.get_icon("be_snap_ml")).direction = 'LEFTCENTER'
-        row.operator('uv.be_snap_island', text="·", icon_value=_icon.get_icon("be_snap_mm")).direction = 'CENTER'
-        row.operator('uv.be_snap_island', text="→", icon_value=_icon.get_icon("be_snap_mr")).direction = 'RIGHTCENTER'
+        row.operator('uv.be_snap_island', text="←", icon_value=_icon.get_icon("be_snap_ml")).direction='LEFTCENTER'
+        row.operator('uv.be_snap_island', text="·", icon_value=_icon.get_icon("be_snap_mm")).direction='CENTER'
+        row.operator('uv.be_snap_island', text="→", icon_value=_icon.get_icon("be_snap_mr")).direction='RIGHTCENTER'
         row = col.row(align=True)
-        row.operator('uv.be_snap_island', text="↙", icon_value=_icon.get_icon("be_snap_bl")).direction = 'LEFTBOTTOM'
-        row.operator('uv.be_snap_island', text="↓", icon_value=_icon.get_icon("be_snap_bm")).direction = 'CENTERBOTTOM'
-        row.operator('uv.be_snap_island', text="↘", icon_value=_icon.get_icon("be_snap_br")).direction = 'RIGHTBOTTOM'
+        row.operator('uv.be_snap_island', text="↙", icon_value=_icon.get_icon("be_snap_bl")).direction='LEFTBOTTOM'
+        row.operator('uv.be_snap_island', text="↓", icon_value=_icon.get_icon("be_snap_bm")).direction='CENTERBOTTOM'
+        row.operator('uv.be_snap_island', text="↘", icon_value=_icon.get_icon("be_snap_br")).direction='RIGHTBOTTOM'
 
         row = col.row(align=True)
-        row.operator("uv.be_island_sort", text="Sort H", icon_value=_icon.get_icon("be_sort_hor")).axis = 'HORIZONTAL'
-        row.operator("uv.be_island_sort", text="Sort V", icon_value=_icon.get_icon("be_sort_vert")).axis = 'VERTICAL'
+        row.operator("uv.be_island_sort", text="Sort H", icon_value=_icon.get_icon("be_sort_hor")).axis='HORIZONTAL'
+        row.operator("uv.be_island_sort", text="Sort V", icon_value=_icon.get_icon("be_sort_vert")).axis='VERTICAL'
 
         row = col.row(align=True)
         row.operator("uv.pack_islands", text = "Pack Islands", icon_value=_icon.get_icon("be_pack")).margin = _uvs.get_padding()
@@ -651,6 +650,64 @@ class UI_PT_UVTexel(Panel):
         row.operator("uv.be_cube_helper", text="1m").size = "1M"
         row.operator("uv.be_cube_helper", text="2m").size = "2M"
         row.operator("uv.be_cube_helper", text="4m").size = "4M"
+
+
+class UI_PT_UVTrim(Panel):
+    bl_category = "Be Tools"
+    bl_label = "Trim"
+    bl_parent_id = "UI_PT_UVEditor"
+    bl_region_type = "UI"
+    bl_space_type = "IMAGE_EDITOR"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        settings = context.scene.betools_settings
+
+        layout = self.layout
+        box = layout.box()
+
+        col = box.column(align=True)
+        col.scale_y = 1.75
+        row = col.row(align=True)
+        row.operator('uv.be_trim_template', text="Assign Trim Template", icon='NODE_TEXTURE')
+        
+        col = box.column(align=True)
+        row = col.row(align=True)
+        row.label(text="Template Mesh: ")
+        
+        row = col.row(align=True)
+        row.prop(settings, "trim_mesh", emboss=False, text="")
+        row.enabled = False
+        
+        col.scale_y = 1
+        row = col.row(align=True)
+        row.label(text="Fit Mode: ")
+        row = col.row(align=True)
+        row.prop(settings, "trim_fit_dropdown", text="")
+
+        row = col.row(align=True)
+        row.operator('uv.be_trim_fit', text="Snap Shell to Trim", icon='ALIGN_MIDDLE')
+
+        col = box.column(align=True)
+        row = col.row(align=True)
+        row.label(text="Shift Trim Shell", icon_value=_icon.get_icon("be_move"))
+
+        row = col.row(align=True)
+        row.operator('uv.be_trim_shift', text="Shift Up", icon='TRIA_UP').direction = "UP"
+
+        row = col.row(align=True)
+        row.operator('uv.be_trim_shift', text="Shift Down", icon='TRIA_DOWN').direction = "DOWN"
+
+        col = box.column(align=True)
+        row = col.row(align=True)
+        row.label(text="Align Shell in Trim: ")
+
+        row = col.row(align=True)
+        row.operator('uv.be_trim_align', text="Left").mode='LEFT'
+        row.operator('uv.be_trim_align', text="Center").mode="CENTER"
+        row.operator('uv.be_trim_align', text="Right").mode="RIGHT"
+
+        # TODOadd random horizontal offset?
 
 
 class UI_PT_UVColorID(Panel):
@@ -720,7 +777,7 @@ class UI_PT_UVUtils(Panel):
         box = layout.box()
 
         col = box.column(align=True)
-        row = col.row(align = True)
+        row = col.row(align=True)
         row.label(text="UV Channels:")
         row = col.row(align = True)
         group = row.row(align=True)

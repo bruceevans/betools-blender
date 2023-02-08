@@ -1,4 +1,7 @@
-
+#################################################################
+# Be Tools by Bruce Evans                                       #
+# brucein3d@gmail.com                                           #
+#################################################################
 
 import bpy
 import bmesh
@@ -450,7 +453,7 @@ def FollowActiveUV(operator, me, f_act, faces, EXTEND_MODE = 'LENGTH_AVERAGE'):
     for f_triple in walk_face(f_act):
         apply_uv(*f_triple)
 
-    bmesh.update_edit_mesh(me, False)
+    bmesh.update_edit_mesh(me) # , False)
 
 '''----------------------------------'''
 

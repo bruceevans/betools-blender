@@ -6,9 +6,9 @@
 bl_info = {
     "name": "BE Tools",
     "author": "Bruce Evans",
-    "version": (1, 0, 9),
+    "version": (1, 1, 9),
     "description": "Context sensitive pie menus for various modeling tasks, mimics Maya's shift + RMB functionality and a shelf like menu for easy access modeling functions",
-    "blender": (2, 90, 0),
+    "blender": (2, 93, 5),
     "category": "User Interface"
 }
 
@@ -39,6 +39,7 @@ if "bpy" in locals():
     imp.reload(ops._vert)
     imp.reload(ops._viewops)
     imp.reload(ops._snapping)
+    imp.reload(ops._trim)
 
 else:
     from . import _settings
@@ -66,6 +67,7 @@ else:
     from .ops import _vert
     from .ops import _viewops
     from .ops import _snapping
+    from .ops import _trim
 
 
 import bpy
@@ -89,6 +91,7 @@ classes = (
     _panels.UI_PT_UVTransform,
     _panels.UI_PT_UVLayout,
     _panels.UI_PT_UVTexel,
+    _panels.UI_PT_UVTrim,
     _panels.UI_PT_UVColorID,
     _panels.UI_PT_UVUtils,
     _settings.BETOOLSProperties
@@ -100,8 +103,6 @@ def register():
     for cls in classes:
         bpy.utils.register_class(cls)
     bpy.types.Scene.betools_settings = bpy.props.PointerProperty(type=_settings.BETOOLSProperties)
-
-    # TODO initialize any settings / startup funcs here
 
     # handle keymaps
     kc = bpy.context.window_manager.keyconfigs.addon

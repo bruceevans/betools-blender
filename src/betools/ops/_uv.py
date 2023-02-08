@@ -6,7 +6,7 @@
 import bpy
 import bmesh
 import math
-from bpy.props import EnumProperty, FloatVectorProperty, FloatProperty
+from bpy.props import EnumProperty
 from mathutils import Vector
 from ..utils import _uvs
 from .. import _settings
@@ -244,6 +244,7 @@ class BETOOLS_OT_Fill(bpy.types.Operator):
         if not bpy.context.object.data.uv_layers:
             return False
         # Selective sync off
+        # TODO new tool settings name
         if bpy.context.scene.tool_settings.use_uv_select_sync:
             return False
         #Only in UV editor mode

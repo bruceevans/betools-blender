@@ -1,18 +1,14 @@
+#################################################################
+# Be Tools by Bruce Evans                                       #
+# brucein3d@gmail.com                                           #
+#################################################################
 
 import bpy
 import bmesh
-import operator
-
-import time
 import math
-
 from mathutils import Vector
-from collections import defaultdict
-
 from ..utils import _ui
 from .. import _settings
-
-from pprint import pprint
 
 
 #######################################
