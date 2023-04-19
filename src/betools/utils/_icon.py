@@ -86,7 +86,6 @@ previewIcons = bpy.utils.previews.new()
 def register_icon(iconFile):
     icon_name = os.path.splitext(iconFile)[0]
     directory = os.path.join(os.path.dirname(__file__), "icons")
-    print(directory)
     previewIcons.load(icon_name, os.path.join(directory, iconFile), 'IMAGE')
 
 for icon in _ICONS:
